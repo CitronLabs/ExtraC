@@ -14,12 +14,6 @@ ExtraC includes a series of libraries that each comes with its own set of featur
     <li> <a href="./libs/ExtraC/routines/README.md">Routines</a> : control flow utilities </li>
 </b></ul>
 
-### ***Tools include:***
-
-<ul><b>
-    <li> <a href="./libs/Ebee/README.md">Ebee</a> : simple, yet powerful modular build system </li>
-</b></ul>
-
 ## Current Status: Work in Progress
 
 [![Project Status: WIP](https://img.shields.io/badge/Project%20Status-WIP-red)](https://img.shields.io/badge/Project%20Status-WIP-red)
