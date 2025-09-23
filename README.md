@@ -1,4 +1,4 @@
-<img src="./__media/ExtraC-Logo.svg">
+<img src="https://github.com/CitronLabs/CitronLabs-SDK/blob/main/__media/ExtraC-Logo.svg">
 <h1> ExtraC: Modernizing C Development </h1>
 
 
