@@ -6,10 +6,8 @@
 
 
 Class(Vector,
-__INIT(VecData initData),
-__FIELD(),
-	interface(Formatter);
-	interface(IterableList);
+INIT(VecData initData),
+FIELD(),
 
 	bool 		method(Vector, isFloat);
 	u64 		method(Vector, DataSize);

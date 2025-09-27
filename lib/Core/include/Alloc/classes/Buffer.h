@@ -3,12 +3,15 @@
 #define __XC_ALLOC__
 #include "../pkg.h"
 #include "../types.h"
+#include "../utils.h"
 #include "../interfaces/Allocator.h"
+
+#undef b
+#undef B
 
 /**
 @class Buffer
 @implements Allocator
-@implements IterableList
 @brief A fixed size array able to store any type of arbitrary size
 
 @details This class is wrapper around a raw C array which
@@ -28,11 +31,10 @@ can save you an extra size parameter for pointers
 */
 
 Class(Buffer,
-__INIT(u64 size; u16 typeSize; bool isStatic; void* initData),
-__FIELD(),
+INIT(u64 size; u16 typeSize; bool isStatic; void* initData),
+FIELD(),
 
 	interface(Allocator);
-	interface(IterableList);
 
 /**
 @return **true** if the buffer is at its allocation max else it returns **false**
@@ -103,13 +105,19 @@ __FIELD(),
 @details the type is infered using typeof() from the first parameter, then the others are assumed to 
 be of the same type
 */
-	#define b(first, ...) 									\
-		initialize(Buffer, alloca(							\
-			sizeof(Buffer) + sizeof_Buffer_Private + 				\
-			sizeof((typeof(first)[]){first, __VA_ARGS__})), 			\
-	     		sizeof((typeof(first)[]){first, __VA_ARGS__}) / sizeof(typeof(first)), 	\
-			sizeof(typeof(first)),							\
-			true, &(typeof(first)[]){first, __VA_ARGS__} 				\
+	#define b(first, ...) 							\
+		initialize(Buffer, 						\
+		    (memcpy(							\
+			alloca(							\
+				sizeof(Buffer) + sizeof_Buffer_Private + 	\
+				sizeof((typeof(first)[]){first, __VA_ARGS__}))	\
+			+ sizeof(Buffer) + sizeof_Buffer_Private,		\
+		        (typeof(first)[]){first, __VA_ARGS__}, 			\
+        	        sizeof((typeof(first)[]){first, __VA_ARGS__})) 		\
+       		     - sizeof(Buffer) + sizeof_Buffer_Private),			\
+		sizeof((typeof(first)[]){first, __VA_ARGS__}), 			\
+		sizeof(typeof(first)),						\
+		true, NULL 							\
 	     	)
 /**
 @def B(first, ...)
@@ -117,13 +125,19 @@ be of the same type
 @details the type is infered using typeof() from the first parameter, then the others are assumed to 
 be of the same type
 */
-	#define B(first, ...) 									\
-		initialize(Buffer, malloc(							\
-			sizeof(Buffer) + sizeof_Buffer_Private + 				\
-			sizeof((typeof(first)[]){first, __VA_ARGS__})), 			\
-	     		sizeof((typeof(first)[]){first, __VA_ARGS__}) / sizeof(typeof(first)), 	\
-			sizeof(typeof(first)),							\
-			true, &(typeof(first)[]){first, __VA_ARGS__} 				\
+	#define B(first, ...) 							\
+		initialize(Buffer, 						\
+		    (memcpy(							\
+			malloc(							\
+				sizeof(Buffer) + sizeof_Buffer_Private + 	\
+				sizeof((typeof(first)[]){first, __VA_ARGS__}))	\
+			+ sizeof(Buffer) + sizeof_Buffer_Private,		\
+		        (typeof(first)[]){first, __VA_ARGS__}, 			\
+        	        sizeof((typeof(first)[]){first, __VA_ARGS__})) 		\
+       		     - sizeof(Buffer) + sizeof_Buffer_Private),			\
+		sizeof((typeof(first)[]){first, __VA_ARGS__}), 			\
+		sizeof(typeof(first)),						\
+		true, NULL 							\
 	     	)
 
 
@@ -132,4 +146,8 @@ be of the same type
 
 	#define newBufferView(type, len, pntr) \
 			Buffer.fromView(malloc(sizeof(Buffer) + sizeof_Buffer_Private), pntr, sizeof(type), len)
+
+
+
+
 

@@ -20,8 +20,8 @@ the buffer
 @param isStatic 	if the buffer is able to grow 
 */
 Class(Arena,
-__INIT(u64 init_size; bool isStatic),
-__FIELD(),
+INIT(u64 init_size; bool isStatic),
+FIELD(),
 	interface(Allocator);
       	u64 method(Arena, Size);
       	void* method(Arena, Alloc,, u64 num_bytes);

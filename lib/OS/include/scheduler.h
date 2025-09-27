@@ -51,7 +51,7 @@ Interface(scheduler,
 	);
 )
 
-Enum(ProcessEvent_Type,
+enum(ProcessEvent_Type,
 	ProcessEvent_Breakpoint,
 	ProcessEvent_Exception,
 	ProcessEvent_CreateProcess,
@@ -60,7 +60,7 @@ Enum(ProcessEvent_Type,
 	ProcessEvent_UnloadLib
 );
 
-Type(ProcessEvent,
+struct(ProcessEvent,
 	schedulerHandle handle;
 	ProcessEvent_Type type;
      	union data{

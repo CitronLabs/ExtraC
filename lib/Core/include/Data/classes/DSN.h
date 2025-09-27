@@ -9,10 +9,8 @@
 #define DSB_Magic {'D','S','B',':','D'} //DSB:D
 
 Class(DSN, 
-__INIT(cstr name; inst(String) source; List(entry(String,DSN)) imports), 
-__FIELD(inst(String) name; inst(Struct) body),
-	
- 	interface(Formatter);
+INIT(cstr name; inst(String) source; List(entry(String,DSN)) imports), 
+FIELD(inst(String) name; inst(Struct) body),
 	
       	errvt 		method(DSN, addImport,,   cstr name, inst(DSN) import_data);
 	DSN_data*	method(DSN, searchField,, inst(String) name);

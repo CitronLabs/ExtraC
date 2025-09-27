@@ -1,1 +1,1 @@
-#include "../../../build/config/xc-core.c"
+#include "../../build/config/xc-core.c"

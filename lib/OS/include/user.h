@@ -6,7 +6,7 @@ typedef void* userHandle;
 
 typedef int userPermissions;
 
-Type(userInfo,
+struct(userInfo,
 	inst(String) userName;
 	inst(String) fullName;
     	Buffer(data(String)) groups;

@@ -9,7 +9,7 @@
 
 static u32 Linux_PageSize = 4096;
 
-Type(LinuxMemoryHandle,
+struct(LinuxMemoryHandle,
 	size_t size;
      	void* address;
 	int sharefd;

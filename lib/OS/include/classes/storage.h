@@ -15,8 +15,8 @@
 #define DFL_WRITE 	0x02
 
 Class(File,
-__INIT(cstr path; u8 flags; u16 char_size),
-__FIELD(),
+INIT(cstr path; u8 flags; u16 char_size),
+FIELD(),
 	#define print(...) 	 File.PrintTo(File.out, __VA_ARGS__, endprint)
 	#define fprint(file,...) File.PrintTo(file, 	__VA_ARGS__, endprint)
 	#define println(...) 	 File.PrintTo(File.out, __VA_ARGS__, "\n" , endprint)
@@ -47,8 +47,8 @@ __FIELD(),
 )
 
 Class(Dir,
-__INIT(cstr path; u8 flags;),
-__FIELD(),
+INIT(cstr path; u8 flags;),
+FIELD(),
 	
 	interface(IterableList);
 	

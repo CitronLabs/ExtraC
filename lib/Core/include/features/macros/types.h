@@ -1,9 +1,8 @@
-#include "classes.h"
 
 #define boolToObject(var) 		\
 	(&(data(Boolean)){ 		\
 		NULL, 			\
-		&Boolean, 		\
+		(void*) &Boolean_Ops, 	\
 		*(u8*)&			\
 		(typeof(var)){var} 	\
 	})
@@ -12,7 +11,7 @@
 #define pntrToObject(var) 		\
 	(&(data(Pointer)){ 		\
 		NULL, 			\
-		&Pointer, 		\
+		(void*) &Pointer_Ops, 	\
 		*(void**)&		\
 		(typeof(var)){var} 	\
 	})
@@ -20,25 +19,45 @@
 #define charToObject(var) 		\
 	(&(data(Char)){ 		\
 		NULL, 			\
-		&Char, 			\
+		(void*) &Char_Ops,	\
 		{getCharType(var), 	\
 		*(wchar_t*)&		\
 		(typeof(var)){var}} 	\
 	})
 
+#define xccharToObject(var) 		\
+	(&(data(Char)){ 		\
+		NULL, 			\
+		(void*) &Char_Ops,	\
+  		*(char_t*)var		\
+	})
+
 #define cstrToObject(var) 		\
 	(&(data(CString)){ 		\
 		NULL, 			\
-		&CString, 		\
-		{getCharType(var), 	\
+		(void*) &CString_Ops, 	\
+		{(void*) &str_t_Ops,	\
+		0,getCharType(var), 	\
 		*((void**)&		\
 		(typeof(var)){var})} 	\
 	})
+#define xcstrToObject(var) 		\
+	(&(data(CString)){ 		\
+		NULL, 			\
+		(void*) &CString_Ops, 	\
+		*(str_t*)var 		\
+	}) 				
+#define xcbufToObject(var) 		\
+	(&(data(Buff)){ 		\
+		NULL, 			\
+		(void*) &Buff_Ops,	\
+		*(buff_t*)var 		\
+	}) 				
 
 #define floatToObject(var) 		\
 	(&(data(Float)){ 		\
 		NULL, 			\
-		&Float, 		\
+		(void*) &Float_Ops, 	\
 		*(double*)&		\
 		(typeof(var)){var}, 	\
 		.dbl = _Generic(var, 	\
@@ -51,7 +70,7 @@
 #define intToObject(var) 		\
 	(&(data(Integer)){ 		\
 		NULL, 			\
-		&Integer, 		\
+		(void*)	&Integer_Ops, 	\
 		*(u64*)&		\
 		(typeof(var)){var}, 	\
 		.sign = _Generic(var, 	\
@@ -84,26 +103,15 @@ float:   	floatToObject(var),	\
 double:   	floatToObject(var),	\
 const char*: 	cstrToObject(var),	\
 char*:	 	cstrToObject(var),	\
+str_t:		xcstrToObject(var),	\
+buff_t:		xcbufToObject(var),	\
 c8:	 	charToObject(var),	\
 char:	 	charToObject(var),	\
+char_t:	 	xccharToObject(var),	\
 void*:	  	pntrToObject(var),	\
 bool:		boolToObject(var), 	\
 default: 	var)		
 
-#define getMethods(type)  	\
-_Generic(((data(type)){0}), 	\
-i32:    	Integer,	\
-u32:		Integer,	\
-i64:    	Integer,	\
-u64:    	Integer,	\
-i16:   		Integer,	\
-u16:   		Integer,	\
-u8:   		Integer,	\
-i8:   		Integer,	\
-float:   	Float,		\
-double:  	Float,		\
-const char*: 	CString,	\
-cstr:	  	CString,	\
-pntr: 	 	Pointer,	\
-bool:		Boolean,	\
-default: 	type)		
+
+
+

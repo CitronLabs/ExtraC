@@ -6,8 +6,6 @@
 
 /**
 @class Queue
-@implements Formatter
-@implements IterableList
 @brief a dynamic queue of any type of arbitrary size
 @details This class represents a dynamic queue which can be 
 used wherever an unknown amount of items must be put into a queue
@@ -29,11 +27,8 @@ if the orignal reference count is larger than the overide queue's count then the
 elements from the orignal reference are appended to overide queue
 */
 Class(Queue,
-__INIT(u64 init_size; u64 type_size; DSN_fieldType dsn_type; void* literal;),
-__FIELD(),
-
-	interface(Formatter);
-	interface(IterableList);
+INIT(u64 init_size; u64 type_size; void* literal;),
+FIELD(),
 
 	errvt method(Queue,Index,,   bool write, u64 index, void* data);
 	void* method(Queue,ToPointer);
@@ -55,7 +50,6 @@ __FIELD(),
 #define newQueue(type, size) new(Queue, 		\
 		size,					\
 		sizeof(type),	 			\
-		getDSN_Type((type){0}),			\
 		NULL)
 /**
 @def pushQueue(type, size)
@@ -64,7 +58,6 @@ __FIELD(),
 #define pushQueue(type, size) push(Queue, 		\
 		size,					\
 		sizeof(type),	 			\
-		getDSN_Type((type){0}),			\
 		NULL)
 /**
 @def l_s(first, ...)
@@ -75,7 +68,6 @@ be of the same type
 #define l_q(first, ...) push(Queue, sizeof((typeof(first)[]){first, __VA_ARGS__})\
 				 / sizeof(typeof(first)), 			 \
 			   	 sizeof(typeof(first)), 			 \
-				 getDSN_Type((typeof(first)){0}),		 \
 				 (typeof(first)[]){first, __VA_ARGS__}		 \
 			)
 /**
@@ -87,6 +79,5 @@ be of the same type
 #define L_Q(first, ...) new(Queue, sizeof((typeof(first)[]){first, __VA_ARGS__})\
 				 / sizeof(typeof(first)), 			\
 			   	 sizeof(typeof(first)), 			\
-				 getDSN_Type((typeof(first)){0}),		\
 				 (typeof(first)[]){first, __VA_ARGS__}		\
 			)

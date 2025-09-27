@@ -11,6 +11,7 @@
 #include <math.h>
 #include <assert.h>
 #include <wchar.h>
+#include <wctype.h>
 #include <time.h>
 #include <ctype.h>
 #include <setjmp.h>

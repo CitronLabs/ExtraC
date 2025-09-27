@@ -6,8 +6,6 @@
 
 /**
 @class List
-@implements Formatter
-@implements IterableList
 @brief a dynamic array of any type of arbitrary size
 @details This class represents a dynamic array which can be 
 used wherever an unknown amount of items must be put into an array 
@@ -29,11 +27,8 @@ if the orignal reference count is larger than the overide lists count then the r
 elements from the orignal reference are appended to overide list
 */
 Class(List,
-__INIT(u64 init_size; u64 type_size; DSN_fieldType dsn_type; void* literal;),
-__FIELD(),
-
-	interface(Formatter);
-	interface(IterableList);	
+INIT(u64 init_size; typeData type),
+FIELD(),
 
 	errvt 		method(List,Limit,, u64 limit_size);
 	errvt 		method(List,Append,, void* in, u64 len);
@@ -59,18 +54,16 @@ __FIELD(),
 */
 #define newList(type, size) new(List, 			\
 		size,					\
-		sizeof(type),	 			\
-		getDSN_Type((type){0}),			\
-		NULL)
+		type((type){0}),	 		\
+		getDSN_Type((type){0}))
 /**
 @def pushList(type, size)
 @brief allocates a static buffer object on the stack 
 */
 #define pushList(type, size) push(List, 		\
 		size,					\
-		sizeof(type),	 			\
-		getDSN_Type((type){0}),			\
-		NULL)
+		type((type){0}),	 		\
+		getDSN_Type((type){0}))
 /**
 @def l(first, ...)
 @brief allocates a list object literal on the stack 
@@ -79,9 +72,8 @@ be of the same type
 */
 #define l(first, ...) push(List, sizeof((typeof(first)[]){first, __VA_ARGS__}) 	\
 				 / sizeof(typeof(first)), 			\
-			   	 sizeof(typeof(first)), 			\
-				 getDSN_Type((typeof(first)){0}),		\
-				 (typeof(first)[]){first, __VA_ARGS__}		\
+			   	 type(first), 					\
+				 getDSN_Type((typeof(first)){0})		\
 			)
 /**
 @def L(first, ...)
@@ -91,9 +83,8 @@ be of the same type
 */
 #define L(first, ...) new(List, sizeof((typeof(first)[]){first, __VA_ARGS__}) 	\
 				 / sizeof(typeof(first)), 			\
-			   	 sizeof(typeof(first)), 			\
-				 getDSN_Type((typeof(first)){0}),		\
-				 (typeof(first)[]){first, __VA_ARGS__}		\
+			   	 type(first), 					\
+				 getDSN_Type((typeof(first)){0})		\
 			)
 
 

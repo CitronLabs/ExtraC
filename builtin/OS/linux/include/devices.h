@@ -4,7 +4,7 @@
 typedef i64 Device_ID;
 #define DEVICE_ID_NULL ((Device_ID)-1)
 
-Enum(EnvDevice_Type, 
+enum(EnvDevice_Type, 
 	EnvDevice_Video,
 	EnvDevice_Sound,
 	EnvDevice_Network,
@@ -12,7 +12,7 @@ Enum(EnvDevice_Type,
 	EnvDevice_Input,
      #define EnvDevice_Top EnvDevice_Input 
 )
-Enum(OSDevice_Type, 
+enum(OSDevice_Type, 
 	OSDevice_Graphics,
 	OSDevice_Audio,
 	OSDevice_Network,
@@ -20,7 +20,7 @@ Enum(OSDevice_Type,
 	OSDevice_Input,
      #define OSDevice_Top OSDevice_Input 
 )
-Type(EnvDevice_ID,
+struct(EnvDevice_ID,
 	data(String) 
      	* name,
      	* vendorName,
@@ -29,24 +29,24 @@ Type(EnvDevice_ID,
      	* devPath;
      	Device_ID id;
 )
-Type(EnvDevice_Network_Data,
+struct(EnvDevice_Network_Data,
      	EnvDevice_ID info;
 )
-Type(EnvDevice_Storage_Data,
+struct(EnvDevice_Storage_Data,
      	EnvDevice_ID info;
 )
-Type(EnvDevice_Video_Data,
+struct(EnvDevice_Video_Data,
      	EnvDevice_ID info;
      	videoDirection direction;
 )
-Type(EnvDevice_Sound_Data,
+struct(EnvDevice_Sound_Data,
      	EnvDevice_ID info;
 );
-Type(EnvDevice_Input_Data,
+struct(EnvDevice_Input_Data,
      	EnvDevice_ID info;
 	List(String) inputs; 
 );
-Type(OSDeviceResouce,
+struct(OSDeviceResouce,
 	intf(Object) interface;
      	inst(Object) object;
 );
@@ -55,8 +55,8 @@ Type(OSDeviceResouce,
 
 
 Class(OSDeviceManager,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
 errvt method(OSDeviceManager, registerOSDevice,, 
       	EnvDevice_Type envDevType, Device_ID envDevUnqID, 
       	OSDevice_Type osDevType,   void* deviceData, 

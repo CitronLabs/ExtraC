@@ -7,7 +7,7 @@
 #include <sys/wait.h>
 
 int main(int argc, cstr argv[]);
-Type(LinuxThread,
+struct(LinuxThread,
 	pthread_t thread;
 );
 

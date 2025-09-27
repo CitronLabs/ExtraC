@@ -5,11 +5,9 @@
 #include "../types.h"
 
 Class(Time,
-__INIT(u64 seconds; u64 nanosec),
-__FIELD(u64 seconds; u64 nanosec),
+INIT(u64 seconds; u64 nanosec),
+FIELD(u64 seconds; u64 nanosec),
 
-	interface(Formatter);
-	
 	inst(Time) method(Time, GetNow,, TimeScale scale);
 	errvt method(Time, Difference,, inst(Time) time2, inst(Time) result);
 	bool  method(Time, Compare,, inst(Time) time2, inst(Time) tolerance);

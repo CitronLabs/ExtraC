@@ -2,8 +2,8 @@
 #include "../../os.h"
 
 Class(Mouse,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
       	#define MOUSEBUTTON_LEFT  0
       	#define MOUSEBUTTON_RIGHT 1
 	interface(PosDevice);
@@ -11,8 +11,8 @@ __FIELD(),
 )
 
 Class(Keyboard,
-__INIT(),
-__FIELD(inputHandle handle),
+INIT(),
+FIELD(inputHandle handle),
       	interface(KeyDevice);
 )
 

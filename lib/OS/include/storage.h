@@ -9,7 +9,7 @@
 typedef void* storageHandle;
 
 typedef char fsPath[256];
-Type(fsEntry,
+struct(fsEntry,
 	union {
      	    struct {
      	    	bool dir:  1;
@@ -23,7 +23,7 @@ Type(fsEntry,
 	inst(Time) time_modified;
 )
 
-Type(storageDevice,
+struct(storageDevice,
 	inst(String) name;
 	inst(String) manufacturer;
 	inst(String) model;
@@ -77,12 +77,12 @@ Interface(storage,
 )
 
 
-Enum(FileSysEvent_Type,
+enum(FileSysEvent_Type,
     FileSysEvent_Write,
     FileSysEvent_Read,
     FileSysEvent_Delete
 )
-Type(FileSysEvent,
+struct(FileSysEvent,
     storageHandle handle;
     FileSysEvent_Type type;
 )

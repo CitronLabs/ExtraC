@@ -24,8 +24,8 @@ lifetime of the Pool object.
 @param isStatic 	if the Pool is able to grow beyond the orginal init size
 */
 Class(Pool, 
-__INIT(u64 member_size, init_size, limit; bool isStatic),
-__FIELD(),
+INIT(u64 member_size, init_size, limit; bool isStatic),
+FIELD(),
 	#define Pool(type) inst(Pool)
 
 	interface(Allocator);

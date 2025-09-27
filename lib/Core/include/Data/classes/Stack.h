@@ -7,8 +7,6 @@
 
 /**
 @class Stack
-@implements Formatter
-@implements IterableList
 @brief a dynamic stack of any type of arbitrary size
 @details This class represents a dynamic stack which can be 
 used wherever an unknown amount of items must be put into a stack
@@ -31,12 +29,9 @@ elements from the orignal reference are appended to overide stack
 */
 
 Class(Stack,
-__INIT(u64 init_size; u64 type_size; DSN_fieldType dsn_type; void* literal;),
-__FIELD(),
+INIT(u64 init_size; u64 type_size; void* literal),
+FIELD(),
 	
-	interface(Formatter);
-	interface(IterableList);	
-
 	errvt method(Stack,Index,, bool write, u64 index, void* data);
 	void* method(Stack,ToPointer);
 	errvt method(Stack,Limit,, u64 limit);
@@ -56,7 +51,6 @@ __FIELD(),
 #define newStack(type, size) new(Stack, 		\
 		size,					\
 		sizeof(type),	 			\
-		getDSN_Type((type){0}),			\
 		NULL)
 /**
 @def pushStack(type, size)
@@ -65,7 +59,6 @@ __FIELD(),
 #define pushStack(type, size) push(Stack, 		\
 		size,					\
 		sizeof(type),	 			\
-		getDSN_Type((type){0}),			\
 		NULL)
 /**
 @def l_s(first, ...)
@@ -76,7 +69,6 @@ be of the same type
 #define l_s(first, ...) push(Stack, sizeof((typeof(first)[]){first, __VA_ARGS__}) \
 				 / sizeof(typeof(first)), 			  \
 			   	 sizeof(typeof(first)), 			  \
-				 getDSN_Type((typeof(first)){0}),		  \
 				 (typeof(first)[]){first, __VA_ARGS__}		  \
 			)
 /**
@@ -88,6 +80,5 @@ be of the same type
 #define L_S(first, ...) new(Stack, sizeof((typeof(first)[]){first, __VA_ARGS__}) \
 				 / sizeof(typeof(first)), 			 \
 			   	 sizeof(typeof(first)), 			 \
-				 getDSN_Type((typeof(first)){0}),		 \
 				 (typeof(first)[]){first, __VA_ARGS__}		 \
 			)

@@ -23,13 +23,13 @@ typedef union{
 	u32 protections;
 }mmprot_info;
 
-Type(mmnode_info,
+struct(mmnode_info,
 	u32 childrennum : 24;
 	u32 contentsnum : 32;
 	mmprot_info protections;
 );
 
-Type(mmleaf_info,
+struct(mmleaf_info,
 	allocid allocator_index;
 	mmprot_info protections;
 	u64 size;
@@ -46,8 +46,8 @@ Type(mmleaf_info,
 typedef struct Resource_Instance Resource_Instance;
 
 Class(MemoryMap,
-__INIT(intf(Allocator) default_alloc_intf; void* default_alloc; mmprot_info protections),
-__FIELD(),
+INIT(intf(Allocator) default_alloc_intf; void* default_alloc; mmprot_info protections),
+FIELD(),
 	
 	#define ROOT_TOKEN 0
 
@@ -69,8 +69,8 @@ __FIELD(),
 
 
 Class(Collection,
-__INIT(inst(MemoryMap) memMap; memid parent;),
-__FIELD(u8 warnRemoval),
+INIT(inst(MemoryMap) memMap; memid parent;),
+FIELD(u8 warnRemoval),
 	
 	#define collect(Collection, Class, ...) Class.__COLLECT(Collection, (Class##_ConstructArgs){__VA_ARGS__})
 
@@ -79,8 +79,8 @@ __FIELD(u8 warnRemoval),
 )
 
 Class(Resource,
-__INIT(inst(Collection) collection; size_t size),
-__FIELD(),
+INIT(inst(Collection) collection; size_t size),
+FIELD(),
       	void* method(Resource, getData);
       	errvt method(Resource, setDestructor,, errvt(*destructor)(void*));
       	bool method(Resource,  isNearRemoval);

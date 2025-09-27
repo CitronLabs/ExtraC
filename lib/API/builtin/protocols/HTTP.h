@@ -1,6 +1,6 @@
 #include "../../os.h"
 
-Enum(HTTPMethod,
+enum(HTTPMethod,
 	HTTP_GET,
 	HTTP_POST,
 	HTTP_PUT
@@ -17,7 +17,7 @@ Enum(HTTPMethod,
      		__VA_ARGS__			\
 	})
 
-Type(HTTPHeader,
+struct(HTTPHeader,
 	cstr key, value;
 )
 
@@ -34,8 +34,8 @@ Protocol(HTTP_Response,
 
 
 Class(HTTPServer,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
 	
 )
 

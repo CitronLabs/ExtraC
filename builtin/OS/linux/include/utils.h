@@ -1,7 +1,7 @@
 #pragma once
 #include "extern.h"
 
-Type(EDID_Info,
+struct(EDID_Info,
     // 0-7: Header
     u8 header[8]; // Always 0x00 FF FF FF FF FF FF 00
 

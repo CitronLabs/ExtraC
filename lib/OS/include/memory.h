@@ -9,14 +9,14 @@
 #define MEM_SHARED  16
 
 
-Type(systemMemoryInfo,
+struct(systemMemoryInfo,
     size_t total_Physical_Memory;
     size_t total_Virtual_Memory;
     size_t available_Physical_Memory;
     size_t available_Virtual_Memory;	
 )
 
-Type(memoryInfo,
+struct(memoryInfo,
 	u16 flags;
      	size_t size;
      	void* address;

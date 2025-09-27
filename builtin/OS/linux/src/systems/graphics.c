@@ -141,11 +141,11 @@ errvt initVideoInputSystem(){
 
 return OK;
 }
-Type(LinuxVideoFrame_Buffer,
+struct(LinuxVideoFrame_Buffer,
 	struct v4l2_buffer info;
      	void* data;
 )
-Type(LinuxGraphics_Data,
+struct(LinuxGraphics_Data,
 	videoDirection in_out;
      	List(Queue(OSEvents)) evntQueues;
      	union {

@@ -3,7 +3,7 @@
 
 typedef struct MediaFormat_Interface MediaFormat_Interface;
 
-Enum(MediaType,
+enum(MediaType,
 	MEDIA_IMAGE,
 	MEDIA_AUDIO,
 	MEDIA_VECTOR,
@@ -13,8 +13,8 @@ Enum(MediaType,
 )
 
 Class(Media,
-__INIT(const char* path; intf(MediaFormat) format; bool lazy_load),
-__FIELD(intf(MediaFormat) format),
+INIT(const char* path; intf(MediaFormat) format; bool lazy_load),
+FIELD(intf(MediaFormat) format),
 	
       	inst(Media)(*create)(intf(MediaFormat) format, void* metadata, MediaType* media_data, inst(Collection) collection);
       	errvt method(Media, reformat,, void* metadata);
@@ -35,31 +35,31 @@ Interface(MediaFormat,
 
 
 
-Type(Media_Image,
+struct(Media_Image,
 	MediaType type;
 )
 
-Type(Media_Audio,
-	MediaType type;
-
-)
-
-Type(Media_VectorImage,
+struct(Media_Audio,
 	MediaType type;
 
 )
 
-Type(Media_Model3D,
+struct(Media_VectorImage,
 	MediaType type;
 
 )
 
-Type(Media_Video,
+struct(Media_Model3D,
 	MediaType type;
 
 )
 
-Type(Media_File,
+struct(Media_Video,
+	MediaType type;
+
+)
+
+struct(Media_File,
 	MediaType type;
 
 )

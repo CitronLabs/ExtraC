@@ -3,8 +3,7 @@
 @def Buffer(type)
 @brief readability macro for being explicit about what the buffer is intended to store
 */
-	#define Buffer(type) inst(Buffer)
-
+#define Buffer(type) inst(Buffer)
 
 #if __HijackMalloc
 #define memalign(align, size) 	CMalloc.AlignNew(generic c_malloc, align, size)
