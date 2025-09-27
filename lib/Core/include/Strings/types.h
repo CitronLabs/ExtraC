@@ -3,15 +3,14 @@
 #define __XC_STRINGS__
 #include "pkg.h"
 
-Enum(chartype, CHAR_UTF8 = 0, CHAR_ASCII = 1, CHAR_UTF16 = 2, CHAR_UTF32 = 4, CHAR_INVALID = 5);
-
-Type(str_regex_result,
+struct(str_regex_result,
 	u64 str_offset;
 	u64 len;
 );
 
-typedef union{ 
-    struct {
+enum(chartype, CHAR_UTF8 = 0, CHAR_ASCII = 1, CHAR_UTF16 = 2, CHAR_UTF32 = 4, CHAR_INVALID = 5);
+
+struct(char_t,
 	chartype type;
 	union {
 	    char ascii; 
@@ -19,37 +18,29 @@ typedef union{
 	    char32_t utf32; 
 	    wchar_t wide;
 	} data;
-    } character;
-    struct {
+);
+
+Data(str_t,
+INIT(chartype type; void* data),
+     	size_t 	 len;
 	chartype type;
 	union {
-	    char* utf8; 
-	    char16_t* utf16; 
-	    char32_t* utf32; 
-	    wchar_t* wide;
+	    char* 	utf8; 
+	    char16_t* 	utf16; 
+	    char32_t* 	utf32; 
+	    wchar_t* 	wide;
 	} data;
-    } string;
-}TextEncoding; 
+);
 
-#define __FORMAT_CODES__
-typedef enum FormatID{
-	#define FORMAT(domain, default, ...) __VA_ARGS__,
-		#include "../config.h"
-	#undef FORMAT
-}FormatID;
+#define endstr NULL, NULL
 
-typedef enum Format_Domain{
-	#define FORMAT(domain, default, ...) FORMAT_##domain,
-		#include "../config.h"
-	#undef FORMAT
-	FORMAT_DOMAIN_TOP
-}Format_Domain;
+Interface(StringUtils,
+	size_t vmethod(len, void* str,  size_t maxlen);
+	size_t vmethod(cpy, void* dest, void* src,  size_t maxlen);
+	size_t vmethod(cmp, void* str1, void* str2, size_t maxlen);
+	size_t vmethod(cat, void* dest, void* src,  size_t maxlen);
+);
 
-
-static const FormatID __default_formats[] = {
-	#define FORMAT(domain, default, ...) [FORMAT_##domain] = default,
-		#include "../config.h"
-	#undef FORMAT
-};
-#undef __FORMAT_CODES__
-
+VTable(UTF8Utils,  interface(StringUtils);)
+VTable(UTF16Utils, interface(StringUtils);)
+VTable(UTF32Utils, interface(StringUtils);)

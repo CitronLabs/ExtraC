@@ -14,7 +14,7 @@
 
 typedef u32 OSEventType;
 
-Enum(OSResouceType,
+enum(OSResouceType,
 	SYS_GRAPHICS  = 0,
 	  SYS_GRAPHICS_DISPLAY = 0,
 	  SYS_GRAPHICS_VIDEO   = 1,
@@ -40,7 +40,7 @@ Enum(OSResouceType,
 
 
 
-Type(OSEvent,
+struct(OSEvent,
 	u8 osSystem   ;
      	u8 osResource ;
 	union {
@@ -58,7 +58,7 @@ Type(OSEvent,
 
 typedef void* osHandle;
 
-Type(AppData,
+struct(AppData,
 	cstr  appName, domainName;
      	cstr* argv;
      	cstr  instNumber;

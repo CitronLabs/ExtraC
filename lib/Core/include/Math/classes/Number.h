@@ -8,9 +8,8 @@
 #define n(number) push(Number, #number)
 
 Class(Number,
-__INIT(cstr initVal),
-__FIELD(),
-	interface(Formatter);
+INIT(cstr initVal),
+FIELD(),
     	
 	//Number Float Casts
       	errvt  method(Number, castToBigFloat);

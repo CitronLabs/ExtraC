@@ -3,15 +3,15 @@
 
 
 Class(Process,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
 
 )
 
 
 Class(Thread,
-__INIT(int(*func)(inst(Thread), void* args);),
-__FIELD(),
+INIT(int(*func)(inst(Thread), void* args);),
+FIELD(),
 
 	errvt method(Thread,Start,, void* args);
 	errvt method(Thread,Join);
@@ -23,15 +23,15 @@ __FIELD(),
       	inst(Thread)(*GetCurrent)();
 );
 Class(Mutex,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
       	errvt method(Mutex,Lock);
       	errvt method(Mutex,Unlock);
       	errvt method(Mutex,TryLock);
 );
 Class(Semaphore,
-__INIT(u64 slots;),
-__FIELD(),
+INIT(u64 slots;),
+FIELD(),
       	errvt method(Semaphore,Wait);
       	errvt method(Semaphore,Post);
       	errvt method(Semaphore,TryWait);

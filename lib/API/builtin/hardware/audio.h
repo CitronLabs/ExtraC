@@ -2,14 +2,14 @@
 #include "../../os.h"
 
 Class(Speaker,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
 
 )
 
 Class(Microphone,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
 
 )
 

@@ -11,12 +11,12 @@ typedef u32 cache_id;
 #define AUTOCLEANUP_TRUE true
 
 Class(Cache,
-__INIT(
+INIT(
 	size_t max_size_in_bytes;
       	bool auto_cleanup;
       	u16 cleanup_counter;
 ),
-__FIELD(),
+FIELD(),
 	cache_id method(Cache, Add,, size_t size_in_bytes, inst(String) label, void* data);
 	void* method(Cache, Get,, cache_id id);
 	void* method(Cache, Search,, inst(String) label);

@@ -7,8 +7,8 @@
 Decl(Logger)
 
 Class(Error,
-__INIT(errvt errorcode; cstr message;),
-__FIELD(errvt errorcode; cstr message;),
+INIT(errvt errorcode; cstr message;),
+FIELD(errvt errorcode; cstr message;),
 
 	inst(Logger) STDLOG;
 
@@ -20,11 +20,7 @@ __FIELD(errvt errorcode; cstr message;),
       	errvt vmethod(Try, errvt* errors_to_catch, size_t num);
       	noFail vmethod(Throw);
 	errvt vmethod(setLogger, inst(Logger) logger);
-	errvt vmethod(setSignalHandler, u8 signals_to_handle, void fn(sighandler, ErrorSignal signal))
+	errvt vmethod(setSignalHandler, u8 signals_to_handle, void (*sighandler)(ErrorSignal signal))
 )
 
-static inst(Error) core_geterr(){
-	static data(Error) err;
-	return &err;
-}
-static inst(Error)(*geterr)() = core_geterr;
+

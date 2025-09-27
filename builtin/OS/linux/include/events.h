@@ -1,7 +1,7 @@
 #pragma once
 #include "extern.h"
 
-Enum(Events_Type,
+enum(Events_Type,
 	Events_Dev	,
 	Events_Video	,
      	Events_Input	,

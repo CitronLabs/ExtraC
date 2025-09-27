@@ -6,9 +6,9 @@
 #include "../utils.h"
 
 Class(Struct,
-__INIT(data_entry* fields; u64 num_of_fields),
-__FIELD(Map(String, DSN_data) fields),
-	interface(Formatter);
+INIT(data_entry* fields; u64 num_of_fields),
+FIELD(Map(String, DSN_data) fields),
+
 	errvt 		method(Struct, Define,, ...);
 	errvt 		method(Struct, AddField,, cstr name, DSN_data* data);
 	errvt 		method(Struct, Merge,, inst(Struct) datastruct);

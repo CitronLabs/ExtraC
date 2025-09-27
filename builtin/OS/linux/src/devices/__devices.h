@@ -9,7 +9,7 @@
 #define deviceType_OS  true
 #define deviceType_ENV false
 
-Type(RegisteredDevice,
+struct(RegisteredDevice,
 	bool isOSDevice, isAlive, isFree;
      	union {
      	    struct {
@@ -40,7 +40,7 @@ Type(RegisteredDevice,
      	} data;
 )
 
-Type(UdevData,
+struct(UdevData,
 	UD* handle;
 	UDMonitor* monitor;
 	UDEnum* enumerate;

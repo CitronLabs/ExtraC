@@ -53,8 +53,8 @@
 	)
 
 Class(SIMD,
-__INIT(u16 bitwidth; u16 typesize; void* data),
-__FIELD(u16 bitwidth, typesize; void* data),
+INIT(u16 bitwidth; u16 typesize; void* data),
+FIELD(u16 bitwidth, typesize; void* data),
 	u32 maxBitWidth;
        	void method(SIMD, Add,,   inst(SIMD) b, inst(SIMD) result);	
        	void method(SIMD, Sub,,   inst(SIMD) b, inst(SIMD) result);	
@@ -72,3 +72,7 @@ __FIELD(u16 bitwidth, typesize; void* data),
 #else
 	#define usingSIMD (false)
 #endif
+
+
+
+

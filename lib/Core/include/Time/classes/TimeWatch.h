@@ -6,9 +6,8 @@
 
 
 Class(TimeWatch,
-__INIT(inst(Time) limit; bool start),
-__FIELD(inst(Time) start_time;),
-	interface(Formatter);
+INIT(inst(Time) limit; bool start),
+FIELD(inst(Time) start_time;),
 
     errvt method(TimeWatch, Start);
     inst(Time) method(TimeWatch, Check);

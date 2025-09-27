@@ -22,21 +22,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------*/
 #pragma once
-#include "../../ExtraC/os/include/audio.h"
-#include "../../ExtraC/os/include/graphics.h"
-#include "../../ExtraC/os/include/storage.h"
-#include "../../ExtraC/os/include/scheduler.h"
-#include "../../ExtraC/os/include/network.h"
-#include "../../ExtraC/os/include/input.h"
-#include "../../ExtraC/os/include/memory.h"
-#include "../../ExtraC/os/include/user.h"
+#include "../OS/include/audio.h"
+#include "../OS/include/graphics.h"
+#include "../OS/include/storage.h"
+#include "../OS/include/scheduler.h"
+#include "../OS/include/network.h"
+#include "../OS/include/input.h"
+#include "../OS/include/memory.h"
+#include "../OS/include/user.h"
 
-#include "../../ExtraC/os/include/classes/audio.h"
-#include "../../ExtraC/os/include/classes/graphics.h"
-#include "../../ExtraC/os/include/classes/storage.h"
-#include "../../ExtraC/os/include/classes/scheduler.h"
-#include "../../ExtraC/os/include/classes/network.h"
-#include "../../ExtraC/os/include/classes/input.h"
-#include "../../ExtraC/os/include/classes/memory.h"
+#include "../OS/include/classes/audio.h"
+#include "../OS/include/classes/graphics.h"
+#include "../OS/include/classes/storage.h"
+#include "../OS/include/classes/scheduler.h"
+#include "../OS/include/classes/network.h"
+#include "../OS/include/classes/input.h"
+#include "../OS/include/classes/memory.h"
 
 #define __EXTRAC_OS__

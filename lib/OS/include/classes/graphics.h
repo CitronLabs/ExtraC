@@ -8,14 +8,14 @@ Interface(ColorEncoding,
 	errvt imethod(fromRGBA,, Color color);
 )
 
-Type(Color,
+struct(Color,
       	#define RGBA(r,g,b,a) (data(Color)){((float)r/255.0),((float)g/255.0),((float)b/255.0),((float)a/255.0)}
  	float r,g,b,a;
 );
 
 Class(Canvas,
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
 	
 
 )
@@ -34,8 +34,8 @@ Interface(Render,
 
 
 Class(Display, 
-__INIT(inst(Display) parent; char* name; u64 w,h,x,y;),
-__FIELD(inst(Display) parent; char* name; u64 w,h,x,y),
+INIT(inst(Display) parent; char* name; u64 w,h,x,y;),
+FIELD(inst(Display) parent; char* name; u64 w,h,x,y),
       	errvt 		method(Display, addChild,, inst(Display) display);
       	errvt 		method(Display, update);
       	errvt 		method(Display, run);

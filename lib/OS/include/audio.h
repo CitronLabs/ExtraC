@@ -6,13 +6,13 @@
 
 typedef bool audioDirection;
 
-Type(AudioSpec,
+struct(AudioSpec,
     u32 sample_rate;    // e.g., 44100, 48000 Hz
     u16 channels;       // e.g., 1 (mono), 2 (stereo)
     u16 bits_per_sample; // e.g., 16, 24, 32 bits
 );
 
-Type(audioDevice,
+struct(audioDevice,
 	inst(String) name;
 	inst(String) manufacturer;
 	inst(String) model;
@@ -49,11 +49,11 @@ Interface(audio,
 	u64 		  	vmethod(pollEvents);
 )
 
-Enum(AudioEvent_Type,
+enum(AudioEvent_Type,
 	AudioEvent_NewFrame,
 )
 
-Type(AudioEvent,
+struct(AudioEvent,
 	audioHandle handle;
 	AudioEvent_Type type;
 )

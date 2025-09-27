@@ -27,7 +27,7 @@
 #define cases(str) if(String.Compare(__string__switch, s(str)))
 #define defaults else
 
-
+#define strnlenbytes(_string, maxlen)	(strnlen(_string, maxlen) * charlen(*_string)) \
 
 #define getCharType(chars) 		\
 _Generic((chars),			\
@@ -42,30 +42,21 @@ wchar_t: 	sizeof(wchar_t),	\
 default:	CHAR_INVALID		\
 )
 
-#define getCharSize(chars) 		\
-_Generic((chars),			\
-char*: 		sizeof(char),		\
+#define charlen(c) 			\
+_Generic((c),				\
 char:  		sizeof(char),		\
-char16_t*: 	sizeof(char16_t),	\
 char16_t: 	sizeof(char16_t),	\
-char32_t*: 	sizeof(char32_t),	\
 char32_t: 	sizeof(char32_t),	\
-wchar_t*: 	sizeof(wchar_t),	\
 wchar_t: 	sizeof(wchar_t),	\
 default:	0			\
 )
 
-#define getStringLenBytes(_string, maxlen)		\
-_Generic((_string),					\
-char*: 		strnlen(generic _string, maxlen),	\
-char16_t*: 	String.Utils.strnlen((TextEncoding){	\
-			.string = 			\
-	 		{CHAR_UTF16, generic _string}	\
-	 	}, maxlen) * sizeof(char16_t),		\
-char32_t*: 	String.Utils.strnlen((TextEncoding){	\
-	 		.string = 			\
-	 		{CHAR_UTF32, generic _string}	\
-	 	}, maxlen) * sizeof(char32_t),		\
-wchar_t*: 	wcsnlen(generic _string, maxlen) 	\
-	 		* sizeof(wchar_t) 		\
+#define strnlen(_string, maxlen)						\
+_Generic((_string),								\
+char*: 		UTF8Utils.StringUtils.strnlen(generic _string, maxlen),		\
+char16_t*: 	UTF16Utils.StringUtils.strnlen(generic _string, maxlen),	\
+char32_t*: 	UTF32Utils.StringUtils.strnlen(generic _string, maxlen),	\
+wchar_t*: 	wcsnlen(generic _string, maxlen) 				\
 )
+
+

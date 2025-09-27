@@ -3,7 +3,7 @@
 #define __XC_MATH__
 #include "pkg.h"
 
-Enum(numEquality,
+enum(numEquality,
      	NUM_NULL    = 0,
 	NUM_EQUALS  = 1,
 	NUM_GREATER = 2,
@@ -16,7 +16,7 @@ Enum(numEquality,
 #define VECDATA_BIG  2
 #define VECDATA_VEC  3
 
-Type(VecData,
+struct(VecData,
      	u8 stack_allocated : 1;
 	u8 floating : 1; 
 	u8 datatype : 2; 

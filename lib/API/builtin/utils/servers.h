@@ -6,8 +6,8 @@ Interface(Server,
 )
 
 Class(ServerManager,
-__INIT(ifob(Server) server; inst(Logger) logger; u16 max_threads),
-__FIELD(
+INIT(ifob(Server) server; inst(Logger) logger; u16 max_threads),
+FIELD(
 	inst(Thread) 	main_thread;
      	inst(TimeWatch) active_timewatch;
      	inst(Logger)	logger

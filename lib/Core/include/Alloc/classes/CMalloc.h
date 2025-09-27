@@ -23,8 +23,8 @@ more than max_alloc
 @param max_alloc	the maxium number of bytes that can be allocted with this object
 */
 Class(CMalloc,
-__INIT(u64 max_alloc),
-__FIELD(
+INIT(u64 max_alloc),
+FIELD(
 	bool(*overflow_handler)(inst(CMalloc), u64 overflowed_datasize);
 ),
 	interface(Allocator);

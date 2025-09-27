@@ -25,18 +25,18 @@ SOFTWARE.
 
 #define __EXTRAC_CORE__
 
-#include "../../ExtraC/core/include/libc.h"
+#include "../Core/include/libc.h"
 #if !defined (__FORMAT_CODES__) && !defined (__ERROR_CODES__) && !defined (__GLOBAL_METHODS__)
 	#include "config.h"
 #endif
 
-#include "../../ExtraC/core/include/utils.h"
-#include "../../ExtraC/core/include/types.h"
-#include "../../ExtraC/core/include/error.h"
-#include "../../ExtraC/core/include/data.h"
-#include "../../ExtraC/core/include/stringutils.h"
-#include "../../ExtraC/core/include/alloc.h"
-#include "../../ExtraC/core/include/timing.h"
+#include "../Core/include/utils.h"
+#include "../Core/include/types.h"
+#include "../Core/include/Error/pkg.h"
+#include "../Core/include/Data/pkg.h"
+#include "../Core/include/Strings/pkg.h"
+#include "../Core/include/Alloc/pkg.h"
+#include "../Core/include/Time/pkg.h"
 
 /*--------------------------------------------------------------|
  *								|

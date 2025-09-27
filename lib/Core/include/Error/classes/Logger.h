@@ -5,12 +5,12 @@
 #include "../types.h"
 
 Class(Logger,
-__INIT( const cstr name;
-      data(LogBook)
+INIT( const cstr name;
+      LogBook
       * errorlog,
       * infolog
 ),
-__FIELD(bool hideName),
+FIELD(bool hideName),
       	#define loginfo(...) Logger.logf(Logger.std_logger, LOGGER_INFO, __VA_ARGS__,"\n", endprint)
       	#define logerr(...)  Logger.logf(Logger.std_logger, LOGGER_ERROR, __VA_ARGS__,"\n", endprint)
       	inst(Logger) std_logger;

@@ -3,25 +3,25 @@
 
 typedef void* inputHandle;
 
-Type(keyInput,
+struct(keyInput,
      	inst(String) locale;	
 	chartype encoding;
 )
-Enum(posRange_Type,
+enum(posRange_Type,
      	posRange_Null,
 	posRange_Vector,
      	posRange_Exact,
      	posRange_Stateful
 )
 
-Type(posInput,
+struct(posInput,
 	u8 dimension  : 2;
      	posRange_Type type : 2;
 	float low;
 	float high;
 )
 	  
-Type(inputDevice,
+struct(inputDevice,
 	inst(String) name;
 	inst(String) uniqueID;
 	u16 vendorID, productID;
@@ -39,7 +39,7 @@ Interface(input,
 	u64 		  vmethod(pollEvents);
 )
 
-Enum(InputEvent_Type,
+enum(InputEvent_Type,
 	InputEvent_Update,
 	InputEvent_Close
 )
@@ -49,7 +49,7 @@ Enum(InputEvent_Type,
 #define AXIS_Y 1
 #define AXIS_Z 2
 
-Type(InputEvent,
+struct(InputEvent,
 	inputDevice* device;
 	InputEvent_Type type;
      	union {

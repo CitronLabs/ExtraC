@@ -3,17 +3,13 @@
 #define __XC_STRINGS__
 #include "../pkg.h"
 #include "../types.h"
-#include "../interfaces/Formating.h"
 
 Class(StringBuilder,
-__INIT(chartype type; inst(String) init_str; u64 limit;),
-__FIELD(),
-	#define endstr NULL, 0
-      	#define str_t String_Instance
+INIT(chartype type; inst(String) init_str; u64 limit;),
+FIELD(),
+	#define endstr NULL, NULL
 
       	interface(Loggable);
-      	interface(Formatter);
-	interface(IterableList);
 
 	/**
 	 * @brief Sets a maximum length for the StringBuilder.

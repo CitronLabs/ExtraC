@@ -48,7 +48,7 @@
 		, __parent_packet))
 
 
-Type(socket_settings,
+struct(socket_settings,
 	u8 protocol : 2;
 	u8 domain   : 2;
 	u8 blocking : 1;
@@ -57,8 +57,8 @@ Type(socket_settings,
 typedef struct Connection_Instance Connection_Instance;
 
 Class(Socket,
-__INIT(socket_settings settings;),
-__FIELD(),
+INIT(socket_settings settings;),
+FIELD(),
 
 	errvt method(Socket,Bind,, socketAddress address);
 	errvt method(Socket,Listen,, u32 num_waiting);
@@ -68,8 +68,8 @@ __FIELD(),
 );
 
 Class(Connection,
-__INIT(socket_settings settings; socketAddress address), 
-__FIELD(),
+INIT(socket_settings settings; socketAddress address), 
+FIELD(),
 
 	errvt method(Connection,Send,, 		inst(Buffer) message);
 	errvt method(Connection,Recieve,, 	inst(Buffer) message);

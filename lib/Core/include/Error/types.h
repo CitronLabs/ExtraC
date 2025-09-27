@@ -6,20 +6,13 @@
 
 Decl(Loggable)
 
-typedef enum{ 
-	#define __ERROR_CODES__
-	#include "../config.h"
-	#undef __ERROR_CODES__
-}XC_ERROR_CODES;
-
-
-Type(LogBook,
+struct(LogBook,
 	intf(Loggable) interface;
      	inst(Object) object;
 );
-Enum (LogType, LOGGER_ERROR, LOGGER_INFO)
+enum(LogType, LOGGER_ERROR, LOGGER_INFO)
 
-Enum(ErrorSignal,
+enum(ErrorSignal,
 	SIG_FGPE = 1 , 
 	SIG_ILL = 2  , 
 	SIG_INT = 4  ,

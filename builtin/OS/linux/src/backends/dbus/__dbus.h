@@ -6,24 +6,24 @@
 #include "../../systems/__systems.h"
 
 
-Type(netObjectForeignData,
+struct(netObjectForeignData,
 	inst(String) dbus_object_path;
 )
-Type(netObjectRemoteData,
+struct(netObjectRemoteData,
 
 )
 
-Type(netObjectData,
+struct(netObjectData,
      	netobjInfo info;
 	Map(String, u64) methods;
 	Map(String, u64) fields;
 )
 
-Type(netCallAsyncData,
+struct(netCallAsyncData,
 
 )
 
-Type(Dbus_Data,
+struct(Dbus_Data,
 	DBusConnection* connection;
 	DBusError err;
 	inst(String) busName;

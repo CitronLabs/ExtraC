@@ -4,8 +4,8 @@
 typedef struct {u8 alloc[18];} FancyFunction_Alloc;
 
 Class(FancyFunction,
-__INIT(),
-__FIELD(bool returned),
+INIT(),
+FIELD(bool returned),
 	
 	#define fancy(...) static FancyFunction_Alloc __FANCY__ = {0}; 				\
      			for(init(FancyFunction, (inst(FancyFunction))&__FANCY__, __VA_ARGS__); 	\
@@ -24,8 +24,8 @@ __FIELD(bool returned),
 )
 
 Class(Coroutine, 
-__INIT(),
-__FIELD(),
+INIT(),
+FIELD(),
 
 	#define go(name)
 	#define yield()

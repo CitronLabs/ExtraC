@@ -13,9 +13,9 @@ Decl(Struct)
 
 /**
 @enum DSN_fieldType
-@brief Represents the different valid DSN types
+@brief Represents the different valid DSB types
 */
-Enum(DSN_fieldType,
+enum(DSN_fieldType,
 	DSN_NULL,
 	DSN_NUMBER,
 	DSN_STRING,
@@ -26,7 +26,7 @@ Enum(DSN_fieldType,
 	DSN_STRUCT
 );
 
-Type(DSN_data,
+struct(DSN_data,
 	DSN_fieldType type;
 	union{
 		void* 		data;
@@ -40,19 +40,19 @@ Type(DSN_data,
      	};
 );
 
-Type(DSB_Header,
+struct(DSB_Header,
      	char magic[5];
 	u16 version;
 	u8 charlen;
      	u64 namelen; void* name;
 	u64 body_size;
 )
-Type(DSB_Chain,
+struct(DSB_Chain,
 	DSN_fieldType ID;
      	u64 elmnt_size, len;
 	void* data;
 );
-Type(DSB_Map,
+struct(DSB_Map,
 	DSN_fieldType ID;
      	u64 keylen; void* key;
 	u64 datalen; void* data;
@@ -60,7 +60,7 @@ Type(DSB_Map,
 
 #define entry(key, data) data_entry
 
-Type(data_entry,
+struct(data_entry,
 	void* key;
 	void* data;
 	u32 hash;

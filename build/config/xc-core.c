@@ -8,7 +8,6 @@ ExtraC CORE Configuration File
 * @version 0.1.0
 */
 
-
 #if defined (			__ERROR_CODES__				)
 /*---------------------------------------------------------------------------*/
 	ERR_NONE, ERR_INVALID, ERR_NULLPTR, ERR_INITFAIL, 
@@ -27,9 +26,6 @@ ExtraC CORE Configuration File
 	#include "./xc-os.c"
 	#include "./xc-resource.c"
 	#include "./xc-routines.c"
-	#ifdef __linux__
-		#include "xc-builtin/os-linux.c"	
-	#endif
 
 #elif defined( 			__FORMAT_CODES__			)
 /*---------------------------------------------------------------------------*/
@@ -47,21 +43,27 @@ ExtraC CORE Configuration File
 	
 	#include "./xc-os.c"
 	#include "./xc-resource.c"
-	#ifdef __linux__
-		#include "xc-builtin/os-linux.c"	
-	#endif
 
 
 #undef FORMAT
-#elif defined( 			__GLOBAL_METHODS__			)
+#elif defined( 			__TYPE_OPERATORS__			)
 /*---------------------------------------------------------------------------*/
-#include "./xc-resource.c"
+#include "./xc-resource.c"							
+#ifndef OPERATOR
+#define OPERATOR(class, name, returnval, ...)
+#endif	
 
-#define CORE_METHODS(Class)							\
-	u32 imethod(__HASH);							\
-	u32 imethod(__DESTROY);							\
-	RESOURCE_METHODS(Class)							\
-	
+	#define OPERATOR_FUNCS(Class)							\
+	    OPERATOR(Class, Destroy, errvt);						\
+	    OPERATOR(Class, Hash,    u32);						\
+	    OPERATOR(Class, Append,  u64,,     pntr data[]);				\
+	    OPERATOR(Class, Set,     errvt,,   void* value);				\
+	    OPERATOR(Class, Copy,    errvt,,   void* where);				\
+	    OPERATOR(Class, Iter,    void*,,   u64 index);				\
+	    OPERATOR(Class, Size,    size_t,,  bool elements);				\
+	    OPERATOR(Class, Scan,    u64,,     FormatID* format,  str_t* in);		\
+	    OPERATOR(Class, Print,   u64,,     FormatID* format,  strbuff_t* out);	\
+	    RESOURCE_METHODS(Class)							
 #else
 /*---------------------------------------------------------------------------*/
 #ifndef XC_CORE_CONFIG
@@ -73,6 +75,12 @@ ExtraC CORE Configuration File
  *  \defgroup xc-core-config Core
  */
 
+#define SIMD_MATH 1
+#define SIMD_BITS 2
+#define SIMD_CMP  4
+#define SIMD_MOVE 8
+
+
 #define __HeaderOnly			false
 
 #define __Debug 			true
@@ -81,7 +89,7 @@ ExtraC CORE Configuration File
 
 #define __stdLoggerName			"Log"
 
-#define __Simd_Use			true
+#define __Simd_Use			(SIMD_MATH | SIMD_BITS | SIMD_CMP | SIMD_MOVE)
 
 
 define(XC_DataStructs){

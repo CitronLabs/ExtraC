@@ -2,14 +2,15 @@
 #define __XC_STRINGS__
 #include "../pkg.h"
 #include "../types.h"
-#include "../interfaces/Formating.h"
+
+#undef s
+#undef S
 
 Class(String,
-__INIT(typeof((TextEncoding){0}.string) txt; u64 bytes_len; bool inline_alloc),
-__FIELD(typeof((TextEncoding){0}.string) txt; u64 len),
+INIT(str_t txt; u64 bytes_len; bool inline_alloc),
+FIELD(str_t txt),
 	
-	interface(Formatter);
-	interface(IterableList);
+	interfaceAs(StringUtils) Utils;
 
 
 	/**
@@ -104,69 +105,54 @@ __FIELD(typeof((TextEncoding){0}.string) txt; u64 len),
 	 * @note The returned string must be freed by the caller.
 	 */
 	inst(String)	method(String, Convert,, chartype type);
-
-
-	namespace(Utils,
-	/**
-	 * @brief Calculates the length of a null-terminated string with a maximum limit.
-	 * @details This utility function handles different character encodings by
-	 * delegating the length calculation to the appropriate internal function.
-	 *
-	 * @param text A `TextEncoding` union containing the string data and its type.
-	 * @param len The maximum number of units (bytes or characters) to search.
-	 * @return The length of the string, or the maximum limit if a null terminator is not found.
-	 */
-		size_t vmethod(strnlen, TextEncoding text, size_t len);
-	)
 )
 
-#define pushString(string, max_len) String_Construct(			\
-	(String_ConstructArgs){						\
-		{getCharType(string), generic string},			\
-		getStringLenBytes(string, max_len), 			\
-		true 							\
-	},								\
+
+
+#define pushString(string, max_len) initialize(String,			\
 	alloca(								\
  		sizeof(String_Instance)  + 				\
  		sizeof_String_Private    + 				\
- 		getStringLenBytes(string, max_len) + 1			\
-	)								\
+ 		strnlenbytes(string, max_len) + 1			\
+	), 								\
+	{strnlen(string, max_len), getCharType(string), generic string},\
+	strnlenbytes(string, max_len), 					\
+	true 								\
 )
 
-#define newString(string, max_len) String_Construct(			\
-	(String_ConstructArgs){						\
-		{getCharType(string), generic string},			\
-		getStringLenBytes(string, max_len), 			\
-		true							\
-	}, 								\
+#define newString(string, max_len) initialize(String,			\
 	malloc(								\
  		sizeof(String_Instance)  + 				\
  		sizeof_String_Private    + 				\
- 		getStringLenBytes(string, max_len) + 1			\
-	)								\
+ 		strnlenbytes(string, max_len) + 1			\
+	), 								\
+	{strnlen(string, max_len), getCharType(string), generic string},\
+	strnlenbytes(string, max_len), 					\
+	true 								\
 )
 
-#define s(string) String_Construct(					\
-	(String_ConstructArgs){						\
-		{getCharType(string), generic string},			\
-		(sizeof(string)) - 1,					\
-		true 							\
-	},								\
+
+#define s(string) initialize(String,					\
 	alloca(								\
- 		sizeof(String_Instance) + 				\
- 		sizeof_String_Private   + 				\
- 		sizeof(string)						\
-	)								\
+ 		sizeof(String_Instance)  + 				\
+ 		sizeof_String_Private    + 				\
+ 		sizeof(stirng)						\
+	), 								\
+	{sizeof(string) / getCharSize(string), 				\
+	getCharType(string), generic string},				\
+	(sizeof(string)) - 1,						\
+	true 								\
 )
-#define S(string) String_Construct(					\
-	(String_ConstructArgs){						\
-		{getCharType(string), generic string},			\
-		(sizeof(string)) - 1,					\
-		true 							\
-	},								\
+
+#define S(string) initialize(String,					\
 	malloc(								\
- 		sizeof(String_Instance) + 				\
- 		sizeof_String_Private   + 				\
- 		sizeof(string)						\
-	)								\
+ 		sizeof(String_Instance)  + 				\
+ 		sizeof_String_Private    + 				\
+ 		sizeof(stirng)						\
+	), 								\
+	{sizeof(string) / getCharSize(string), 				\
+	getCharType(string), generic string},				\
+	(sizeof(string)) - 1,						\
+	true 								\
 )
+

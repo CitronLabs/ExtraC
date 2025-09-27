@@ -8,7 +8,7 @@ typedef u8 ipv4_netaddress[4];
 typedef u16 ipv6_netaddress[8];
 typedef int socketType;
 
-Type(socketAddress,
+struct(socketAddress,
      	socketType type;
 	union {
 	    struct ipv4Address{
@@ -29,7 +29,7 @@ typedef struct ipv4Address ipv4Address;
 typedef struct ipv6Address ipv6Address;
 typedef struct localAddress localAddress;
 
-Enum(netCall_Flags,
+enum(netCall_Flags,
 	netCall_Async = 1
 )
 
@@ -42,7 +42,7 @@ __IO(in_DSN_data parameters; out_DSN_data returnvalue),
 __DATA()
 )
 
-Type(netobjMethodInfo, 
+struct(netobjMethodInfo, 
 	inst(String) name; 
      	DSN_data parameters;
      	modl(Module) module; 
@@ -53,12 +53,12 @@ Type(netobjMethodInfo,
 #define NETFIELD_SET 2
 #define NETFIELD_GET_SET (NETFIELD_GET | NETFIELD_SET)
 
-Type(netobjFieldInfo,
+struct(netobjFieldInfo,
 	inst(String) name; 
      	u16 access;
 	DSN_data data;
 )
-Type(netobjInfo,
+struct(netobjInfo,
      	data(String)
      	* interface,
      	* name;
@@ -67,7 +67,7 @@ Type(netobjInfo,
 )
 
 
-Type(networkDevice,
+struct(networkDevice,
 	inst(String) name;
 	inst(String) manufacturer;
 	inst(String) model;
@@ -129,36 +129,36 @@ Interface(network,
 	errvt 	  	vmethod(handleEvents,  	 networkHandle handle, Queue(OSEvent) evntQueue);
 	u64 	  	vmethod(pollEvents);
 )
-Enum(SocketEventType,
+enum(SocketEventType,
     SocketEvent_NewClient,
     SocketEvent_Recive,
     SocketEvent_Close
 )
 
-Type(SocketEvent,
+struct(SocketEvent,
     networkHandle handle;
     SocketEventType type;
 )
 
 
 
-Enum(NetObjEventType,
+enum(NetObjEventType,
     NetObjEvent_NewClient,
     NetObjEvent_Recive,
     NetObjEvent_Close
 )
-Type(NetObjEvent,
+struct(NetObjEvent,
     networkHandle handle;
     NetObjEventType type;
 )
 
 
-Enum(NetDeviceEventType,
+enum(NetDeviceEventType,
     NetDeviceEvent_NewClient,
     NetDeviceEvent_Recive,
     NetDeviceEvent_Close
 )
-Type(NetDeviceEvent,
+struct(NetDeviceEvent,
     networkHandle handle;
     NetDeviceEventType type;
 )
