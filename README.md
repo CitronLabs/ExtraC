@@ -1,30 +1,38 @@
-<img src="https://github.com/CitronLabs/CitronLabs-SDK/blob/main/__media/ExtraC-Logo.svg">
+<p align="center">
+ <img src="https://github.com/CitronLabs/CitronLabs-SDK/blob/main/__media/Extra-Banner_1x.png">
+</p>
 <h1> ExtraC: Modernizing C Development </h1>
 
 
-**ExtraC** is a project dedicated to **modernizing C development**. Its objective is to provide a comprehensive set of C libraries and developer tools, simplifying the creation of complex applications in C.
 
-ExtraC includes a series of libraries that each comes with its own set of features.
+**ExtraC** is a project dedicated to **modernizing C development**. The objective is to provide a comprehensive set of C libraries and developer tools, simplifying the creation of complex applications in C.
 
-### ***Libraries include:***
-<ul><b>
-    <li> <a href="./libs/ExtraC/core/README.md">Core</a> : The core utilities that every other ExtraC library depends on</li>
-    <li> Others coming soon!</li>
-</b></ul>
+### 📦 ***Packages include:***
+- [**Core**](./lib/Core) : The core utilities that every other ExtraC package depends on
+- **Others coming soon!**
 
-## Current Status: Work in Progress
 
-[![Project Status: WIP](https://img.shields.io/badge/Project%20Status-WIP-red)](https://img.shields.io/badge/Project%20Status-WIP-red)
+\**For more information about a particular package please follow the respective link to that package's README file*
 
-Please note that **ExtraC is currently under active development and is not yet functional.** Work is diligently progressing on core components!
+## 🔨 Building ExtraC 
 
-Your interest in ExtraC is appreciated. If you've found this repository, please check back periodically for updates on its progress.
+Since this project's size is still relatively small, no formal build system has been made for it yet, however as this also means the building from scratch is still very simple, espcially using the prestabished unity build files provided in the source code.
 
-## Currently Working On
+For ease of use and to remain compatibile with future versions of the project we suggest using the included utility scipts **/build/doBuild.sh** for posix systems and **/build/doBuild.ps1** for windows systems. 
 
-- Finishing the core library utilities
-- Providing a stable first build
-- Creating a test suite for integration testing of new features and changes
+This example builds ExtraC's Core package:
+#### On Posix:
+``` shell
+> cd build
+> ./doBuild.sh --package core 
+```
+#### On Windows:
+``` shell
+> cd build
+> ./doBuild.ps1 --package core
+```
+
+We **ENSURE** compatibility using this method however functionality may be limited as the project grows and a proper build system is developed.
 
 ## Contact
 
