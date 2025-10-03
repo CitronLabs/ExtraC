@@ -12,4 +12,4 @@ FIELD(inst(Time) start_time;),
     errvt method(TimeWatch, Start);
     inst(Time) method(TimeWatch, Check);
     inst(Time) method(TimeWatch, Stop);
-)
+);

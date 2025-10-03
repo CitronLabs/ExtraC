@@ -13,7 +13,7 @@ FIELD(Map(String, DSN_data) fields),
 	errvt 		method(Struct, AddField,, cstr name, DSN_data* data);
 	errvt 		method(Struct, Merge,, inst(Struct) datastruct);
 	DSN_data*	method(Struct, SearchField,, inst(String) name);
-)
+);
 
 #define pushStruct(...) 			\
 	push(Struct, 				\

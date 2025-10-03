@@ -25,14 +25,13 @@ SOFTWARE.
 
 #define __EXTRAC_CORE__
 
-#include "../Core/include/libc.h"
+#include "../Core/include/LibC/pkg.h"
 #if !defined (__FORMAT_CODES__) && !defined (__ERROR_CODES__) && !defined (__GLOBAL_METHODS__)
 	#include "config.h"
 #endif
 
-#include "../Core/include/utils.h"
-#include "../Core/include/types.h"
-#include "../Core/include/Error/pkg.h"
+#include "../Core/include/Features/pkg.h"
+#include "../Core/include/Debug/pkg.h"
 #include "../Core/include/Data/pkg.h"
 #include "../Core/include/Strings/pkg.h"
 #include "../Core/include/Alloc/pkg.h"

@@ -41,7 +41,7 @@ FIELD(),
 	void* method(Stack,FreeToPointer);
 	u64   method(Stack,Count);
 	bool  method(Stack,Check);
-)
+);
 
 
 /**

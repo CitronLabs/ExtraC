@@ -45,7 +45,7 @@ FIELD(),
 	errvt 		method(List,Merge,, inst(List) merged_list,u64 index);
 	errvt 		method(List,Reserve,, bool exact, u64 amount);
 	errvt   	method(List,Cast,, DSN_fieldType dsn_type, u64 new_type_size);
-)
+);
 
 
 /**

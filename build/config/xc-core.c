@@ -53,17 +53,19 @@ ExtraC CORE Configuration File
 #define OPERATOR(class, name, returnval, ...)
 #endif	
 
-	#define OPERATOR_FUNCS(Class)							\
-	    OPERATOR(Class, Destroy, errvt);						\
-	    OPERATOR(Class, Hash,    u32);						\
-	    OPERATOR(Class, Append,  u64,,     pntr data[]);				\
-	    OPERATOR(Class, Set,     errvt,,   void* value);				\
-	    OPERATOR(Class, Copy,    errvt,,   void* where);				\
-	    OPERATOR(Class, Iter,    void*,,   u64 index);				\
-	    OPERATOR(Class, Size,    size_t,,  bool elements);				\
-	    OPERATOR(Class, Scan,    u64,,     FormatID* format,  str_t* in);		\
-	    OPERATOR(Class, Print,   u64,,     FormatID* format,  strbuff_t* out);	\
-	    RESOURCE_METHODS(Class)							
+	#define OPERATOR_FUNCS(Class)								\
+	    OPERATOR(Class, Create, inst(Class),, size_t size, Class##_ConstructArgs* args);	\
+	    OPERATOR(Class, Destroy, errvt,, bool* doFree);					\
+	    OPERATOR(Class, Hash,    u32);							\
+	    OPERATOR(Class, Append,  u64,,     pntr data[]);					\
+	    OPERATOR(Class, Get,     u64,,     pntr data[]);					\
+	    OPERATOR(Class, Set,     errvt,,   void* value);					\
+	    OPERATOR(Class, Copy,    errvt,,   void* where);					\
+	    OPERATOR(Class, Iter,    void*,,   u64 index);					\
+	    OPERATOR(Class, Size,    size_t,,  bool elements, Class##_ConstructArgs* args);	\
+	    OPERATOR(Class, Scan,    u64,,     FormatID* format,  inst(Stream) in);		\
+	    OPERATOR(Class, Print,   u64,,     FormatID* format,  inst(Stream) out);	
+
 #else
 /*---------------------------------------------------------------------------*/
 #ifndef XC_CORE_CONFIG

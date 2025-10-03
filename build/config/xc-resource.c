@@ -16,13 +16,7 @@ ExtraC RESOURCE Configuration File
 #endif	
 
 #undef FORMAT
-#elif defined( 			__TYPE_OPERATORS__			)
-/*---------------------------------------------------------------------------*/
-typedef struct Collection_Instance Collection_Instance;
 
-#define RESOURCE_METHODS(Class)							\
-	OPERATOR(Class, Collect, inst(Class),,					\
-		inst(Collection) collection, Class##_ConstructArgs args);	
 #else
 /*---------------------------------------------------------------------------*/
 #ifndef XC_RESOURCE_CONFIG

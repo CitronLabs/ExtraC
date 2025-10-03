@@ -104,4 +104,4 @@ FIELD(),
 	 */
 	inst(String) method(StringBuilder, CreateStr);
 
-)
+);

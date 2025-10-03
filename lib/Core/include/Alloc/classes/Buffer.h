@@ -77,7 +77,7 @@ FIELD(),
 @return ERR_NONE if 
 */
       	inst(Buffer) method(Buffer, fromView,, void* start, u64 type_size, u64 len);
-)
+);
 
 /**
 @def newBuffer(type, size)

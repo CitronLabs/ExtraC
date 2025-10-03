@@ -36,4 +36,4 @@ FIELD(inst(String) name; inst(Struct) body),
 	u64 	method(DSN, formatStruct,, inst(Struct) data,	inst(StringBuilder) out);
 	u64 	method(DSN, formatString,, inst(String) data,	inst(StringBuilder) out);
 	u64 	method(DSN, formatNumber,, inst(Number) data,	inst(StringBuilder) out);
-)
+);

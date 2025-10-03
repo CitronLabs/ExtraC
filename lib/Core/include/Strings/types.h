@@ -11,25 +11,12 @@ struct(str_regex_result,
 enum(chartype, CHAR_UTF8 = 0, CHAR_ASCII = 1, CHAR_UTF16 = 2, CHAR_UTF32 = 4, CHAR_INVALID = 5);
 
 struct(char_t,
-	chartype type;
-	union {
-	    char ascii; 
-	    char16_t utf16; 
-	    char32_t utf32; 
-	    wchar_t wide;
-	} data;
+
 );
 
 Data(str_t,
 INIT(chartype type; void* data),
-     	size_t 	 len;
-	chartype type;
-	union {
-	    char* 	utf8; 
-	    char16_t* 	utf16; 
-	    char32_t* 	utf32; 
-	    wchar_t* 	wide;
-	} data;
+
 );
 
 #define endstr NULL, NULL

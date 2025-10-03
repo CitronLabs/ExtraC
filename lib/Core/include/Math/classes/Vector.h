@@ -13,7 +13,7 @@ FIELD(),
 	u64 		method(Vector, DataSize);
 	inst(Vector) 	method(Vector, DotProduct,, 	 inst(Vector) other);
 	errvt 		method(Vector, DotProductInto,,  inst(Vector) a, inst(Vector) b);
-)
+);
 
 #define vec(first, ...) push(Vector, (VecData){true, 		\
 	_Generic((first),					\

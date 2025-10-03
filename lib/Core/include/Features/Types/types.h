@@ -1,5 +1,7 @@
 #pragma once
-#include "../libc.h"
+#define __XC_TYPE__
+#include "pkg.h"
+#include "utils.h"
 
 typedef uint64_t u64;
 
@@ -55,4 +57,40 @@ typedef u32 FormatID;
 #define enum(name, ...) typedef enum {__VA_ARGS__} name; 			
 
 
+typedef enum{ 
+	#define __ERROR_CODES__
+	#include "../../config.h"
+	#undef __ERROR_CODES__
+}XC_ERROR_CODES;
+
+
+typedef struct {errvt code; const char* msg} err_t;
+
+
+typedef struct Object_Instance Object_Instance;
+typedef struct Object_ConstructArgs Object_ConstructArgs;
+typedef struct Object_Interface Object_Interface;
+
+typedef struct Stream_Instance Stream_Instance;
+
+#define __TYPE_OPERATORS__
+#include "../../config.h"
+#undef __TYPE_OPERATORS__
+
+#undef OPERATOR
+#define OPERATOR(class, name, returnval, ...) returnval (*name)(void* __VA_ARGS__)
+
+struct(TypeOperators, OPERATOR_FUNCS(Object)) 
+
+#undef OPERATOR
+#define OPERATOR(class, name, returnval, ...) returnval class##__##name(void* object __VA_ARGS__)
+
+struct(typeData,
+     	TypeOperators* ops;
+	size_t size;
+)
+struct(variableData,
+	typeData type;
+       	void* data;
+)
 

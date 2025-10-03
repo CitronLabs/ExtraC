@@ -1,6 +1,6 @@
 #pragma once
-#include "../types.h"
-#include "../Error/pkg.h"
+#include "../Features/pkg.h"
+#include "../Debug/pkg.h"
 
 Decl(StringBuilder);
 Decl(String)
@@ -14,5 +14,6 @@ Decl(String)
 	
 	#include "classes/String.h"
 	#include "classes/StringBuilder.h"
+	
 #endif
 

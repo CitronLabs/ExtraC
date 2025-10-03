@@ -7,18 +7,18 @@
 
 #if __Simd_Use
 
-    #define usingSIMD (true)
-    
-    	#if isSet(__Simd_DefFunctions, SIMD_MATH)
+	#define usingSIMD (true)
+	    
+    	#if isSet(__Simd_Use, SIMD_MATH)
     		#include "SIMD/Arithmetic.h"
     	#endif
-    	#if isSet(__Simd_DefFunctions, SIMD_MATH)
+    	#if isSet(__Simd_Use, SIMD_BITS)
     		#include "SIMD/Bitwise.h"
     	#endif
-    	#if isSet(__Simd_DefFunctions, SIMD_MATH)
+    	#if isSet(__Simd_Use, SIMD_CMP)
     		#include "SIMD/Comparision.h"
     	#endif
-    	#if isSet(__Simd_DefFunctions, SIMD_MATH)
+    	#if isSet(__Simd_Use, SIMD_MOVE)
     		#include "SIMD/Move.h"
     	#endif
 
@@ -68,7 +68,7 @@ FIELD(u16 bitwidth, typesize; void* data),
        	void method(SIMD, Move,,  inst(SIMD) output);	
        	void method(SIMD, Store,, void* output);	
        	void method(SIMD, Set,,   void* output);
-)
+);
 #else
 	#define usingSIMD (false)
 #endif

@@ -1,6 +1,6 @@
 #pragma once
 
-#define __XC_ERROR__
+#define __XC_DEBUG__
 #include "../pkg.h"
 #include "../types.h"
 
@@ -15,6 +15,5 @@ FIELD(bool hideName),
       	#define logerr(...)  Logger.logf(Logger.std_logger, LOGGER_ERROR, __VA_ARGS__,"\n", endprint)
       	inst(Logger) std_logger;
 
-	errvt method(Logger, logf,, LogType type, ...);
-	errvt method(Logger, log,,  LogType type, inst(String) txt);
-)
+	errvt method(Logger, log,, LogType type, ...);
+);

@@ -19,4 +19,4 @@ FIELD(
 
       	inst(Time) method(Date, toTime);
       	inst(Date) method(Date, fromString,, inst(String) string);
-)
+);

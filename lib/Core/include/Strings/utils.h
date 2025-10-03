@@ -53,9 +53,9 @@ default:	0			\
 
 #define strnlen(_string, maxlen)						\
 _Generic((_string),								\
-char*: 		UTF8Utils.StringUtils.strnlen(generic _string, maxlen),		\
-char16_t*: 	UTF16Utils.StringUtils.strnlen(generic _string, maxlen),	\
-char32_t*: 	UTF32Utils.StringUtils.strnlen(generic _string, maxlen),	\
+char*: 		UTF8Utils.StringUtils.len(generic _string, maxlen),		\
+char16_t*: 	UTF16Utils.StringUtils.len(generic _string, maxlen),	\
+char32_t*: 	UTF32Utils.StringUtils.len(generic _string, maxlen),	\
 wchar_t*: 	wcsnlen(generic _string, maxlen) 				\
 )
 

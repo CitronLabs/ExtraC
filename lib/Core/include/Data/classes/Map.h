@@ -18,7 +18,7 @@ FIELD(),
 	u32 		method(Map,SearchIndex,, void* key);
 	void* 		method(Map,Index,, u32 index);
 	errvt 		method(Map,Remove,, void* key);
-)
+);
 
 
 #define newMap(keyclass, datatype, ...) new(Map,	\

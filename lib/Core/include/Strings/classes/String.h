@@ -3,8 +3,6 @@
 #include "../pkg.h"
 #include "../types.h"
 
-#undef s
-#undef S
 
 Class(String,
 INIT(str_t txt; u64 bytes_len; bool inline_alloc),
@@ -105,7 +103,7 @@ FIELD(str_t txt),
 	 * @note The returned string must be freed by the caller.
 	 */
 	inst(String)	method(String, Convert,, chartype type);
-)
+);
 
 
 
