@@ -1,0 +1,9 @@
+[submodule "lib/Builtin/Rendering"]
+	path = lib/Builtin/Rendering
+	url = https://github.com/CitronLabs/RenderKit
+[submodule "Implementations"]
+	path = lib/Builtin/Implementations
+	url = https://github.com/CitronLabs/ExtraC-Impls
+[submodule "Testing"]
+	path = lib/Builtin/Testing
+	url = https://github.com/CitronLabs/ExtraC-Test
