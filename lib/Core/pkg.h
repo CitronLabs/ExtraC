@@ -24,6 +24,47 @@ SOFTWARE.
 #pragma once
 #ifndef __XC_CORE__
 #define __EXTRAC_CORE__
+
+#include "Essential/pkg.h"
+#include "Debug/pkg.h"
+#include "Data/pkg.h"
+#include "Strings/pkg.h"
+#include "Math/pkg.h"
+#include "Alloc/pkg.h"
+#include "Time/pkg.h"
+
+Module(std){ 
+  values(Version, word,
+	MAJOR,
+	MINOR,
+	PATCH
+  )
+	interface(std_Type)		Type;
+	interface(std_Error)		Error;
+	interface(std_Local) 	  	Local;
+	interface(std_Stream) 		Stream;
+	interface(std_FS) 		FS;
+   	interface(std_String) 		String;
+   	interface(std_Memory) 		Memory;
+	interface(std_List)   		List;
+	interface(std_Stack)  		Stack;
+	interface(std_Queue)  		Queue;
+	interface(std_Map)    		Map;
+	interface(std_Struct) 		Struct;
+	interface(std_DSN)    		DSN;
+   	interface(std_StringBuilder) 	StringBuilder;
+   	interface(std_Arena) 		Arena;
+   	interface(std_Pool) 		Pool;
+   	interface(std_Buffer) 		Buffer;
+   	interface(std_Logger) 		Logger;
+   	interface(std_Time) 		Time;
+   	interface(std_Date) 		Date;
+   	interface(std_Watch) 		Watch;
+   	interface(std_Clock) 		Clock;
+   	interface(std_Number) 		Number;
+   	interface(std_Vector) 		Vector;
+};
+
 /*--------------------------------------------------------------|
  *								|
  * 			  Documentation 			|
