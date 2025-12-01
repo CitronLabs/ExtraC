@@ -17,13 +17,13 @@ enum(HTTPMethod,
      		__VA_ARGS__			\
 	})
 
-struct(HTTPHeader,
-	cstr key, value;
+type(HTTPHeader,
+	strc8 key, value;
 )
 
 Protocol(HTTP_Request,
 	HTTPMethod method;
-	cstr route;
+	strc8 route;
 	HTTPHeader* headers;
 ){}
 
@@ -63,6 +63,6 @@ void testo(){
 	    }
 	);
 
-	msgSend(NULL, __parent_packet = packet;)
+	msgSend(null, __parent_packet = packet;)
 	
 }

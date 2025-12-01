@@ -1,8 +1,8 @@
 #include "../../os.h"
 
 Interface(Server,
-	errvt imethod(handlePacket,, inst(Connection) client, inst(Packet) packet);
-	errvt imethod(reviewNewClient,, inst(Connection) client);
+	errvt imethod(handlePacket, inst(Connection) client, inst(Packet) packet);
+	errvt imethod(reviewNewClient, inst(Connection) client);
 )
 
 Class(ServerManager,
@@ -13,5 +13,5 @@ FIELD(
      	inst(Logger)	logger
 ),
 	errvt method(ServerManager, startServer);
-	errvt method(ServerManager, limitThreads,, u16 limit);
+	errvt method(ServerManager, limitThreads, u16 limit);
 )

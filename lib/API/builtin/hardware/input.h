@@ -7,7 +7,7 @@ FIELD(),
       	#define MOUSEBUTTON_LEFT  0
       	#define MOUSEBUTTON_RIGHT 1
 	interface(PosDevice);
-	bool method(Mouse, buttonPressed,, u32 buttonID);
+	bool method(Mouse, buttonPressed, u32 buttonID);
 )
 
 Class(Keyboard,
@@ -16,4 +16,4 @@ FIELD(inputHandle handle),
       	interface(KeyDevice);
 )
 
-static inst(Mouse) defaultMouse = NULL;
+static inst(Mouse) defaultMouse = null;

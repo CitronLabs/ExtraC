@@ -13,5 +13,5 @@ FIELD(),
 
 )
 
-static inst(Speaker) defaultSpeaker 	= NULL;
-static inst(Speaker) defaultMicrophone  = NULL;
+static inst(Speaker) defaultSpeaker 	= null;
+static inst(Speaker) defaultMicrophone  = null;
