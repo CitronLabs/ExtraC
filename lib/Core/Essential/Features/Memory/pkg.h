@@ -29,5 +29,6 @@ FMT(),
 #define memcpy(dest, from,  size) 	std.Memory.copyTo(dest, from, size)
 #define memset(dest, value, size) 	std.Memory.setTo(dest, value, size)
 #define memcmp(a, b,  size) 		std.Memory.compare(a, b, size)
+#define calloc(num, size) 		memset(malloc(num * size), 0, num * size)
 
 #undef package
