@@ -6,13 +6,13 @@
 
 typedef bool audioDirection;
 
-struct(AudioSpec,
+type(AudioSpec,
     u32 sample_rate;    // e.g., 44100, 48000 Hz
     u16 channels;       // e.g., 1 (mono), 2 (stereo)
     u16 bits_per_sample; // e.g., 16, 24, 32 bits
 );
 
-struct(audioDevice,
+type(audioDevice,
 	inst(String) name;
 	inst(String) manufacturer;
 	inst(String) model;
@@ -32,16 +32,16 @@ struct(audioDevice,
 
 typedef void* audioHandle; // aka an audio stream
 Interface(audio,
-	const cstr stdVersion;
+	const strc8 stdVersion;
 	errvt 			vmethod(initSystem);
 	errvt 			vmethod(exitSystem);
 	arry(audioDevice) 	vmethod(enumDevices, u64* numDevices);
 	namespace(stream,
-	audioHandle 		vmethod(grab,  bool direction, audioDevice* device, size_t framesize, AudioSpec spec);
+	audioHandle 		vmethod(grab,  bool direction, audioDevice* device, len_t framesize, AudioSpec spec);
 	errvt			vmethod(start, audioHandle handle);
 	errvt			vmethod(stop,  audioHandle handle);
 	errvt			vmethod(close, audioHandle handle);
-	errvt			vmethod(write, audioHandle handle, void* buffer, size_t frames);
+	errvt			vmethod(write, audioHandle handle, void* buffer, len_t frames);
 	errvt			vmethod(read,  audioHandle handle);
 	errvt 		  	vmethod(handleEvents,     audioHandle handle, Queue(OSEvent) evntQueue);
 	u64 		  	vmethod(pollEvents);
@@ -53,7 +53,7 @@ enum(AudioEvent_Type,
 	AudioEvent_NewFrame,
 )
 
-struct(AudioEvent,
+type(AudioEvent,
 	audioHandle handle;
 	AudioEvent_Type type;
 )

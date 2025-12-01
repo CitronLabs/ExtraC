@@ -7,7 +7,7 @@
 errvt methodimpl(Mutex, Lock){
 	nonull(self, return err);
 
-	if(pthread_mutex_lock(&priv->mutex) != 0){
+	if(pthread_mutex_lock(&priv.mutex) != 0){
 		if(EINVAL == errno) 
 		    return ERR(
 			THREADERR_MUTEX_NOTINIT, "mutex is not initialized or has been destroyed");
@@ -23,7 +23,7 @@ return OK;
 errvt methodimpl(Mutex, TryLock){
 	nonull(self, return err);
 	
-	if(pthread_mutex_trylock(&priv->mutex) != 0){
+	if(pthread_mutex_trylock(&priv.mutex) != 0){
 		if(EINVAL == errno) 
 		    return ERR(
 			THREADERR_MUTEX_NOTINIT, "mutex is not initialized or has been destroyed");
@@ -38,7 +38,7 @@ return OK;
 errvt methodimpl(Mutex, UnLock){
 	nonull(self, return err);
 	
-	if(pthread_mutex_unlock(&priv->mutex) != 0){
+	if(pthread_mutex_unlock(&priv.mutex) != 0){
 		if(EINVAL == errno) 
 		    return ERR(
 			THREADERR_MUTEX_NOTINIT, "mutex is not initialized or has been destroyed");
@@ -56,7 +56,7 @@ errvt imethodimpl(Mutex, Destroy){
 
 	nonull(self, return err);
 	
-	pthread_mutex_destroy(&priv->mutex);
+	pthread_mutex_destroy(&priv.mutex);
 	;
 return OK;
 }
@@ -69,6 +69,6 @@ construct(Mutex,
 		.__DESTROY = Mutex_Destroy
 	}
 ){
-	pthread_mutex_init(&priv->mutex, NULL);
+	pthread_mutex_init(&priv.mutex, null);
 return self;
 }

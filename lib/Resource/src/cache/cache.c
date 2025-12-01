@@ -19,11 +19,11 @@ typedef struct std_cache{
 	u16 cleanup_counter;
 }std_cache;
 
-std_cache* cacheInit(size_t max_size_in_bytes, bool autocleanup, u16 cleanup_counter){
+std_cache* cacheInit(len_t max_size_in_bytes, bool autocleanup, u16 cleanup_counter){
 	
 	std_cache* res = calloc(1, sizeof(std_cache));
 	*res = (std_cache){
-		.data = memPoolInit(max_size_in_bytes, NULL),
+		.data = memPoolInit(max_size_in_bytes, null),
 		.labels = mapInit(10, std_str, cache_id),
 		.autocleanup = autocleanup,
 		.cleanup_counter = autocleanup && cleanup_counter != 0 ?
@@ -58,7 +58,7 @@ cache_id cacheSearch(std_cache* cache, std_str label){
 	post_ifnull(cache, return UINT64_MAX)
 	post_ifnull(label.txt, return UINT64_MAX)
 
-	cacheslot* slot = NULL;
+	cacheslot* slot = null;
 	u32 mindex = UINT32_MAX;
 	cache_id slot_id;
 
@@ -66,19 +66,19 @@ cache_id cacheSearch(std_cache* cache, std_str label){
 	      CACHYERR_SEARCH, "could not find cache slot with specified label");
 
 	checkposterr(mapIndex(cache->labels, mindex, &slot_id),
-	      CACHYERR_SEARCH, "could not index cache slot", return NULL;)
+	      CACHYERR_SEARCH, "could not index cache slot", return null;)
 
 	if(cache->autocleanup) cache->cleanup_counter--;
 }
 
 
-cache_id cacheAdd(std_cache* cache, size_t size,  std_str label, void* data){
+cache_id cacheAdd(std_cache* cache, len_t size,  std_str label, void* data){
 	
 	post_ifnull(cache, return UINT64_MAX)
 	post_ifnull(data, return UINT64_MAX)
 	
 	cache_id res;
-	void* cache_data = NULL;
+	void* cache_data = null;
 	cacheslot slot = {
 		.label = label,
 		.size = size,
@@ -87,7 +87,7 @@ cache_id cacheAdd(std_cache* cache, size_t size,  std_str label, void* data){
 
 	};
 
-	checkposterr((cache_data = memPoolGet(cache->data, size)) != NULL, 
+	checkposterr((cache_data = memPoolGet(cache->data, size)) != null, 
 	      CACHYERR_ADD, "could not add data to cache");
 
 	if(stackCount(cache->free_slots) > 0){
@@ -104,8 +104,8 @@ return res;
 
 void* cacheGet(std_cache* cache, cache_id id){
 
-	cacheslot* slotptr = NULL;
-	checkposterr((slotptr = listGetPointer(cache->slots, id)) == NULL,
+	cacheslot* slotptr = null;
+	checkposterr((slotptr = listGetPointer(cache->slots, id)) == null,
 	      CACHYERR_GET, "invalid cache id")
 	
 	slotptr->frequency++;

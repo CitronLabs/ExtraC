@@ -3,51 +3,51 @@
 #include "posix.h"
 
 
-errvt methodimpl(Connection, Send,, msg_packet message){
+errvt methodimpl(Connection, Send, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 
-	if(-1 == send(priv->fd, message.buff, message.size, 0) ) 
+	if(-1 == send(priv.fd, message.buff, message.size, 0) ) 
 		return ERR(NETERR_CONNSEND, "could not send data through connect");
 
-	priv->io_ready &= 0;
+	priv.io_ready &= 0;
 return OK;
 }
-errvt methodimpl(Connection, Recieve,, msg_packet message){
+errvt methodimpl(Connection, Recieve, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 	
-	if(-1 == recv(priv->fd, message.buff, message.size, 0) )
+	if(-1 == recv(priv.fd, message.buff, message.size, 0) )
 		return ERR(NETERR_CONNRECV, "could not recieve data through connect");
-	priv->io_ready &= 0;
+	priv.io_ready &= 0;
 return OK;
 }
-errvt methodimpl(Connection, GroupSend,, msg_packet message){
+errvt methodimpl(Connection, GroupSend, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 
-	if(-1 == sendto(priv->fd, 
+	if(-1 == sendto(priv.fd, 
 		  	message.buff, 
 		  	message.size, 
 		  	0, 
-		  	&priv->addresses[1], 
-		  	priv->sizeofaddr) )
+		  	&priv.addresses[1], 
+		  	priv.sizeofaddr) )
 		return ERR(NETERR_CONNSEND, "could not send data through connect");
-	priv->io_ready &= 0;
+	priv.io_ready &= 0;
 return OK;
 }
-errvt methodimpl(Connection, GroupRecive,, msg_packet message){
+errvt methodimpl(Connection, GroupRecive, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 
-	if(-1 == recvfrom(priv->fd, 
+	if(-1 == recvfrom(priv.fd, 
 		  	message.buff, 
 		  	message.size, 
 		  	0, 
-		  	&priv->addresses[1], 
-		  	&priv->sizeofaddr) ) 
+		  	&priv.addresses[1], 
+		  	&priv.sizeofaddr) ) 
 		return ERR(NETERR_CONNRECV, "could not recieve data through connect");
-	priv->io_ready &= 0;
+	priv.io_ready &= 0;
 return OK;
 }
 
@@ -57,18 +57,18 @@ errvt methodimpl(Connection, UnWatch){
 	if(epoll_fd == 0){
 		assert((epoll_fd = epoll_create1(0)) == -1);
 	}
-	if(connections == NULL){
+	if(connections == null){
 		connections = newMap(Number, data(Connection));
-		assert(connections != NULL);
+		assert(connections != null);
 	}
 
-	if(!priv->watched) 
+	if(!priv.watched) 
 		return ERR(NETERR_WATCH, "connection is already being watched");
 
-	if(-1 == epoll_ctl(epoll_fd, EPOLL_CTL_DEL, priv->fd, NULL) ) 
+	if(-1 == epoll_ctl(epoll_fd, EPOLL_CTL_DEL, priv.fd, null) ) 
 		return ERR(NETERR_WATCH, "could not set up watch for the connection");
 	
-	priv->watched = false;
+	priv.watched = false;
 return OK;
 }
 errvt methodimpl(Connection, Watch){
@@ -77,18 +77,18 @@ errvt methodimpl(Connection, Watch){
 	if(epoll_fd == 0){
 		assert((epoll_fd = epoll_create1(0)) == -1);
 	}
-	if(connections == NULL){
+	if(connections == null){
 		connections = newMap(Number, data(Connection));
-		assert(connections != NULL);
+		assert(connections != null);
 	}
 
-	if(priv->watched)
+	if(priv.watched)
 		return ERR(NETERR_WATCH, "connection is already being watched");
 
-	if(-1 == epoll_ctl(epoll_fd, EPOLL_CTL_ADD, priv->fd, NULL) )
+	if(-1 == epoll_ctl(epoll_fd, EPOLL_CTL_ADD, priv.fd, null) )
 		return ERR(NETERR_WATCH, "could not set up watch for the connection");
 	
-	priv->watched = true;
+	priv.watched = true;
 return OK;
 }
 bool methodimpl(Connection, Check){
@@ -99,18 +99,18 @@ bool methodimpl(Connection, Check){
 		assert((epoll_fd = epoll_create1(0)) == -1);
 		return false;
 	}
-	if(connections == NULL){
+	if(connections == null){
 		connections = newMap(Number, data(Connection));
-		assert(connections != NULL);
+		assert(connections != null);
 		return false;
 	}
 
-	if(!priv->watched) {
+	if(!priv.watched) {
 	      ERR(NETERR_WATCH, "connection is not being watched");
 		return false;
 	}
 
-	if(priv->io_ready) return true;
+	if(priv.io_ready) return true;
 	else{
 		struct epoll_event events[10];
 		int num_events = 0;
@@ -133,39 +133,39 @@ bool methodimpl(Connection, Check){
 
 		}
 	}
-	if(priv->io_ready) return true;
+	if(priv.io_ready) return true;
 
 return false;
 }
-errvt methodimpl(Connection, GroupJoin,, void* address, void* interface_addr){
+errvt methodimpl(Connection, GroupJoin, void* address, void* interface_addr){
 
 	nonull(self);
 	nonull(address);
 
-	if(priv->settings.domain != SOCKET_PROTOCOL_UDP ||
-	   priv->settings.domain != SOCKET_PROTOCOL_RAW) 
+	if(priv.settings.domain != SOCKET_PROTOCOL_UDP ||
+	   priv.settings.domain != SOCKET_PROTOCOL_RAW) 
 		return ERR(
 			NETERR_CONNECT, "only UPD and RAW protocols can join a multicast group");
 
 	if(0 == XCAddrToUnix(
-		    priv->settings.domain, 
+		    priv.settings.domain, 
 		    address,
-		    &priv->addresses[1]) == 0 ) return ERR(
+		    &priv.addresses[1]) == 0 ) return ERR(
 		NETERR_CONNECT, "invalid connection configuration");
 
-	switch (priv->settings.domain) {
+	switch (priv.settings.domain) {
 
 	case SOCKET_DOMAIN_IPV4:{
 
 		struct ip_mreq group_address = {
-			.imr_multiaddr = ((struct sockaddr_in*)&priv->addresses[1])->sin_addr,
+			.imr_multiaddr = ((struct sockaddr_in*)&priv.addresses[1])->sin_addr,
 			.imr_interface = inet_addr("0.0.0.0")
 		};
 
-		if(interface_addr != NULL){
+		if(interface_addr != null){
 			struct sockaddr_in temp;
 			XCAddrToUnix(
-			    priv->settings.domain, 
+			    priv.settings.domain, 
 			    address,
 			    (struct sockaddr*)&temp
 			);
@@ -173,14 +173,14 @@ errvt methodimpl(Connection, GroupJoin,, void* address, void* interface_addr){
 		}
 
 			if(setsockopt(
-			    priv->fd,
+			    priv.fd,
 			    IPPROTO_IP,
 			    IP_ADD_MEMBERSHIP,
 			    &group_address,
 			    sizeof(struct ip_mreq)) < 0)
 			{
 				ERR(NETERR_CONNECT, "could not join group");
-				*(struct sockaddr_in*)&priv->addresses[1] = 
+				*(struct sockaddr_in*)&priv.addresses[1] = 
 					(struct sockaddr_in){0};
 			}
 		 
@@ -188,21 +188,21 @@ errvt methodimpl(Connection, GroupJoin,, void* address, void* interface_addr){
 	case SOCKET_DOMAIN_IPV6:{
 			
 		struct ipv6_mreq group_address = {
-			.ipv6mr_multiaddr = ((struct sockaddr_in6*)&priv->addresses[1])->sin6_addr,
-			.ipv6mr_interface = interface_addr == NULL ?
+			.ipv6mr_multiaddr = ((struct sockaddr_in6*)&priv.addresses[1])->sin6_addr,
+			.ipv6mr_interface = interface_addr == null ?
 				0 :
 				if_nametoindex(interface_addr)
 		};
 
 			if(setsockopt(
-			    priv->fd,
+			    priv.fd,
 			    IPPROTO_IPV6,
 			    IPV6_ADD_MEMBERSHIP,
 			    &group_address,
 			    sizeof(struct ipv6_mreq)))
 			{
 				ERR(NETERR_CONNECT, "could not join group");
-				*(struct sockaddr_in6*)&priv->addresses[1] = (struct sockaddr_in6){0};
+				*(struct sockaddr_in6*)&priv.addresses[1] = (struct sockaddr_in6){0};
 		 	}
 	break;}
 	default:{
@@ -214,29 +214,29 @@ errvt methodimpl(Connection, GroupJoin,, void* address, void* interface_addr){
 errvt methodimpl(Connection,GroupLeave){
 	nonull(self);
 
-	switch (priv->settings.domain) {
+	switch (priv.settings.domain) {
 	case SOCKET_DOMAIN_IPV4:{
 		if(setsockopt(
-			priv->fd,
+			priv.fd,
 			IPPROTO_IP,
 			IP_ADD_MEMBERSHIP,
-			&priv->addresses[1],
+			&priv.addresses[1],
 			sizeof(struct ip_mreq)) < 0)
 		{
 			ERR(NETERR_CONNECT, "could not leave group");
-			*(struct sockaddr_in*)&priv->addresses[1] = (struct sockaddr_in){0};
+			*(struct sockaddr_in*)&priv.addresses[1] = (struct sockaddr_in){0};
 		}
 	break;}
 	case SOCKET_DOMAIN_IPV6:{
 		if(setsockopt(
-			priv->fd,
+			priv.fd,
 			IPPROTO_IP,
 			IP_ADD_MEMBERSHIP,
-			&priv->addresses[1],
+			&priv.addresses[1],
 			sizeof(struct ip_mreq)) < 0)
 		{
 		 	ERR(NETERR_CONNECT, "could not join group");
-			*(struct sockaddr_in6*)&priv->addresses[1] = (struct sockaddr_in6){0};
+			*(struct sockaddr_in6*)&priv.addresses[1] = (struct sockaddr_in6){0};
 		}
 	break;}
 	default:{
@@ -249,23 +249,23 @@ return OK;
 
 socket_settings methodimpl(Connection, GetSettings){
 	nonull(self, return (socket_settings){0};);
-	return priv->settings;
+	return priv.settings;
 }
-errvt methodimpl(Connection, GetAddress,, void* address, void* multicast_address){
+errvt methodimpl(Connection, GetAddress, void* address, void* multicast_address){
 	nonull(self)	
 	nonull(address)	
 
 	errvt error = unixAddrToXCAddr(
-		priv->settings.domain, 
-		&priv->addresses[0],
+		priv.settings.domain, 
+		&priv.addresses[0],
 		address);
 
 	if(error) return error;
 
 	if(multicast_address)
 	    error = unixAddrToXCAddr(
-		priv->settings.domain, 
-		&priv->addresses[1],
+		priv.settings.domain, 
+		&priv.addresses[1],
 		multicast_address);
 return error;
 }
@@ -273,10 +273,10 @@ errvt imethodimpl(Connection, Close){
 	self(Connection)
 	nonull(self);
 	
-	if(priv->watched)
+	if(priv.watched)
 		Connection.UnWatch(self);
 	
-	close(priv->fd);
+	close(priv.fd);
 
 return OK;
 }
@@ -300,53 +300,53 @@ construct(Connection,
 	if(epoll_fd == 0){
 		assert((epoll_fd = epoll_create1(0)) == -1);
 	}
-	if(connections == NULL){
+	if(connections == null){
 		connections = newMap(Number, data(Connection));
-		assert(connections != NULL);
+		assert(connections != null);
 	}
 
 	int domain = 
-		args.settings.domain == SOCKET_DOMAIN_IPV4 ? AF_INET  :
-		args.settings.domain == SOCKET_DOMAIN_IPV6 ? AF_INET6 :
-		args.settings.domain == SOCKET_DOMAIN_LOCAL ? AF_LOCAL :
+		arg.settings.domain == SOCKET_DOMAIN_IPV4 ? AF_INET  :
+		arg.settings.domain == SOCKET_DOMAIN_IPV6 ? AF_INET6 :
+		arg.settings.domain == SOCKET_DOMAIN_LOCAL ? AF_LOCAL :
 		-1;
 
 	int protocol = 
-		args.settings.protocol == SOCKET_PROTOCOL_UDP ? SOCK_DGRAM  :
-		args.settings.protocol == SOCKET_PROTOCOL_TCP ? SOCK_STREAM :
-		args.settings.protocol == SOCKET_PROTOCOL_RAW ? SOCK_RAW :
+		arg.settings.protocol == SOCKET_PROTOCOL_UDP ? SOCK_DGRAM  :
+		arg.settings.protocol == SOCKET_PROTOCOL_TCP ? SOCK_STREAM :
+		arg.settings.protocol == SOCKET_PROTOCOL_RAW ? SOCK_RAW :
 		-1;
 
 	if(-1 == domain ){
 	      ERR(NETERR_CONNECT, "invalid domain setting");
-	      return NULL;
+	      return null;
 	}
 	
 	if(-1 == protocol ){
 	      ERR(NETERR_CONNECT, "invalid domain setting");
-	      return NULL;
+	      return null;
 	}
 
 	setpriv(Connection){
 		.fd = socket(domain, protocol, 0),
-		.settings = args.settings,
+		.settings = arg.settings,
 		.sizeofaddr = XCAddrToUnix(
-			args.settings.domain,
-			args.address,
-			&priv->addresses[0]
+			arg.settings.domain,
+			arg.address,
+			&priv.addresses[0]
 		)
 	};
-	if(-1 == priv->fd ) {
+	if(-1 == priv.fd ) {
 	      ERR(NETERR_CONNECT, "could not create connection socket");
-	      ; return NULL;
+	      ; return null;
 	}
 
-	if(-1 == connect(priv->fd, &priv->addresses[0], priv->sizeofaddr) ) {
+	if(-1 == connect(priv.fd, &priv->addresses[0], priv->sizeofaddr) ) {
 	      ERR(NETERR_CONNECT , "could not initialize connection");
-	      ; return NULL;
+	      ; return null;
 	}
 	
-	Map.Insert(connections, n(priv->fd), &self);
+	Map.Insert(connections, n(priv.fd), &self);
 
 return self;
 }

@@ -34,7 +34,7 @@ private(Connection,
 );
 
 static int epoll_fd = 0;
-static Map(int, inst(Connection)) connections = NULL;
+static Map(int, inst(Connection)) connections = null;
 
 
 

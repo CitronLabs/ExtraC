@@ -23,13 +23,13 @@ typedef union{
 	u32 protections;
 }mmprot_info;
 
-struct(mmnode_info,
+type(mmnode_info,
 	u32 childrennum : 24;
 	u32 contentsnum : 32;
 	mmprot_info protections;
 );
 
-struct(mmleaf_info,
+type(mmleaf_info,
 	allocid allocator_index;
 	mmprot_info protections;
 	u64 size;
@@ -51,26 +51,26 @@ FIELD(),
 	
 	#define ROOT_TOKEN 0
 
-      	bool method(MemoryMap, validateMemID,, memid id);
-	allocid method(MemoryMap, registerAllocator,, intf(Allocator) set_allocator_intf, void* set_allocator);
-	memid method(MemoryMap, Nest,, memid parent, inst(MemoryMap) nested_tree);
+      	bool method(MemoryMap, validateMemID, memid id);
+	allocid method(MemoryMap, registerAllocator, intf(Allocator) set_allocator_intf, void* set_allocator);
+	memid method(MemoryMap, Nest, memid parent, inst(MemoryMap) nested_tree);
 	
-      	errvt 	method(MemoryMap, GetNode,,  memid  token,  mmnode_info* metadata);
-	memid   method(MemoryMap, AddNode,,  memid  parent, mmprot_info* protections);
-	errvt 	method(MemoryMap, CutNode,,  memid  token);
-	errvt 	method(MemoryMap, MoveNode,, memid* token,  memid maptoid);
+      	errvt 	method(MemoryMap, GetNode,  memid  token,  mmnode_info* metadata);
+	memid   method(MemoryMap, AddNode,  memid  parent, mmprot_info* protections);
+	errvt 	method(MemoryMap, CutNode,  memid  token);
+	errvt 	method(MemoryMap, MoveNode, memid* token,  memid maptoid);
 
 
-	errvt 	method(MemoryMap, GetLeaf,,  memid  token,  mmleaf_info* metadata);
-	memid   method(MemoryMap, AddLeaf,,  memid  parent, mmleaf_info metadata);
-	errvt 	method(MemoryMap, CutLeaf,,  memid  token);
-	errvt 	method(MemoryMap, MoveLeaf,, memid* token,  memid maptotoken);
+	errvt 	method(MemoryMap, GetLeaf,  memid  token,  mmleaf_info* metadata);
+	memid   method(MemoryMap, AddLeaf,  memid  parent, mmleaf_info metadata);
+	errvt 	method(MemoryMap, CutLeaf,  memid  token);
+	errvt 	method(MemoryMap, MoveLeaf, memid* token,  memid maptotoken);
 )
 
 
 Class(Collection,
 INIT(inst(MemoryMap) memMap; memid parent;),
-FIELD(u8 warnRemoval),
+FIELD(bool warnRemoval),
 	
 	#define collect(Collection, Class, ...) Class.__COLLECT(Collection, (Class##_ConstructArgs){__VA_ARGS__})
 
@@ -79,12 +79,12 @@ FIELD(u8 warnRemoval),
 )
 
 Class(Resource,
-INIT(inst(Collection) collection; size_t size),
+INIT(inst(Collection) collection; len_t size),
 FIELD(),
       	void* method(Resource, getData);
-      	errvt method(Resource, setDestructor,, errvt(*destructor)(void*));
+      	errvt method(Resource, setDestructor, errvt(*destructor)(void*));
       	bool method(Resource,  isNearRemoval);
-	errvt method(Resource, moveTo,, inst(Collection) new_collection);
-	errvt method(Resource, resize,, size_t new_size);
+	errvt method(Resource, moveTo, inst(Collection) new_collection);
+	errvt method(Resource, resize, len_t new_size);
 
 )

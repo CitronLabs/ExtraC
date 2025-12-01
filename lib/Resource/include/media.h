@@ -17,7 +17,7 @@ INIT(const char* path; intf(MediaFormat) format; bool lazy_load),
 FIELD(intf(MediaFormat) format),
 	
       	inst(Media)(*create)(intf(MediaFormat) format, void* metadata, MediaType* media_data, inst(Collection) collection);
-      	errvt method(Media, reformat,, void* metadata);
+      	errvt method(Media, reformat, void* metadata);
 
       	inst(Resource) method(Media, getResource);
       	MediaType* method(Media, getMediaData);
@@ -35,31 +35,31 @@ Interface(MediaFormat,
 
 
 
-struct(Media_Image,
+type(Media_Image,
 	MediaType type;
 )
 
-struct(Media_Audio,
-	MediaType type;
-
-)
-
-struct(Media_VectorImage,
+type(Media_Audio,
 	MediaType type;
 
 )
 
-struct(Media_Model3D,
+type(Media_VectorImage,
 	MediaType type;
 
 )
 
-struct(Media_Video,
+type(Media_Model3D,
 	MediaType type;
 
 )
 
-struct(Media_File,
+type(Media_Video,
+	MediaType type;
+
+)
+
+type(Media_File,
 	MediaType type;
 
 )

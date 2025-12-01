@@ -2,8 +2,8 @@
 #include "../../include/all.h"
 
 
-static List(inst(Thread)) active_threads = NULL;
-static Stack(inst(Thread)) freed_threads = NULL;
+static List(inst(Thread)) active_threads = null;
+static Stack(inst(Thread)) freed_threads = null;
 
 private(Thread,
 	pthread_t thread;
@@ -22,7 +22,7 @@ private(Semaphore,
 	sem_t semaphore;	
 );
 
-int main(int argc, cstr* argv);
+int main(int argc, strc8* argv);
 
 static inst(Thread) init_thread = 
     &(Thread_Instance){

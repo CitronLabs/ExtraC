@@ -15,7 +15,7 @@
 #define DFL_WRITE 	0x02
 
 Class(File,
-INIT(cstr path; u8 flags; u16 char_size),
+INIT(strc8 path; u8 flags; u16 char_size),
 FIELD(),
 	#define print(...) 	 File.PrintTo(File.out, __VA_ARGS__, endprint)
 	#define fprint(file,...) File.PrintTo(file, 	__VA_ARGS__, endprint)
@@ -26,36 +26,35 @@ FIELD(),
 	#define scanln(...) 		   File.ScanFrom(File.in, "\n", __VA_ARGS__, endscan)
 
 	interface(Loggable);
-	interface(IterableList);
 
 	inst(File) in;
 	inst(File) out;
 	inst(File) err;
-	errvt 		method(File, PrintTo,, ...);
-	errvt 		method(File, ScanFrom,, cstr delimiter, ...);
+	errvt 		method(File, PrintTo, ...);
+	errvt 		method(File, ScanFrom, strc8 delimiter, ...);
 	FILE* 		method(File, ToC);
-	i64 		method(File, Read,,     pntr output, u64 len);
-	i64 		method(File, Write,,    pntr input,  u64 len);
-	errvt 		method(File, Move,,     fsPath path);
-	errvt 		method(File, Copy,,     inst(File)* new_file, fsPath path);
+	i64 		method(File, Read,     pntr output, u64 len);
+	i64 		method(File, Write,    pntr input,  u64 len);
+	errvt 		method(File, Move,     fsPath path);
+	errvt 		method(File, Copy,     inst(File)* new_file, fsPath path);
 	errvt 		method(File, Remove);
-	errvt 		method(File, SetFlags,, u8 flags);
+	errvt 		method(File, SetFlags, u8 flags);
 
-	inst(File)  	vmethod(CreateTemp, 	cstr name,  u8 flags, u16 char_size);
-	inst(File)  	vmethod(Create, 	cstr path,  u8 flags, u16 char_size);
+	inst(File)  	vmethod(CreateTemp, 	strc8 name,  u8 flags, u16 char_size);
+	inst(File)  	vmethod(Create, 	strc8 path,  u8 flags, u16 char_size);
 	inst(File)  	vmethod(FromC,  	FILE* file, u8 flags, u16 char_size);
 )
 
 Class(Dir,
-INIT(cstr path; u8 flags;),
+INIT(strc8 path; u8 flags;),
 FIELD(),
 	
 	interface(IterableList);
 	
-	i64 	  method(Dir, Read,,  fsEntry* output , u64 len);
-	i64 	  method(Dir, Write,, fsEntry* input , u64 len);
-	errvt 	  method(Dir, Move,,  fsPath path);
-	errvt 	  method(Dir, Copy,,  inst(Dir)* new_dir, fsPath path);
+	i64 	  method(Dir, Read,  fsEntry* output , u64 len);
+	i64 	  method(Dir, Write, fsEntry* input , u64 len);
+	errvt 	  method(Dir, Move,  fsPath path);
+	errvt 	  method(Dir, Copy,  inst(Dir)* new_dir, fsPath path);
 	inst(Dir) vmethod(Create,     fsPath path, u8 flags);
 	errvt 	  vmethod(SetCurrent, fsPath path);
 )

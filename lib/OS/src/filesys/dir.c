@@ -16,7 +16,7 @@ errvt getFileSystemEntry(fsPath path, fsEntry* ent){
 		}
 	}
 
-	if(ent == NULL) return OK;
+	if(ent == null) return OK;
 
 	inst(Time) time_buff = {0};
 
@@ -61,13 +61,13 @@ inst(Dir) Dir_Create (fsPath path, u8 flags){
 
 	if(0 == stat(path, &statbuf)){ ERR(
 		IOERR_ALRDYEXST, "dir already exists");
-		return NULL;
+		return null;
 	}
 
 	if(mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0){
 	switch(errno){
-	case ENOENT:{ERR(IOERR_NOTFOUND, "could not create directory"); return NULL; }
-	case EACCES:{ERR(IOERR_PERMS, "invalid permissions could not access"); return NULL; }
+	case ENOENT:{ERR(IOERR_NOTFOUND, "could not create directory"); return null; }
+	case EACCES:{ERR(IOERR_PERMS, "invalid permissions could not access"); return null; }
 	}
 	}
 
@@ -79,20 +79,20 @@ inst(Dir) Dir_Create (fsPath path, u8 flags){
 	self->__init = true;
 	self->__methods = &Dir;
 
-	strncpy((cstr)&priv->path, path, 255);
+	strncpy((strc8)&priv.path, path, 255);
 
 return self;
 }
 
-i64 methodimpl(Dir, Read,, fsEntry* output, u64 max_entries){
-	struct dirent* entries = NULL; 
+i64 methodimpl(Dir, Read, fsEntry* output, u64 max_entries){
+	struct dirent* entries = null; 
 	u64 ent_count = 0;
 	nonull(self, return -1)	
 	nonull(output, return -1)	
 
-	inst(StringBuilder) path_builder = push(StringBuilder, NULL, 255);
+	inst(StringBuilder) path_builder = push(StringBuilder, null, 255);
 
-	while((entries = readdir(priv->dir)) != NULL){
+	while((entries = readdir(priv.dir)) != null){
 		struct stat stat_buf = {0};
 
 		if(strncmp(entries->d_name, "..", 3) == 0 ||
@@ -100,7 +100,7 @@ i64 methodimpl(Dir, Read,, fsEntry* output, u64 max_entries){
 			{continue;}
 		
 		StringBuilder.Set(path_builder, 
-		   priv->path,"/",entries->d_name);
+		   priv.path,"/",entries->d_name);
 
 		stat(StringBuilder.GetStr(path_builder).txt, &stat_buf);
 
@@ -121,16 +121,16 @@ i64 methodimpl(Dir, Read,, fsEntry* output, u64 max_entries){
 	
 return ent_count;
 };
-i64 methodimpl(Dir, Write,, fsEntry* entries, u64 num_entries){
+i64 methodimpl(Dir, Write, fsEntry* entries, u64 num_entries){
 
-	inst(StringBuilder) path = push(StringBuilder, NULL, 256);
+	inst(StringBuilder) path = push(StringBuilder, null, 256);
 	u64 ent_count = 0;
 
 	nonull(self, return -1)	
 	nonull(entries, return -1)
 
 	loop(i, num_entries){
-		StringBuilder.Append(path, String_From(priv->path, 256));
+		StringBuilder.Append(path, String_From(priv.path, 256));
 		StringBuilder.Append(path, String_From(entries[i].name, 256));
 		
 		if(entries[i].is_dir)
@@ -146,11 +146,11 @@ i64 methodimpl(Dir, Write,, fsEntry* entries, u64 num_entries){
 return ent_count;
 }
 
-errvt methodimpl(Dir, Copy,, inst(Dir)* new_dir, fsPath path){
+errvt methodimpl(Dir, Copy, inst(Dir)* new_dir, fsPath path){
 	
 	nonull(self, return err;)	
 	
-	if(*new_dir != NULL)
+	if(*new_dir != null)
 		return ERR(IOERR_ALRDYEXST, "new dir instance already in use");
 
 	if((*new_dir = Dir.Create(path, DFL_READ | DFL_WRITE)) != ERR_NONE) 
@@ -164,7 +164,7 @@ errvt methodimpl(Dir, Copy,, inst(Dir)* new_dir, fsPath path){
 	
 	Stack.Push(nested_dirs, &self, 1);
 	do{
-		inst(Dir) curr_dir = NULL, * curr_new_dir = NULL;
+		inst(Dir) curr_dir = null, * curr_new_dir = NULL;
 
 		Stack.Pop(nested_dirs, &curr_dir, 1);
 		Stack.Pop(nested_dirs, &curr_new_dir, 1);
@@ -188,7 +188,7 @@ errvt methodimpl(Dir, Copy,, inst(Dir)* new_dir, fsPath path){
 				Stack.Push(nested_dirs, dir_next_new, 1);
 			}else{
 				fsPath origin;
-				inst(File) file = NULL,* cpyfile = NULL;
+				inst(File) file = null,* cpyfile = NULL;
 				catNameandDirPath(origin, curr_dir->__private->path, entry.name)
 				file = push(File, origin, FFL_READ | FFL_WRITE);
 				File.Copy(file, &cpyfile, curr_new_dir->__private->path);
@@ -207,16 +207,16 @@ errvt methodimpl(Dir, Copy,, inst(Dir)* new_dir, fsPath path){
 return OK;
 }
 
-errvt methodimpl(Dir, Move,, fsPath path){
+errvt methodimpl(Dir, Move, fsPath path){
 	nonull(self, return err);
-	inst(Dir) new_dir = NULL;
+	inst(Dir) new_dir = null;
 	Dir.Copy(self, &new_dir, path);
-	rmdir(priv->path);
+	rmdir(priv.path);
 	
-	closedir(priv->dir);
-	priv->dir = new_dir->__private->dir;
+	closedir(priv.dir);
+	priv.dir = new_dir->__private->dir;
 
-	strncpy(priv->path, path, 255);
+	strncpy(priv.path, path, 255);
 	free(new_dir);
 	
 return OK;
@@ -226,7 +226,7 @@ errvt imethodimpl(Dir, Close){
 	self(Dir)
 
 	nonull(self, return err)	
-	closedir(priv->dir);
+	closedir(priv.dir);
 
 return OK;
 }
@@ -234,37 +234,37 @@ return OK;
 errvt methodimpl(Dir, Remove){
 
 	nonull(self, return err;)	
-	rmdir(priv->path);
+	rmdir(priv.path);
 
 return OK;
 }
 
-u64 methodimpl(Dir, Scan,, FormatID* formats, inst(String) in){
+u64 methodimpl(Dir, Scan, FormatID* formats, inst(String) in){
 
 	u32 cursor = 0;
 	while(isblank(in->txt[cursor])) cursor++;
 
 	inst(String) tmp = push(String, in->txt);
 	*self = *push(Dir, tmp->txt, DFL_READ | DFL_WRITE);
-	if((File_Instance*)self->__private == NULL) return 0;
+	if((File_Instance*)self->__private == null) return 0;
 
 	pop(tmp);
 return cursor;
 }
 
-u64 methodimpl(Dir, Print,, FormatID* formats, inst(StringBuilder) out){
+u64 methodimpl(Dir, Print, FormatID* formats, inst(StringBuilder) out){
 
 	u64 formated_len = 0;
 	u8 entries_read = 0;
 
 	fsEntry entries[10] = {0};
 
-	formated_len += StringBuilder.Append(out, NULL,
-		"name:", $(priv->path), ":\n", endstr);
+	formated_len += StringBuilder.Append(out, null,
+		"name:", $(priv.path), ":\n", endstr);
 
 	while((entries_read = Dir.Read(self, entries, 10)) != 0){
 	    loop(i, entries_read){
-		formated_len += StringBuilder.Append(out, NULL, 
+		formated_len += StringBuilder.Append(out, null, 
 			$(entries[i].name), 
 			entries[i].is_dir ? "\tdirectory\t" : "\tfile\t",
 			"created: ", $O(entries[i].time_created), "\t"
@@ -285,12 +285,12 @@ construct(Dir,
 	.Write = Dir_Write,
 	.Object = {.__DESTROY = Dir_Close}
 ){
-	if((priv->dir = opendir(args.path)) == NULL){
+	if((priv.dir = opendir(arg.path)) == null){
 		switch(errno){
 		case ENOENT:{ return self; }
 		case EACCES:{ERR(IOERR_PERMS, "invalid permissions could not access"); return self; }
 		}
 	}
-	strncpy((cstr)&priv->path, args.path, 255);
+	strncpy((strc8)&priv.path, arg.path, 255);
 return self;
 }

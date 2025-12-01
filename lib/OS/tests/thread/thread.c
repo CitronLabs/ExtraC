@@ -31,7 +31,7 @@ bool RUN_STDTHREAD_TESTS(){
 
 
 NEW_TEST("Basic Thread Control"){
-	inst(Thread) test_thread = NULL;
+	inst(Thread) test_thread = null;
 	int res;
 
 	NEW_SUBTEST("Getting the current thread"){
@@ -47,7 +47,7 @@ NEW_TEST("Basic Thread Control"){
 	
 	NEW_SUBTEST("Creating a new thread"){
 		test_thread = new(Thread, threadfunc);
-		if(test_thread != NULL)
+		if(test_thread != null)
 			PASS_TEST
 		else 
 			FAIL_TEST
@@ -71,7 +71,7 @@ NEW_TEST("Basic Thread Control"){
 	NEW_SUBTEST("Destroying threads"){
 		Thread.Free(test_thread);
 		Error.Hide();
-		if(Thread.Start(test_thread, NULL) == THREADERR_DESTROY )
+		if(Thread.Start(test_thread, null) == THREADERR_DESTROY )
 
 			PASS_TEST
 		else 
@@ -85,7 +85,7 @@ NEW_TEST("Basic Thread Control"){
 			FAIL_TEST
 		)
 
-		Thread.Start(test_thread, NULL);
+		Thread.Start(test_thread, null);
 		Thread.Join(test_thread);
 
 		if(iter == 10000)

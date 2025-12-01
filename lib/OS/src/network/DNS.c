@@ -17,25 +17,25 @@ errvt netDomainResolve(nethost_resolve* resolve, inst(String) host_name, u8 doma
 		domain_type == D_IPV6 ? AF_INET6 : 
 		AF_UNSPEC
 	},
-	* host_data = NULL;
+	* host_data = null;
 	
 	List(ipv4_netaddress) i4_addrs =
 		(domain_type == D_IPV4 || 
 	         domain_type == (D_IPV4 | D_IPV6)) ?
-		pushList(ipv4_netaddress, 10) : NULL;
+		pushList(ipv4_netaddress, 10) : null;
 
 	List(ipv6_netaddress) i6_addrs = 
 		(domain_type == D_IPV6 || 
 	         domain_type == (D_IPV4 | D_IPV6)) ?
-		pushList(ipv6_netaddress, 10) : NULL;
+		pushList(ipv6_netaddress, 10) : null;
 
 	in_addr_t addr4 = {0};
 	struct in6_addr addr6 = {0};
 
-	if(0 != getaddrinfo(host_name->txt, NULL, &hints, &host_data) ) 
+	if(0 != getaddrinfo(host_name->txt, null, &hints, &host_data) ) 
 		return ERR(NETERR_HOSTRESOLVE, "could not resolve host");
 
-	while(host_data->ai_next != NULL){
+	while(host_data->ai_next != null){
 
 	    if(host_data->ai_family == AF_INET &&
 	       (domain_type == D_IPV4 || 
@@ -69,8 +69,8 @@ errvt netDomainResolve(nethost_resolve* resolve, inst(String) host_name, u8 doma
 		}
 
 	}
-	if(i4_addrs != NULL) resolve->ipv4_addrs = List.FreeToPointer(i4_addrs);
-	if(i6_addrs != NULL) resolve->ipv6_addrs = List.FreeToPointer(i6_addrs);
+	if(i4_addrs != null) resolve->ipv4_addrs = List.FreeToPointer(i4_addrs);
+	if(i6_addrs != null) resolve->ipv6_addrs = List.FreeToPointer(i6_addrs);
 
 return OK;
 }

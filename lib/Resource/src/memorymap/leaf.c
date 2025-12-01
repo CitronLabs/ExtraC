@@ -12,19 +12,19 @@ errvt getLeaf(mmnode node, mmleaf** retleaf, memiddef iddef){
 
 	mmleaf** res = List.GetPointer(node.contents, iddef.leafnum - 1);
 	
-	if(res == NULL) return ERR(
+	if(res == null) return ERR(
 		RESOURCERR_TOKENINDEX, "unable to index leaf list");	
 	*retleaf = *res;
 
 return OK;
 }
 
-errvt methodimpl(MemoryMap, GetLeaf,,memid id, mmleaf_info* metadata){
+errvt methodimpl(MemoryMap, GetLeaf,memid id, mmleaf_info* metadata){
 
 	nonull(priv);
 
-	mmnode* node = NULL;
-	mmleaf* leaf = NULL;
+	mmnode* node = null;
+	mmleaf* leaf = null;
 
 	if(getNode(self, &node, *(memiddef*)&id)) return ERR(
 		RESOURCERR_TOKENINDEX, "could not get node from id");
@@ -45,19 +45,19 @@ return OK;
 #define getTokenVal(id) ((memiddef*)&id)
 #define getTokenFromVal(idval) ((memid*)&idval)
 
-errvt methodimpl(MemoryMap, addLeaf,, mmnode* node, memid* returnid, mmleaf_info metadata){
+errvt methodimpl(MemoryMap, addLeaf, mmnode* node, memid* returnid, mmleaf_info metadata){
 
 
 
-	mmleaf* res  = NULL;
+	mmleaf* res  = null;
 
-	if(List.Size(priv->allocators) > metadata.allocator_index)
+	if(List.Size(priv.allocators) > metadata.allocator_index)
 		return ERR(RESOURCERR_INVALID, "invalid allocator index");
 	
 
-	mmalloc* allocator = List.GetPointer(priv->allocators, metadata.allocator_index);
+	mmalloc* allocator = List.GetPointer(priv.allocators, metadata.allocator_index);
 
-	res = Pool.Allocator.New(priv->leafs, 1);
+	res = Pool.Allocator.New(priv.leafs, 1);
 	*res = (mmleaf){
 		.allocator_index = metadata.allocator_index,
 		
@@ -67,7 +67,7 @@ errvt methodimpl(MemoryMap, addLeaf,, mmnode* node, memid* returnid, mmleaf_info
 		.size = metadata.size
 	};
 
-	if(res->data == NULL){
+	if(res->data == null){
 		return ERR(RESOURCERR_TOKENCREATE, "could not allocate data for leaf");
 	}
 	*returnid = creatTokenVal(node->token.nodenum, List.Size(node->contents));
@@ -77,11 +77,11 @@ errvt methodimpl(MemoryMap, addLeaf,, mmnode* node, memid* returnid, mmleaf_info
 return OK;
 }
 
-memid methodimpl(MemoryMap, AddLeaf,, memid maptonode, mmleaf_info metadata){
+memid methodimpl(MemoryMap, AddLeaf, memid maptonode, mmleaf_info metadata){
 
 	nonull(self);
 
-	mmnode* node = NULL;
+	mmnode* node = null;
 
 	if(getNode(self, &node, *(memiddef*)&maptonode)) return ERR(
 		RESOURCERR_TOKENINDEX, "could not get node from id");
@@ -94,12 +94,12 @@ memid methodimpl(MemoryMap, AddLeaf,, memid maptonode, mmleaf_info metadata){
 
 return result;
 }
-errvt methodimpl(MemoryMap, CutLeaf,, memid id){
+errvt methodimpl(MemoryMap, CutLeaf, memid id){
 
 	nonull(priv);
 
-	mmnode* node = NULL;
-	mmleaf* leaf = NULL;
+	mmnode* node = null;
+	mmleaf* leaf = null;
 
 	if(getNode(self, &node, *getTokenVal(id))) return ERR(
 		RESOURCERR_TOKENINDEX, "could not get node from id");
@@ -107,17 +107,17 @@ errvt methodimpl(MemoryMap, CutLeaf,, memid id){
 	if(getLeaf(*node, &leaf, *getTokenVal(id))) return ERR(
 		RESOURCERR_TOKENINDEX, "could not get node from id");
 
-	Pool.Allocator.Delete(priv->leafs, leaf);
+	Pool.Allocator.Delete(priv.leafs, leaf);
 	List.SetFree(node->contents, getTokenVal(id)->leafnum);
 
 return OK;
 }
-errvt methodimpl(MemoryMap, MoveLeaf,, memid* id, memid maptoid){
+errvt methodimpl(MemoryMap, MoveLeaf, memid* id, memid maptoid){
 
 	nonull(priv);
 	
-	mmnode* node = NULL;
-	mmleaf* leaf = NULL;
+	mmnode* node = null;
+	mmleaf* leaf = null;
 
 	//Getting the original node for the leaf
 	if(getNode(self, &node, *getTokenVal(id))) return ERR(

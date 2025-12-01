@@ -4,13 +4,13 @@
 
 errvt methodimpl(Semaphore, Wait){
 	nonull(priv, return err;);
-	sem_wait(&priv->semaphore);
+	sem_wait(&priv.semaphore);
 
 return OK;
 }
 errvt methodimpl(Semaphore, TryWait){
 	nonull(priv, return err;);
-	if(sem_trywait(&priv->semaphore) != 0){
+	if(sem_trywait(&priv.semaphore) != 0){
 		if(errno == EAGAIN)
 		return THREADERR_SEM_FULL;
 		else{
@@ -22,14 +22,14 @@ return OK;
 }
 errvt methodimpl(Semaphore, Post){
 	nonull(priv, return err;);
-	sem_post(&priv->semaphore);
+	sem_post(&priv.semaphore);
 
 return OK;
 }
 errvt imethodimpl(Semaphore, Destroy){
 	self(Semaphore)
 	nonull(priv, return err;);
-	sem_destroy(&priv->semaphore);
+	sem_destroy(&priv.semaphore);
 	;
 
 return OK;
@@ -46,6 +46,6 @@ construct(Semaphore,
 	setpriv(Semaphore){
 		.semaphore = 0
 	};
-	sem_init(&priv->semaphore, false, args.slots);
+	sem_init(&priv.semaphore, false, arg.slots);
 return self;
 }

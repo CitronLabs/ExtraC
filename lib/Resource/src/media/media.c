@@ -14,11 +14,11 @@ u64 getMediaFileSize(const char* path){
 
 	if(getFileSystemEntry((char*)path, &file_ent) != ERR_NONE){
 		ERR(RESOURCERR_INVALID, "could not find media file from path");
-		return NULL;
+		return null;
 	}
 	if(file_ent.is_dir){
 		ERR(RESOURCERR_INVALID, "path does not lead to an media file");
-		return NULL;
+		return null;
 	}
 
 return file_ent.size;
@@ -27,10 +27,10 @@ return file_ent.size;
 
 bool methodimpl(Media, isLoaded){
 
-	if(priv->is_loaded) return true;
+	if(priv.is_loaded) return true;
 
 	errvt ioerr;
-	if((ioerr = File.Read(priv->media_file, priv->format_data, priv->format_size)) != ERR_NONE){
+	if((ioerr = File.Read(priv.media_file, priv->format_data, priv->format_size)) != ERR_NONE){
 		if(ioerr != IOERR_ASYNC){
 			ERR(RESOURCERR_FAIL, "failed to load resource");
 			return false;
@@ -38,19 +38,19 @@ bool methodimpl(Media, isLoaded){
 			return false;
 		}
 	}
-	priv->media_data = self->format->parse(priv->format_data);
+	priv.media_data = self->format->parse(priv->format_data);
 	
-	priv->is_loaded = true;
+	priv.is_loaded = true;
 
 return true;	
 }
 
 errvt methodimpl(Media, forceLoad){
 	
-	if(priv->is_loaded) return OK;
+	if(priv.is_loaded) return OK;
 
 	errvt ioerr;
-	while((ioerr = File.Read(priv->media_file, priv->format_data, priv->format_size)) != ERR_NONE){
+	while((ioerr = File.Read(priv.media_file, priv->format_data, priv->format_size)) != ERR_NONE){
 		if(ioerr != IOERR_ASYNC)
 			return ERR(RESOURCERR_FAIL, "failed to load resource");
 	}
@@ -61,7 +61,7 @@ return OK;
 
 inst(Media) Media___COLLECT(inst(Collection) collection, Media_ConstructArgs args){
 	
-	u32 format_size = getMediaFileSize(args.path);
+	u32 format_size = getMediaFileSize(arg.path);
 
 	inst(Resource) media_resource = new(Resource, collection, 
 		sizeof(Media_Instance) + sizeof(Media_Private)
@@ -69,16 +69,16 @@ inst(Media) Media___COLLECT(inst(Collection) collection, Media_ConstructArgs arg
 
 	inst(Resource) format_data_resource = new(Resource, collection, format_size);
 
-	if(media_resource == NULL){
+	if(media_resource == null){
 		ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
-		if(format_data_resource != NULL) del(format_data_resource);
-		return NULL;
+		if(format_data_resource != null) del(format_data_resource);
+		return null;
 	}
 	
-	if(format_data_resource == NULL){
+	if(format_data_resource == null){
 		ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
-		if(media_resource != NULL) del(media_resource);
-		return NULL;
+		if(media_resource != null) del(media_resource);
+		return null;
 	}
 
 	inst(Media) self = Resource.getData(media_resource);
@@ -89,30 +89,30 @@ inst(Media) Media___COLLECT(inst(Collection) collection, Media_ConstructArgs arg
 	    	.is_loaded = false,
 	    	.format_data = Resource.getData(format_data_resource),
 	    	.format_size = format_size,
-	    	.media_data = NULL,
+	    	.media_data = null,
 	){	
-		if(args.lazy_load){
-			priv->media_file = new(File, (char*)args.path, FFL_READ | FFL_ASYNC);
+		if(arg.lazy_load){
+			priv.media_file = new(File, (char*)arg.path, FFL_READ | FFL_ASYNC);
 			return self;
 		}
         
-		priv->media_file = new(File, (char*)args.path, FFL_READ);
+		priv.media_file = new(File, (char*)arg.path, FFL_READ);
         
-		if(!isinit(priv->media_file)){
+		if(!isinit(priv.media_file)){
 			ERR(RESOURCERR_INVALID, "could not open media file");
 			return self;
 		}
         
-		if(File.Read(priv->media_file, priv->format_data, priv->format_size) != priv->format_size){
+		if(File.Read(priv.media_file, priv->format_data, priv->format_size) != priv->format_size){
 			ERR(RESOURCERR_INVALID, "failed to read media file");
 			return self;
 		}
 
-	    	priv->is_loaded = true;
+	    	priv.is_loaded = true;
         
-		priv->media_data = args.format->parse(priv->format_data);
+		priv.media_data = arg.format->parse(priv->format_data);
 		
-		if(priv->media_data == NULL){
+		if(priv.media_data == null){
 			ERR(RESOURCERR_INVALID, "failed to parse media file");
 			return self;
 		}
@@ -123,11 +123,11 @@ return Resource.getData(media_resource);
 }
 inst(Media) Media_Create(intf(MediaFormat) format, void* metadata, MEDIA_DATA_TYPE* media_data, inst(Collection) collection){
 
-	inst(Media) self = NULL; 
+	inst(Media) self = null; 
 	
 	u32 format_size = format->getAllocSize(metadata, media_data);
 
-	if(collection != NULL){
+	if(collection != null){
 	
 
 		inst(Resource) media_resource = new(Resource, collection, 
@@ -136,16 +136,16 @@ inst(Media) Media_Create(intf(MediaFormat) format, void* metadata, MEDIA_DATA_TY
 
 		inst(Resource) format_data_resource = new(Resource, collection, format_size);
 
-		if(media_resource == NULL){
+		if(media_resource == null){
 			ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
-			if(format_data_resource != NULL) del(format_data_resource);
-			return NULL;
+			if(format_data_resource != null) del(format_data_resource);
+			return null;
 		}
 	
-		if(format_data_resource == NULL){
+		if(format_data_resource == null){
 			ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
-			if(media_resource != NULL) del(media_resource);
-			return NULL;
+			if(media_resource != null) del(media_resource);
+			return null;
 		}
 
 		self = Resource.getData(media_resource);
@@ -155,7 +155,7 @@ inst(Media) Media_Create(intf(MediaFormat) format, void* metadata, MEDIA_DATA_TY
 			.resource_handle = media_resource,
 			.format_data = shift_ptr(self, sizeof(Media_Instance) + sizeof(Media_Private)),
 			.format_size = format_size,
-			.media_file = NULL,
+			.media_file = null,
 			.media_data = media_data
 		};
 
@@ -164,76 +164,76 @@ inst(Media) Media_Create(intf(MediaFormat) format, void* metadata, MEDIA_DATA_TY
 
 		set_methods(Media);
 		set_priv(Media){
-			.resource_handle = NULL,
+			.resource_handle = null,
 			.format_data = malloc(format_size),
 			.format_size = format_size,
-			.media_file = NULL,
+			.media_file = null,
 			.media_data = media_data
 		};
 	}
 
-	priv->format_size = format->format(priv->format_data, priv->media_data, metadata);
+	priv.format_size = format->format(priv->format_data, priv->media_data, metadata);
 
-	if(priv->format_size == 0){
+	if(priv.format_size == 0){
 		ERR(RESOURCERR_FAIL, "failed to format media data for export");
-		return NULL;
+		return null;
 	}
 
 }
 
 inst(Resource) methodimpl(Media, getResource){
 	
-	nonull(self, return NULL;);
+	nonull(self, return null;);
 
-	if(priv->resource_handle == NULL){
+	if(priv.resource_handle == null){
 	  	ERR(RESOURCERR_INVALID, "no resource handle associated with this media");
-		return NULL;
+		return null;
 	}
-return priv->resource_handle;
+return priv.resource_handle;
 }
 
 MEDIA_DATA_TYPE* methodimpl(Media, getMediaData){
 	
 	if(!Media.isLoaded(self)){
 		ERR(RESOURCERR_NOTLOADED, "media has not loaded yet");
-		return NULL;
+		return null;
 	}
 
-return priv->media_data;
+return priv.media_data;
 }
 
 void* methodimpl(Media, getFormatData){
 	
 	if(!Media.isLoaded(self)){
 		ERR(RESOURCERR_NOTLOADED, "media has not loaded yet");
-		return NULL;
+		return null;
 	}
 
-return priv->format_data;
+return priv.format_data;
 }
 
-errvt methodimpl(Media, Reformat,, void* metadata){
+errvt methodimpl(Media, Reformat, void* metadata){
 
 
-	u64 new_size = self->format->getAllocSize(metadata, priv->media_data);
-	if(new_size > priv->format_size){
-		if(priv->resource_handle != NULL){
-			Resource.resize(priv->resource_handle, 
+	u64 new_size = self->format->getAllocSize(metadata, priv.media_data);
+	if(new_size > priv.format_size){
+		if(priv.resource_handle != null){
+			Resource.resize(priv.resource_handle, 
 		   		new_size +
 		   		sizeof(Media_Instance) + 
 		   		sizeof(Media_Private)
 		   	);
 		}
 	}
-	if(new_size != priv->format_size)
-		priv->format_size = new_size;
+	if(new_size != priv.format_size)
+		priv.format_size = new_size;
 	
 
-	u64 formatted_len = self->format->format(priv->format_data, metadata, priv->media_data);
+	u64 formatted_len = self->format->format(priv.format_data, metadata, priv->media_data);
 		
 	if(formatted_len == 0){
 		ERR(RESOURCERR_FAIL, "failed to format media data for export");
-		return NULL;
+		return null;
 	}
 
 return OK;
@@ -251,7 +251,7 @@ construct(Media,
 ){
 	fsEntry file_ent = {0};
 
-	if(getFileSystemEntry((char*)args.path, &file_ent) != ERR_NONE){
+	if(getFileSystemEntry((char*)arg.path, &file_ent) != ERR_NONE){
 		ERR(RESOURCERR_INVALID, "could not find media file from path");
 		return self;
 	}
@@ -263,31 +263,31 @@ construct(Media,
 	classSetup(Media,		
 		.format_data = malloc(file_ent.size),
 	    	.format_size = file_ent.size,
-	    	.media_data = NULL,
+	    	.media_data = null,
 	    	.is_loaded = false
 	){	
-		if(args.lazy_load){
-			priv->media_file = new(File, (char*)args.path, FFL_READ | FFL_ASYNC);
+		if(arg.lazy_load){
+			priv.media_file = new(File, (char*)arg.path, FFL_READ | FFL_ASYNC);
 			break;
 		}
         
-		priv->media_file = new(File, (char*)args.path, FFL_READ);
+		priv.media_file = new(File, (char*)arg.path, FFL_READ);
         
-		if(!isinit(priv->media_file)){
+		if(!isinit(priv.media_file)){
 			ERR(RESOURCERR_INVALID, "could not open media file");
 			break;
 		}
         
-		if(File.Read(priv->media_file, priv->format_data, priv->format_size) != priv->format_size){
+		if(File.Read(priv.media_file, priv->format_data, priv->format_size) != priv->format_size){
 			ERR(RESOURCERR_INVALID, "failed to read media file");
 			break;
 		}
 	    	
-		priv->is_loaded = true;
+		priv.is_loaded = true;
         
-		priv->media_data = args.format->parse(priv->format_data);
+		priv.media_data = arg.format->parse(priv->format_data);
 		
-		if(priv->media_data == NULL){
+		if(priv.media_data == null){
 			ERR(RESOURCERR_INVALID, "failed to parse media file");
 			break;
 		}

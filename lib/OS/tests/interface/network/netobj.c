@@ -19,7 +19,7 @@ void NETOBJ_INTERFACE_TESTS(){
 
 	networkHandle bravoServer = netObjAPI->find("HttpServer", "Bravo");
 
-	netObjAPI->call(bravoServer, "Startup", NULL);	
+	netObjAPI->call(bravoServer, "Startup", null);	
 
 	if(String.Compare(netObjAPI->get(bravoServer, "isOnline").asString, s("True"))){
 		loginfo("Bravo server online");

@@ -14,7 +14,7 @@ typedef u32(*printFunc)(FILE* out);
 typedef printFunc(*arthFunc)(u32 a, u32 b, u32(*resCallback)(u32, ...));
 
 
-arthFunc parseOperator(cstr op){ 
+arthFunc parseOperator(strc8 op){ 
 
     fancy(){
 
@@ -33,10 +33,10 @@ arthFunc parseOperator(cstr op){
 
 
 
-return NULL;
+return null;
 }
 
-void FileNFib(cstr path, u32 num){
+void FileNFib(strc8 path, u32 num){
 
     go(file){
 

@@ -38,7 +38,7 @@ the size and functionality of the resulting library file
     - Atomics and thread safety wrappers and utils
     - *Operators*:
       - Data Iteration via. **foreach()** macro
-      - Data Manip  via. **append(), get(), set(), copy() and hash()** macros
+      - Data Manip  via. **write(), get(), set(), copy() and hash()** macros
       - Allocation and Deallocation:
         - Heap-Memory via. **new/del** macros
         - Stack-Memory via. **push/pop** macros
@@ -49,7 +49,7 @@ the size and functionality of the resulting library file
  
  - **Data Features:**
     - *Data Structures*:
- 	    - List (Dynamic Array)
+ 	    - List (Dynamic ArrayList)
   	  - Stack
       - Queue
       - Map

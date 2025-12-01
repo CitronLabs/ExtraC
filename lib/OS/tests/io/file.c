@@ -8,15 +8,15 @@ bool RUN_FILE_TESTS(){
 
 NEW_TEST("File IO Tests"){
 	
-	inst(File) file = NULL;
-	inst(File) filecpy = NULL;
+	inst(File) file = null;
+	inst(File) filecpy = null;
 
 	NEW_SUBTEST("Creation"){
 		if((file = File.Create(
 			"test.file",
 			sizeof(char),
 			FFL_READ | FFL_WRITE)
-		) == NULL){
+		) == null){
 			FAIL_TEST
 			goto skip;
 		}
@@ -36,7 +36,7 @@ NEW_TEST("File IO Tests"){
 			"test.file",
 			sizeof(char),
 			FFL_READ | FFL_WRITE)
-		) == NULL){
+		) == null){
 			FAIL_TEST
 			goto skip;
 		}
@@ -50,7 +50,7 @@ NEW_TEST("File IO Tests"){
 			cfile,
 			FFL_READ | FFL_WRITE,
 			sizeof(char))
-		) == NULL){
+		) == null){
 			FAIL_TEST
 			goto skip;
 		}
@@ -83,7 +83,7 @@ NEW_TEST("File IO Tests"){
 		char buffer[sizeof("Hello, World!")] = {0};
 		if(File.Copy(file, &filecpy, "test.filecopy")){
 			FAIL_TEST
-			perror(NULL);
+			perror(null);
 			goto skip;
 		}
 		if(fseek(File.ToC(filecpy), 0, SEEK_SET) == -1){
@@ -111,7 +111,7 @@ NEW_TEST("File IO Tests"){
 		}
 		if(File.Move(file, "../test.file")){
 			FAIL_TEST
-			perror(NULL);
+			perror(null);
 			goto skip;
 		}
 		if(File.Read(file, 
@@ -150,7 +150,7 @@ NEW_TEST("File IO Tests"){
 			"test.filecopy",
 			sizeof(char),
 			FFL_READ | FFL_WRITE | FFL_ASYNC | FFL_APPEND)
-		) == NULL){
+		) == null){
 			FAIL_TEST
 			goto skip;
 		}

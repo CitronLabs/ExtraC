@@ -40,7 +40,7 @@ enum(OSResouceType,
 
 
 
-struct(OSEvent,
+type(OSEvent,
 	u8 osSystem   ;
      	u8 osResource ;
 	union {
@@ -58,10 +58,10 @@ struct(OSEvent,
 
 typedef void* osHandle;
 
-struct(AppData,
-	cstr  appName, domainName;
-     	cstr* argv;
-     	cstr  instNumber;
+type(AppData,
+	strc8  appName, domainName;
+     	strc8* argv;
+     	strc8  instNumber;
 )
 
 Static(OS,
@@ -74,7 +74,7 @@ Static(OS,
 	interface(network);		
 	interface(user);		
 
-	cstr OSName;
+	strc8 OSName;
 	errvt   vmethod(initOS, AppData appData);
 	errvt   vmethod(exitOS);
 	u64     vmethod(pollEvents);

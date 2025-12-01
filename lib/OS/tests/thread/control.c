@@ -3,8 +3,8 @@
 
 
 int shared_variable = 0;
-inst(Mutex) mutex = NULL;
-inst(Semaphore) sem1 = NULL, *sem2 = NULL;
+inst(Mutex) mutex = null;
+inst(Semaphore) sem1 = null, *sem2 = NULL;
 
 static int sem_func(inst(Thread) thread, void* args){
 	
@@ -31,14 +31,14 @@ return 0;
 
 bool RUN_THREADCONTROL_TESTS(){
 
-	inst(Thread) test_thread = NULL;
-	inst(Thread) test_thread2 = NULL;
+	inst(Thread) test_thread = null;
+	inst(Thread) test_thread2 = null;
 
 NEW_TEST("Mutex Tests"){
 
 	NEW_SUBTEST("Initialization"){
 		mutex = new(Mutex);
-		if(mutex != NULL)
+		if(mutex != null)
 			PASS_TEST
 		else 
 			FAIL_TEST
@@ -49,7 +49,7 @@ NEW_TEST("Mutex Tests"){
 
 		quiet(
 		loop(i, 100){
-			Thread.Start(test_thread, NULL);
+			Thread.Start(test_thread, null);
 			while(Mutex.TryLock(mutex) == THREADERR_MUTEX_LOCKED );
 			if(shared_variable == 1)
 				passed_cycles++;
@@ -73,7 +73,7 @@ NEW_TEST("Semaphore Test"){
 	NEW_SUBTEST("Initialization"){
 		sem1 = new(Semaphore, 2);
 		sem2 = new(Semaphore, 1);
-		if(sem1 != NULL && sem2 != NULL)
+		if(sem1 != null && sem2 != NULL)
 			PASS_TEST
 		else 
 			FAIL_TEST

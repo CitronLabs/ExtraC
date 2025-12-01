@@ -25,14 +25,14 @@ errvt getNodeFromRelation(mmnode* startnode, mmnode** returnnode ,char relation[
 		switch (relation[count]) {
 		case 'v':{
 			loop(i, atoi(numstore)){
-			    if(currentnode->firstchild == NULL) return ERR(
+			    if(currentnode->firstchild == null) return ERR(
 		   		RESOURCERR_TOKENINDEX, "Failed to index firstchild since it is null");
 			    currentnode = currentnode->firstchild; 
 			}
 		break;}
 		case '>':{
 			loop(i, atoi(numstore)){
-			    if(currentnode->nextsibling == NULL) return ERR(
+			    if(currentnode->nextsibling == null) return ERR(
 				RESOURCERR_TOKENINDEX, "Failed to index nextsibling since it is null"); 
 			    currentnode = currentnode->nextsibling; 
 			}
@@ -53,7 +53,7 @@ errvt getNodeFromRelation(mmnode* startnode, mmnode** returnnode ,char relation[
 		break;}
 		case '^':{
 			loop(i, atoi(numstore)){
-			    if(currentnode->parent == NULL) return ERR(
+			    if(currentnode->parent == null) return ERR(
 				RESOURCERR_TOKENINDEX, "Failed to index parent since it is null");
 			    currentnode = currentnode->parent;
 			}	
@@ -66,7 +66,7 @@ return OK;
 errvt freeNode(inst(MemoryMap) self, mmnode* node){
 	
 	u32* leafs = List.GetPointer(node->contents, 0);
-	Pool.Allocator.Delete(priv->nodes, node);
+	Pool.Allocator.Delete(priv.nodes, node);
 
 	del(node->contents);
 	
@@ -92,8 +92,8 @@ errvt addNode(inst(MemoryMap) self, mmnode* maptonode, memid* returntoken){
 		mappednode = &currentnode->firstchild; }
 
 
-	(*mappednode) = Pool.Allocator.New(priv->nodes, 1);
-	if((*mappednode) == NULL) return ERR(
+	(*mappednode) = Pool.Allocator.New(priv.nodes, 1);
+	if((*mappednode) == null) return ERR(
 		RESOURCERR_TOKENCREATE, "failed to get a new node");
 	
 	*returntoken = *(memid*)&currentnode->token;
@@ -105,9 +105,9 @@ errvt getNode(inst(MemoryMap) self,mmnode** returnnode, memiddef token){
 
 	mmnode* currentnode;
 
-	currentnode = List.GetPointer(priv->active_nodes, token.nodenum);
+	currentnode = List.GetPointer(priv.active_nodes, token.nodenum);
 
-	if(currentnode == NULL) return ERR(
+	if(currentnode == null) return ERR(
 		RESOURCERR_TOKENINDEX, "unable to get node");
 
 	*returnnode = currentnode;
@@ -115,9 +115,9 @@ errvt getNode(inst(MemoryMap) self,mmnode** returnnode, memiddef token){
 return OK;
 }
 
-errvt methodimpl(MemoryMap, GetNode,, memid token, mmnode_info* metadata){
+errvt methodimpl(MemoryMap, GetNode, memid token, mmnode_info* metadata){
 	
-	mmnode* node = NULL;
+	mmnode* node = null;
 
 	nonull(self, return err);
 	nonull(metadata, return err;);
@@ -138,9 +138,9 @@ errvt methodimpl(MemoryMap, GetNode,, memid token, mmnode_info* metadata){
 
 return OK;
 };
-memid methodimpl(MemoryMap, AddNode,, memid maptotoken, mmprot_info* metadata){
+memid methodimpl(MemoryMap, AddNode, memid maptotoken, mmprot_info* metadata){
 
-	mmnode* maptonode = NULL, * node = NULL;
+	mmnode* maptonode = null, * node = NULL;
 
 	nonull(self, return err);
 
@@ -158,12 +158,12 @@ memid methodimpl(MemoryMap, AddNode,, memid maptotoken, mmprot_info* metadata){
 
 	maptonode->childrennum++;
 	
-	if(maptonode->firstchild == NULL)
+	if(maptonode->firstchild == null)
 		maptonode->firstchild = node;
 	else{
 		mmnode* child_node = maptonode->firstchild;
 		
-		while(child_node->nextsibling != NULL)
+		while(child_node->nextsibling != null)
 			child_node = child_node->nextsibling;
 		
 		child_node->nextsibling = node;
@@ -174,14 +174,14 @@ memid methodimpl(MemoryMap, AddNode,, memid maptotoken, mmprot_info* metadata){
 		.contents = newList(mmleaf*, 10),
 		.token = *(memiddef*)result,
 		.childrennum = 0,
-		.firstchild = NULL,
-		.nextsibling = NULL,
+		.firstchild = null,
+		.nextsibling = null,
 		.parent = maptonode
 	};
 
 return OK;
 }
-errvt methodimpl(MemoryMap, CutNode,, memid token){
+errvt methodimpl(MemoryMap, CutNode, memid token){
 
 	mmnode* prevnode,* currentnode;
 	
@@ -197,7 +197,7 @@ errvt methodimpl(MemoryMap, CutNode,, memid token){
 		freeEntireTree(self);
 	}
 	else {
-	   if(prevnode->nextsibling != NULL && prevnode->nextsibling->token.nodenum != ((memiddef*)&token)->nodenum)
+	   if(prevnode->nextsibling != null && prevnode->nextsibling->token.nodenum != ((memiddef*)&token)->nodenum)
 		prevnode->nextsibling = prevnode->nextsibling->nextsibling;
 	   else 
 		prevnode->firstchild = prevnode->firstchild->nextsibling;
@@ -209,7 +209,7 @@ return OK;
 
 
 }
-errvt methodimpl(MemoryMap, MoveNode,, memid* token, memid maptotoken){
+errvt methodimpl(MemoryMap, MoveNode, memid* token, memid maptotoken){
 
 	//NOT YET IMPLEMENTED
 

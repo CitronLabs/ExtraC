@@ -13,11 +13,11 @@ Class(Thread,
 INIT(int(*func)(inst(Thread), void* args);),
 FIELD(),
 
-	errvt method(Thread,Start,, void* args);
+	errvt method(Thread,Start, void* args);
 	errvt method(Thread,Join);
 	errvt method(Thread,Free);
-	errvt method(Thread,Exit,,int exitcode);
-	errvt method(Thread,GetExitCode,, int* result);
+	errvt method(Thread,Exit,int exitcode);
+	errvt method(Thread,GetExitCode, int* result);
       	inst(Error) method(Thread,GetErr);
 	void (*Sleep)(u64 milliseconds);
       	inst(Thread)(*GetCurrent)();

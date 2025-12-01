@@ -4,18 +4,18 @@
 
 
 
-bool methodimpl(MemoryMap, validateMemID,, memid id){
+bool methodimpl(MemoryMap, validateMemID, memid id){
 	
 	return 
-		((memiddef*)&id)->nodenum < priv->maxvalidtoken.nodenum &&
-		((memiddef*)&id)->leafnum < priv->maxvalidtoken.leafnum;
+		((memiddef*)&id)->nodenum < priv.maxvalidtoken.nodenum &&
+		((memiddef*)&id)->leafnum < priv.maxvalidtoken.leafnum;
 }
 
-errvt methodimpl(MemoryMap, registerAllocator,, intf(Allocator) interface, void* allocator){
+errvt methodimpl(MemoryMap, registerAllocator, intf(Allocator) interface, void* allocator){
 	
 	nonull(allocator, return err)
 
-	List.Append(priv->allocators, &(mmalloc){
+	List.Append(priv.allocators, &(mmalloc){
 		.alloc_interface = interface,
 		.allocator = allocator,
 		.num_resources = 0
@@ -44,16 +44,16 @@ __PRIVATE(
 	.active_nodes = newList(mmnode*, 10),
 	.allocators = newList(mmalloc, 10)
 ),
-	if(priv->nodes == NULL)
+	if(priv.nodes == null)
 	    	{ERR(ERR_INITFAIL, "failed to create node pool"); break;}
 
-	if(priv->leafs == NULL)
+	if(priv.leafs == null)
 	    	{ERR(ERR_INITFAIL, "failed to create leaf pool"); break;}
 
-	if(priv->active_nodes == NULL)
+	if(priv.active_nodes == null)
 	    	{ERR(ERR_INITFAIL, "failed to create active nodes list"); break;}
 
-	if(priv->allocators == NULL)
+	if(priv.allocators == null)
 	    	{ERR(ERR_INITFAIL, "failed to create allocators list"); break;}
 )
 

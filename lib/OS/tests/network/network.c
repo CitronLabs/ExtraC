@@ -1,7 +1,7 @@
 #pragma once
 #include "../test-utils.h"
 
-inst(Mutex) network_mutex = NULL;
+inst(Mutex) network_mutex = null;
 
 #define SERVER_ARG_RUN_LOCAL_TEST (void*)1
 #define SERVER_ARG_RUN_IPV4_TEST (void*)2

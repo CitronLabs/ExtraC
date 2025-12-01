@@ -11,7 +11,7 @@ int main(int argc, char **argv){
 		}
 	);
 
-	memid overworld_scene = MemoryMap.AddNode(resource_map,	ROOT_TOKEN, NULL);
+	memid overworld_scene = MemoryMap.AddNode(resource_map,	ROOT_TOKEN, null);
 
 	inst(Collection) image_collection = new(Collection, resource_map, overworld_scene);
 

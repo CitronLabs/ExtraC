@@ -1,7 +1,7 @@
 #pragma once
 #include "./extern.h"
 
-struct(VideoMode,
+type(VideoMode,
 	u32 width;
 	u32 height;
 	u16 refreshRate;
@@ -10,14 +10,14 @@ struct(VideoMode,
 #define FOURCC_CODE(code) ((u32)(code[0]) | ((u32)(code[1]) << 8) | ((u32)(code[2]) << 16) | ((u32)(code[3]) << 24))
 
 typedef u32 FOURCC_CODE;
-struct(VideoPixelFormat,
+type(VideoPixelFormat,
 	FOURCC_CODE type;
      	u32 
      	    bottomMostModeIndex,
      	    topMostModeIndex;
 )
 
-struct(VideoFrame,
+type(VideoFrame,
 	void* buffer;
      	u32 frameIndex;
 )
@@ -26,7 +26,7 @@ struct(VideoFrame,
 
 typedef bool videoDirection;
 
-struct(graphicsDevice,
+type(graphicsDevice,
 	inst(String) name;
 	inst(String) manufacturer;
 	inst(String) model;
@@ -57,7 +57,7 @@ struct(graphicsDevice,
 typedef void* graphicsHandle;
 
 Interface(graphics,
-	const cstr stdVersion;
+	const strc8 stdVersion;
 	errvt 			vmethod(initSystem);
 	errvt 			vmethod(exitSystem);
 	graphicsHandle 		vmethod(grabDevice, 	 graphicsDevice* device);
@@ -86,7 +86,7 @@ enum(DisplayEvent_Type,
     DisplayEvent_Close,	
     DisplayEvent_Visibility,	
 )
-struct(DisplayEvent,
+type(DisplayEvent,
     	graphicsHandle handle;
  	DisplayEvent_Type type;
 )
@@ -94,7 +94,7 @@ struct(DisplayEvent,
 enum(VideoEvent_Type,
     VideoEvent_NewFrame,
 )
-struct(VideoEvent,
+type(VideoEvent,
     	graphicsHandle handle;
  	VideoEvent_Type type;
 )

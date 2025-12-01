@@ -24,6 +24,6 @@ construct(Coroutine,
 ){
 	set_methods(Coroutine);
 	set_priv(Coroutine){0};	
-	self->start_func = args.start_func;
+	self->start_func = arg.start_func;
 
 }

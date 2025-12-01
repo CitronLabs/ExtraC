@@ -3,9 +3,9 @@
 
 typedef void* inputHandle;
 
-struct(keyInput,
+type(keyInput,
      	inst(String) locale;	
-	chartype encoding;
+	char_type encoding;
 )
 enum(posRange_Type,
      	posRange_Null,
@@ -14,14 +14,14 @@ enum(posRange_Type,
      	posRange_Stateful
 )
 
-struct(posInput,
+type(posInput,
 	u8 dimension  : 2;
      	posRange_Type type : 2;
 	float low;
 	float high;
 )
 	  
-struct(inputDevice,
+type(inputDevice,
 	inst(String) name;
 	inst(String) uniqueID;
 	u16 vendorID, productID;
@@ -31,7 +31,7 @@ struct(inputDevice,
      	arry(keyInput) keyInputs;
 )
 Interface(input,
-	const cstr stdVersion;
+	const strc8 stdVersion;
 	arry(inputDevice) vmethod(enumDevices, 	    u64* numDevices);
 	errvt 		  vmethod(freeDevice,       inputHandle handle);
 	inputHandle 	  vmethod(grabDevice, 	    inputDevice* dev);
@@ -49,7 +49,7 @@ enum(InputEvent_Type,
 #define AXIS_Y 1
 #define AXIS_Z 2
 
-struct(InputEvent,
+type(InputEvent,
 	inputDevice* device;
 	InputEvent_Type type;
      	union {

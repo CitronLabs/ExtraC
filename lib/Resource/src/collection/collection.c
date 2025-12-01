@@ -8,7 +8,7 @@ private(Collection,
 
 
 u32 methodimpl(Collection, numOfResources){
-	return List.Size(priv->resources);
+	return List.Size(priv.resources);
 	
 }
 
@@ -17,14 +17,14 @@ __METHODS(
 	.numOfResources = Collection_numOfResources
 ),
 	*priv = (Collection_Private){
-		.map = args.memMap,
+		.map = arg.memMap,
 		.resources = newList(memid, 10)
 	};
 
-	if(args.memMap == NULL)
-		failinit(ERR_NULLPTR, "memory map cannot be null");
+	if(arg.memMap == null)
+		failinit(ERR_nullPTR, "memory map cannot be null");
 	
-	if(priv->resources == NULL)
+	if(priv.resources == null)
 		failinit(ERR_INITFAIL, "failed to create resource list");
 	
 )

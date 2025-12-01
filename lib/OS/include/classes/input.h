@@ -25,7 +25,7 @@ asClassExt(Pos1D, INIT(float x;));
 typedef struct{inhertAs(Pos3D) pos; float max, min;}* posData;
 Interface(PosDevice,
 	posData imethod(get);	
-	errvt imethod(update,, posData pos);
+	errvt imethod(update, posData pos);
 	inputHandle imethod(getHandle);
 )
 

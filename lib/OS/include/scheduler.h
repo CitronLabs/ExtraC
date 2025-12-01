@@ -6,7 +6,7 @@ typedef void* schedulerHandle;
 #define PROCFLAG_DEBUG 0x01
 
 Interface(scheduler,
-	const cstr stdVersion;
+	const strc8 stdVersion;
 	errvt 		vmethod(initSystem);
 	errvt 		vmethod(exitSystem);
 	u64  	 	vmethod(pollEvents);
@@ -24,9 +24,9 @@ Interface(scheduler,
 		int PROC_DEBUG;
 	  )
 		bool 		vmethod(isRunning, 	schedulerHandle handle);
-		schedulerHandle vmethod(init, 		cstr exePath, cstr args, u32 flags);
-		errvt 		vmethod(read,    	schedulerHandle handle, void* address, void* buffer, size_t size);
-		errvt 		vmethod(write,   	schedulerHandle handle, void* address, void* buffer, size_t size);
+		schedulerHandle vmethod(init, 		strc8 exePath, strc8 args, u32 flags);
+		errvt 		vmethod(read,    	schedulerHandle handle, void* address, void* buffer, len_t size);
+		errvt 		vmethod(write,   	schedulerHandle handle, void* address, void* buffer, len_t size);
 		errvt 		vmethod(cont,   	schedulerHandle handle);
 		errvt 		vmethod(detach,     	schedulerHandle handle);
 		errvt 		vmethod(handleEvents, 	schedulerHandle handle, Queue(OSEvent) evntQueue);
@@ -42,7 +42,7 @@ Interface(scheduler,
 		errvt 		vmethod(destroy, 	schedulerHandle handle);
 	  )
 	  namespace(semaphore,
-		schedulerHandle vmethod(init, 	 	size_t num);
+		schedulerHandle vmethod(init, 	 	len_t num);
 		errvt 		vmethod(wait, 	 	schedulerHandle handle);
 		errvt 		vmethod(post, 	 	schedulerHandle handle);
 		errvt 		vmethod(tryWait, 	schedulerHandle handle);
@@ -60,7 +60,7 @@ enum(ProcessEvent_Type,
 	ProcessEvent_UnloadLib
 );
 
-struct(ProcessEvent,
+type(ProcessEvent,
 	schedulerHandle handle;
 	ProcessEvent_Type type;
      	union data{

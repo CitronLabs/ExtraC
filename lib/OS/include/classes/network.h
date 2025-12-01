@@ -1,12 +1,12 @@
 #pragma once
 #include "../OS.h"
 
-#define P_NULL  0x00
+#define P_null  0x00
 #define P_TCP   0x01
 #define P_UDP   0x02
 #define P_RAW   0x03
 
-#define D_NULL  0x00
+#define D_null  0x00
 #define D_IPV4  0x01
 #define D_IPV6  0x02
 #define D_LOCAL 0x03
@@ -48,7 +48,7 @@
 		, __parent_packet))
 
 
-struct(socket_settings,
+type(socket_settings,
 	u8 protocol : 2;
 	u8 domain   : 2;
 	u8 blocking : 1;
@@ -60,8 +60,8 @@ Class(Socket,
 INIT(socket_settings settings;),
 FIELD(),
 
-	errvt method(Socket,Bind,, socketAddress address);
-	errvt method(Socket,Listen,, u32 num_waiting);
+	errvt method(Socket,Bind, socketAddress address);
+	errvt method(Socket,Listen, u32 num_waiting);
 	inst(Connection) method(Socket,Accept);
 	socket_settings method(Socket,GetSettings);
       	socketAddress method(Socket, GetAddress);
@@ -71,16 +71,16 @@ Class(Connection,
 INIT(socket_settings settings; socketAddress address), 
 FIELD(),
 
-	errvt method(Connection,Send,, 		inst(Buffer) message);
-	errvt method(Connection,Recieve,, 	inst(Buffer) message);
+	errvt method(Connection,Send, 		inst(Buffer) message);
+	errvt method(Connection,Recieve, 	inst(Buffer) message);
 	errvt method(Connection,Watch);
 	errvt method(Connection,UnWatch);
 	bool  method(Connection,Check);
-	errvt method(Connection,GroupJoin,, 	socketAddress address, socketAddress interface_addr);
+	errvt method(Connection,GroupJoin, 	socketAddress address, socketAddress interface_addr);
 	errvt method(Connection,GroupLeave);
-	errvt method(Connection,GroupSend,, 	inst(Buffer) message);
-	errvt method(Connection,GroupRecive,, 	inst(Buffer) message);
+	errvt method(Connection,GroupSend, 	inst(Buffer) message);
+	errvt method(Connection,GroupRecive, 	inst(Buffer) message);
 	socket_settings method(Connection,GetSettings);
-      	socketAddress method(Socket, GetAddress,, bool groupAddress);
+      	socketAddress method(Socket, GetAddress, bool groupAddress);
 );
 

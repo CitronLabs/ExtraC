@@ -8,7 +8,7 @@ typedef struct SubRoutineContext{
 	u8 ok : 1;
 	u64 program_counter;
 	void* stack_context_start;
-	size_t sizeof_stack_context;
+	len_t sizeof_stack_context;
 
 }__attribute__((packed)) SubRoutineContext;
 
@@ -24,7 +24,7 @@ void methodimpl(SubRoutine, Return){
 
 
 }
-void methodimpl(SubRoutine, Call,, void* args){
+void methodimpl(SubRoutine, Call, void* args){
 	
 	nonull(self, return);
 
@@ -34,7 +34,7 @@ void methodimpl(SubRoutine, Call,, void* args){
 
 extern void getSubRoutineContext(SubRoutineContext* context_ptr);
 
-errvt methodimpl(SubRoutine, InitHere,, size_t size_of_args, void* args_start){
+errvt methodimpl(SubRoutine, InitHere, len_t size_of_args, void* args_start){
 
 	nonull(self, return err);
 	nonull(args_start);
@@ -48,9 +48,9 @@ errvt methodimpl(SubRoutine, InitHere,, size_t size_of_args, void* args_start){
 	    return ERR(
 		ROUTINEERR_INIT, "could not get context for this subroutine");
 	
-	priv->stack_context = calloc(1, context.sizeof_stack_context);
-	priv->sizeof_stack_context = context.sizeof_stack_context;
-	priv->args_offset = args_start - context.stack_context_start;
+	priv.stack_context = calloc(1, context.sizeof_stack_context);
+	priv.sizeof_stack_context = context.sizeof_stack_context;
+	priv.args_offset = args_start - context.stack_context_start;
 	
 return OK;
 }

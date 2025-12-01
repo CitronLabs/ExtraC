@@ -8,28 +8,14 @@
 
 typedef void* storageHandle;
 
-typedef char fsPath[256];
-struct(fsEntry,
-	union {
-     	    struct {
-     	    	bool dir:  1;
-     	    	bool link: 1;
-     	    }is;
-     	    u64 typeFlags;
-     	}type;
-	char name[256];
-	size_t size;
-	inst(Time) time_created;
-	inst(Time) time_modified;
-)
 
-struct(storageDevice,
+type(storageDevice,
 	inst(String) name;
 	inst(String) manufacturer;
 	inst(String) model;
 
 	void* uniqueID;
-	size_t  // The size in bytes of a single unit 
+	len_t  // The size in bytes of a single unit 
 		// a.k.a KiB == 1,000, MiB = 100,000, etc
 		measure,  
 		exponant,	// storage_size = (measure * value)^exponant
@@ -42,25 +28,6 @@ Interface(storage,
 	
     )
     namespace(fs,
-	namespace(flags,
-		int 
-	   	CREATE, 
-	   	APPEND, 
-	   	WRITE, 
-	   	READ, 
-	   	ASYNC;
-	)
-	namespace(paths,
-		cstr 
-	  	APPDATA,
-	  	ROOT;
-	)
-	storageHandle vmethod(open,    bool DIR, fsPath path, int flags);
-	errvt 	 vmethod(search,  fsPath path,   fsEntry* ent);
-	errvt  	 vmethod(delete,  fsPath path);
-	errvt  	 vmethod(chdir,   fsPath path);
-	errvt  	 vmethod(getInfo, storageHandle handle, fsEntry* ent);
-	u64  	 vmethod(pollEvents);
 	namespace(ext,
 		const bool implemented;
 		errvt vmethod(readLink,     fsPath path, fsPath result)
@@ -70,8 +37,8 @@ Interface(storage,
 	);	
     )
 
-	i64 	 vmethod(write,        storageHandle handle, pntr data, size_t size);
-	i64 	 vmethod(read,         storageHandle handle, pntr data, size_t size);
+	i64 	 vmethod(write,        storageHandle handle, pntr data, len_t size);
+	i64 	 vmethod(read,         storageHandle handle, pntr data, len_t size);
 	errvt  	 vmethod(close,        storageHandle handle);
 	errvt  	 vmethod(handleEvents, storageHandle handle, Queue(OSEvent) evntQueue);
 )
@@ -82,7 +49,7 @@ enum(FileSysEvent_Type,
     FileSysEvent_Read,
     FileSysEvent_Delete
 )
-struct(FileSysEvent,
+type(FileSysEvent,
     storageHandle handle;
     FileSysEvent_Type type;
 )

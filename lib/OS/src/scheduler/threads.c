@@ -2,28 +2,28 @@
 #define __THREAD_SOURCE_DEF__
 #include "./posix.h"
 
-int main(int argc, cstr argv[]);
+int main(int argc, strc8 argv[]);
 
 inst(Error) methodimpl(Thread,GetErr){
-	nonull(self, return NULL);
-	return priv->errdata;
+	nonull(self, return null);
+	return priv.errdata;
 }
-errvt methodimpl(Thread,GetExitCode,, int* result){
+errvt methodimpl(Thread,GetExitCode, int* result){
 	nonull(self, return err);
 	nonull(result);
 
-	if(priv->is_active) return ERR(
+	if(priv.is_active) return ERR(
 		THREADERR_RUNNING, "the thread is still active");
 	
-	*result = priv->exit_code;
+	*result = priv.exit_code;
 
 return OK;
 }
 inst(Thread) Thread_GetCurrent(){
 	pthread_t thread = pthread_self();
-	inst(Thread) res = NULL;
+	inst(Thread) res = null;
 	
-	if(active_threads == NULL){
+	if(active_threads == null){
 		init_thread->__private->thread = thread;
 		return init_thread;
 	};
@@ -36,7 +36,7 @@ inst(Thread) Thread_GetCurrent(){
 	res = calloc(1,sizeof(Thread_Instance));
 	res->__private->is_active = true;
 	res->__private->thread = thread;
-	res->__private->start_func = NULL;
+	res->__private->start_func = null;
 	List.Append(active_threads, &res, 1);
 return res;
 };
@@ -53,38 +53,38 @@ static void* __all_threads_start_here__(void* args){
 			thread->__private->start_func(thread, thread_args);
 	}
 thread->__private->is_active = false;
-return NULL;
+return null;
 }
-errvt methodimpl(Thread,SetFunc,, int(*func)(inst(Thread) thread, void* args)){
+errvt methodimpl(Thread,SetFunc, int(*func)(inst(Thread) thread, void* args)){
 	nonull(self, return err);
 	nonull(func);
 
-	priv->start_func = func;
+	priv.start_func = func;
 return OK;
 }
-errvt methodimpl(Thread,Start,, void* args){
+errvt methodimpl(Thread,Start, void* args){
 	nonull(self, return err);
-	if(NULL == priv->start_func) return ERR(
+	if(null == priv.start_func) return ERR(
 		THREADERR_DESTROY, "thread has been destroyed or is invalid");
 
 	List(void*) arg = pushList(void*, 1);
 	List.Append(arg, &self, 1);
 	List.Append(arg, &args, 1);
-	pthread_create(&priv->thread, NULL, __all_threads_start_here__, List.FreeToPointer(arg));
-	priv->is_active = true;
+	pthread_create(&priv.thread, null, __all_threads_start_here__, List.FreeToPointer(arg));
+	priv.is_active = true;
 return OK;
 };
 errvt methodimpl(Thread,Join){
 	nonull(self, return err);
-	if(priv->is_active == false) 
+	if(priv.is_active == false) 
 		return THREADERR_RUNNING;
-	pthread_join(priv->thread, NULL);
+	pthread_join(priv.thread, null);
 return OK;
 };
-errvt methodimpl(Thread,Exit,,int exitcode){
+errvt methodimpl(Thread,Exit,int exitcode){
 	nonull(self, return err);
 	Thread.GetCurrent()->__private->exit_code = exitcode;
-	pthread_exit(NULL);
+	pthread_exit(null);
 return OK;
 };
 void Thread_Sleep(u64 milliseconds){
@@ -96,7 +96,7 @@ errvt imethodimpl(Thread, Destroy){
 	self(Thread);
 	nonull(self, return err);
 	
-	if(priv->is_active) return ERR( 
+	if(priv.is_active) return ERR( 
 		THREADERR_DESTROY, "the thread must be exited before its data can be destroyed");
 	
 	*priv = (Thread_Private){0};
@@ -116,11 +116,11 @@ construct(Thread,
 		.__DESTROY = Thread_Destroy
 	}
 ){
-	if(args.func == NULL){
-		ERR(ERR_NULLPTR, "start function cannot be null");
-	    	return NULL;
+	if(arg.func == null){
+		ERR(ERR_nullPTR, "start function cannot be null");
+	    	return null;
 	}
 	
-		priv->start_func = args.func;
+		priv.start_func = arg.func;
 return self;
 }

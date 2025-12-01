@@ -8,7 +8,7 @@ u32 parseSubCommands(std_cmd **command, std_str *args){
 
 	u32 arg_index = 0;
 
-	while(args[arg_index].txt != NULL){
+	while(args[arg_index].txt != null){
 	    	
 		u32 mindex = mapSearch(
 	    		(*command)->sub_commands, 
@@ -65,7 +65,7 @@ u32 parseArgs(std_cmd *command, std_str *args){
 
 	u32 arg_index = 0;
 
-	while(args[arg_index].txt != NULL){
+	while(args[arg_index].txt != null){
 	    switch(args[arg_index].txt[0]){
 	    case '-': {
 		checkposterr(parseArgAndData(command, 
@@ -76,7 +76,7 @@ u32 parseArgs(std_cmd *command, std_str *args){
 	       	);
 	    break;}
 	    default:{
-		if(command->var_args != NULL){
+		if(command->var_args != null){
 			queueWrite(
 				command->var_args, 
 				&args[arg_index], 
@@ -92,7 +92,7 @@ return arg_index;
 
 errvt cmdCall(std_cmd *command){
 
-	checkreturnerr(command->func == NULL, 
+	checkreturnerr(command->func == null, 
 		CMDERR_CALL, "no function specified for this command")
 
 	std_list 
@@ -153,7 +153,7 @@ errvt cmdParse(std_cmd *command, std_str *args){
 			CMDERR_CALL, "command call failed"
 		)
 
-		checkreturnerr(args[arg_index].txt != NULL && 
+		checkreturnerr(args[arg_index].txt != null && 
 		    	       stringCompare(args[arg_index], s(";")),
 			CMDERR_PARSE, "unexpected token after command",
 			println("ERROR:", $(args[arg_index].txt));
@@ -162,7 +162,7 @@ errvt cmdParse(std_cmd *command, std_str *args){
 		if(args[arg_index].txt[0] == ';') 
 		    {arg_index++; current_command = command;}
 		else
-			if(args[arg_index].txt == NULL) break;
+			if(args[arg_index].txt == null) break;
 	}
 
 return NOERROR;

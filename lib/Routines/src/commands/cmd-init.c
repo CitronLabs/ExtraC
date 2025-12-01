@@ -5,7 +5,7 @@
 std_str parseCommandArgName(std_str* string){
 	
 	std_strbuilder* name_builder = 
-		stringBuilderInit(NULL, UINT64_MAX);
+		stringBuilderInit(null, UINT64_MAX);
 
 	loop(i, string->len){
 	    if(!isalpha(string->txt[i])){
@@ -54,13 +54,13 @@ u32 parseComandArg(std_map(std_str->std_data) args, std_typeid type, std_str str
 	std_str arg_name;
 	u64 prev_string_size = string.len;
 
-	checkposterr((arg_data = parseComandArgData(type, &string)).data == NULL,
+	checkposterr((arg_data = parseComandArgData(type, &string)).data == null,
 	      CMDERR_PARSE, "unable to parse cmd arguemnt",
 	      return UINT32_MAX;)
 	
 	if(string.txt[0] == '('){
 	    for(;;){
-		checkposterr((arg_name = parseCommandArgName(&string)).txt == NULL,
+		checkposterr((arg_name = parseCommandArgName(&string)).txt == null,
 		      CMDERR_PARSE, "unable to parse cmd name",
 		      return UINT32_MAX;)
 		mapInsert(args, arg_name, arg_data);
@@ -68,7 +68,7 @@ u32 parseComandArg(std_map(std_str->std_data) args, std_typeid type, std_str str
 		if(string.txt[0] == ')') break;
 	    }
 	}else{
-		checkposterr((arg_name = parseCommandArgName(&string)).txt == NULL,
+		checkposterr((arg_name = parseCommandArgName(&string)).txt == null,
 		      CMDERR_PARSE, "unable to parse cmd name",
 		      return UINT32_MAX;)
 	}
@@ -76,10 +76,10 @@ return prev_string_size - string.len;
 }
 //ebee build =>  ; 
 #define parse_errorcheck()				\
-    checkposterr(current_arg.data.data == NULL,		\
+    checkposterr(current_arg.data.data == null,		\
 	CMDERR_PARSE, "failed to parse usasge string",	\
 	println("parse_error: ",current_arg.name.txt);	\
-	listFree(args); return NULL;)
+	listFree(args); return null;)
 
 std_map(std_str->std_data) parseUsageString(std_queue(std_str)* var_args, std_str usage_str){
 	
@@ -119,23 +119,23 @@ std_cmd* cmdInit(std_str name,
 	cmd_func(command_func), 
 	std_str usage, ...
 ){
-	std_cmd* res = NULL,* sub_command = NULL;
+	std_cmd* res = null,* sub_command = NULL;
 
 	checkposterr((res == calloc(1, sizeof(std_cmd))), 
 	      CMDERR_INIT, "could not allocate command",
-	      return NULL;)
+	      return null;)
 	res->name = stringCopy(name);
 	res->func = command_func;
 	res->args = parseUsageString(&res->var_args, usage); 
-	checkposterr(res->args == NULL, 
+	checkposterr(res->args == null, 
 	      CMDERR_INIT, "could not parse usage string", 
-	      return NULL;)
+	      return null;)
 
 	va_list args;
 	va_start(args, usage);
 
-	while((sub_command = va_arg(args, std_cmd*)) != NULL){
-		if(res->sub_commands == NULL) 
+	while((sub_command = va_arg(args, std_cmd*)) != null){
+		if(res->sub_commands == null) 
 			res->sub_commands = mapInit(10, std_str, std_cmd*);	
 		mapInsert(
 			res->sub_commands,

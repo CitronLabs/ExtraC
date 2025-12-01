@@ -8,7 +8,7 @@ typedef u8 ipv4_netaddress[4];
 typedef u16 ipv6_netaddress[8];
 typedef int socketType;
 
-struct(socketAddress,
+type(socketAddress,
      	socketType type;
 	union {
 	    struct ipv4Address{
@@ -35,14 +35,14 @@ enum(netCall_Flags,
 
 #define netField(name, access, type, data) (netobjFieldInfo){s(name),NETFIELD_##access,(DSN_data){DSN_##type, data}}
 #define netMethodImpl(name, implModule, ...) (netobjMethodInfo){s(name),(DSN_data){DSN_STRUCT, newStruct(__VA_ARGS__)}, &implModule, implModule##_Logic}
-#define netMethodDecl(name, ...) (netobjMethodInfo){s(name),(DSN_data){DSN_STRUCT, newStruct(__VA_ARGS__)}, NULL, NULL}
+#define netMethodDecl(name, ...) (netobjMethodInfo){s(name),(DSN_data){DSN_STRUCT, newStruct(__VA_ARGS__)}, null, NULL}
 
 Blueprint(NetObjMethod,
 __IO(in_DSN_data parameters; out_DSN_data returnvalue), 
 __DATA()
 )
 
-struct(netobjMethodInfo, 
+type(netobjMethodInfo, 
 	inst(String) name; 
      	DSN_data parameters;
      	modl(Module) module; 
@@ -53,12 +53,12 @@ struct(netobjMethodInfo,
 #define NETFIELD_SET 2
 #define NETFIELD_GET_SET (NETFIELD_GET | NETFIELD_SET)
 
-struct(netobjFieldInfo,
+type(netobjFieldInfo,
 	inst(String) name; 
      	u16 access;
 	DSN_data data;
 )
-struct(netobjInfo,
+type(netobjInfo,
      	data(String)
      	* interface,
      	* name;
@@ -67,7 +67,7 @@ struct(netobjInfo,
 )
 
 
-struct(networkDevice,
+type(networkDevice,
 	inst(String) name;
 	inst(String) manufacturer;
 	inst(String) model;
@@ -79,7 +79,7 @@ struct(networkDevice,
 )
 
 Interface(network,
-	const cstr stdVersion;
+	const strc8 stdVersion;
 	errvt 		vmethod(initSystem);
 	errvt 		vmethod(exitSystem);
 	namespace(socket,
@@ -109,12 +109,12 @@ Interface(network,
 	namespace(obj,
 	const bool implemented; // for compatibiliy reasons
 	errvt 		vmethod(init,    netobjInfo* blueprint);
-	errvt 		vmethod(getInfo,   cstr path, netobjInfo* info);
+	errvt 		vmethod(getInfo,   strc8 path, netobjInfo* info);
 	errvt 		vmethod(implement, netobjInfo* blueprint);
-	networkHandle 	vmethod(find,  cstr interface, cstr object);
-	DSN_data 	vmethod(call,  networkHandle object, netCall_Flags flags, cstr method, DSN_data* args);
-	DSN_data 	vmethod(get,   networkHandle object, netCall_Flags flags, cstr field);
-	errvt 		vmethod(set,   networkHandle object, netCall_Flags flags, cstr field,  DSN_data value);
+	networkHandle 	vmethod(find,  strc8 interface, strc8 object);
+	DSN_data 	vmethod(call,  networkHandle object, netCall_Flags flags, strc8 method, DSN_data* args);
+	DSN_data 	vmethod(get,   networkHandle object, netCall_Flags flags, strc8 field);
+	errvt 		vmethod(set,   networkHandle object, netCall_Flags flags, strc8 field,  DSN_data value);
 	errvt 		vmethod(close, networkHandle handle);
 	)
 	namespace(device,
@@ -135,7 +135,7 @@ enum(SocketEventType,
     SocketEvent_Close
 )
 
-struct(SocketEvent,
+type(SocketEvent,
     networkHandle handle;
     SocketEventType type;
 )
@@ -147,7 +147,7 @@ enum(NetObjEventType,
     NetObjEvent_Recive,
     NetObjEvent_Close
 )
-struct(NetObjEvent,
+type(NetObjEvent,
     networkHandle handle;
     NetObjEventType type;
 )
@@ -158,7 +158,7 @@ enum(NetDeviceEventType,
     NetDeviceEvent_Recive,
     NetDeviceEvent_Close
 )
-struct(NetDeviceEvent,
+type(NetDeviceEvent,
     networkHandle handle;
     NetDeviceEventType type;
 )
