@@ -22,21 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------*/
 #pragma once
-
+#ifndef __XC_CORE__
 #define __EXTRAC_CORE__
-
-#include "../Core/include/LibC/pkg.h"
-#if !defined (__FORMAT_CODES__) && !defined (__ERROR_CODES__) && !defined (__GLOBAL_METHODS__)
-	#include "config.h"
-#endif
-
-#include "../Core/include/Features/pkg.h"
-#include "../Core/include/Debug/pkg.h"
-#include "../Core/include/Data/pkg.h"
-#include "../Core/include/Strings/pkg.h"
-#include "../Core/include/Alloc/pkg.h"
-#include "../Core/include/Time/pkg.h"
-
 /*--------------------------------------------------------------|
  *								|
  * 			  Documentation 			|
@@ -61,15 +48,14 @@ SOFTWARE.
  * @subsection feat Features
  * - **Type Features:**
  *   - Classes and Objects
- *   - Modules
- *   - Vtables
+ *   - Interfaces and Modules
  *   - Heap-Memory Construction/Destruction via. **new/del** macros
  *   - Stack-Memory Construction/Destruction via. **push/pop** macros
  *   - Base-Type Redefinitions
  *
  * - **Data Features:**
  *   - *Data Structures*:
- *  	- List (Dynamic Array)
+ *  	- List (Dynamic ArrayList)
  *   	- Stack
  *   	- Queue
  *   	- Map
@@ -117,3 +103,6 @@ SOFTWARE.
  *   - Timing via. TimeWatch class
  *   - Conversion Macros
 */
+#endif
+
+#undef package
