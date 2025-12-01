@@ -1,7 +1,6 @@
 #pragma once
 #define __XC_ESSENTIAL__
 #include "../pkg.h"
-#include "../types.h"
 #include "../utils.h"
 
 #ifndef __XC_ENV__

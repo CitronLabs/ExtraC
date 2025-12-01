@@ -6,7 +6,6 @@
 #ifndef __XC_ESSENTIAL__
 #define package std
 	#include "utils.h"
-	#include "types.h"
 	
 	#include "Env/pkg.h"
 	#include "Features/pkg.h"

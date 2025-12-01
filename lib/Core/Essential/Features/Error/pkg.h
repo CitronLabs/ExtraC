@@ -32,6 +32,12 @@
 #define errnm  (std.Error.Get()->errorcode)
 #define errstr (std.Error.Get()->message)
 
+typedef enum{ 
+	#define __ERROR_CODES__
+	#include "./config.c"
+	#undef __ERROR_CODES__
+}XC_ERROR_CODES;
+
 type(Error,
 	errvt errorcode; 
 	char* message;

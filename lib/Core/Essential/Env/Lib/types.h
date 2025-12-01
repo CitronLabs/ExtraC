@@ -4,6 +4,8 @@
 
 #include "config.c"
 
+typedef void noFail;
+
 typedef __XC_UINT64_TYPE u64;
 
 typedef __XC_UINT32_TYPE u32;
@@ -48,6 +50,7 @@ typedef void* var;
 
 typedef struct { len_t size; __XC_VARGS_TYPE* data; } vargs;
 
+typedef uword errvt;
 
 #undef NULL
 #define NULL __XC_NULL

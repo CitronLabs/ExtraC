@@ -8,7 +8,6 @@
 
 //=======EXPORTS========
 #ifndef __XC_FEATURE__
-	#include "types.h"
 	#include "utils.h"
 
 	#include "Type/pkg.h"
