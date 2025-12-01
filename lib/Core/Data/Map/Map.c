@@ -182,8 +182,8 @@ errvt methodimpl(std_Map, Limit, u64 limit){
 return std.List.Limit(priv.buckets, limit);
 }
 
-std_typeData	methodimpl(std_Map, GetValType){nonull(self, return typeDataOf(std_Nil)) return priv.value; }
-std_typeData	methodimpl(std_Map, GetKeyType){nonull(self, return typeDataOf(std_Nil)) return priv.key; }
+std_typeData	methodimpl(std_Map, GetValType){nonull(self, return T(std_Nil)) return priv.value; }
+std_typeData	methodimpl(std_Map, GetKeyType){nonull(self, return T(std_Nil)) return priv.key; }
 
 DESTROY(std_Map){
 	nonull(self, return err);

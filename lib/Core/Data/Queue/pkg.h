@@ -30,7 +30,7 @@ elements from the orignal reference are appended to overide queue
 */
 
 Class(Queue,
-INIT(u64 init_size; std_typeData type; void* literal;),
+INIT(u64 init_size; Type type; void* literal),
 FMT(bool debug;),
 private(	
     	u8* writehead,* readhead,* start,* end, * jmp_point;
@@ -58,12 +58,12 @@ private(
 @def newQueue(type, ...)
 @brief allocates a static buffer object on the stack 
 */
-#define newQueue(_type, size) new(std_Queue, size, typeDataOf(_type))
+#define newQueue(_type, size) new(std_Queue, size, T(_type))
 /**
 @def pushQueue(type, size)
 @brief allocates a static buffer object on the stack 
 */
-#define pushQueue(_type, size) push(std_Queue, size, typeDataOf(_type))
+#define pushQueue(_type, size) push(std_Queue, size, T(_type))
 
 
 /**
@@ -75,7 +75,7 @@ be of the same type
 #define l_q(first, ...) 				\
 push(Queue, 						\
 	lenof((typeof(first)[]){first, __VA_ARGS__}),	\
-	typeDataFrom(asObject(first)), 			\
+	TFrom(asObject(first)), 			\
 	(typeof(first)[]){first, __VA_ARGS__}		\
 )
 			
@@ -88,6 +88,6 @@ be of the same type
 #define L_Q(first, ...) 				\
 new(Queue, 						\
 	lenof((typeof(first)[]){first, __VA_ARGS__}),	\
-	typeDataFrom(asObject(first)), 			\
+	TFrom(asObject(first)), 			\
 	(typeof(first)[]){first, __VA_ARGS__}		\
 )

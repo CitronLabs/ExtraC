@@ -23,7 +23,7 @@ errvt methodimpl(std_Arena, Grow, u64 num_bytes){
 		((priv.alloc_size / 2) + num_bytes) > priv.max_size ?
 		priv.max_size - priv.alloc_size : ((priv.alloc_size / 2) + num_bytes);
 
-	std_Buffer* new_buff = new(std_Buffer, new_alloc_size, typeDataOf(u8), true);
+	std_Buffer* new_buff = new(std_Buffer, new_alloc_size, T(u8), true);
 	write(priv.arena_buffers, &new_buff);
 
 	priv.alloc_size += new_alloc_size;

@@ -82,12 +82,12 @@ ITER(std_Logger){
 WRITE(std_Logger){
 	nonull(self, return 0);
 	
-	return std.Type.data.writeTo(varDataOf(&priv.logs), data, size);
+	return std.Type.data.writeTo(V(&priv.logs), data, size);
 }
 READ(std_Logger){
 	nonull(self, return 0);
 
-	return std.Type.data.readFrom(varDataOf(&priv.logs), data, size);
+	return std.Type.data.readFrom(V(&priv.logs), data, size);
 }
 COPY(std_Logger){
 	

@@ -41,7 +41,7 @@ void* imethodimpl(std_Buffer, Realloc, pntr instance, u64 new_size){
 return priv.data;
 }
 
-errvt methodimpl(std_Buffer, Cast, std_typeData type){
+errvt methodimpl(std_Buffer, Cast, Type type){
 	if(type.size == 0) return ERR(MEMERR_INVALIDSIZE, "cannot cast buffer to type size 0");
 	
 	priv.size = (priv.size * priv.type.size) / type.size;
@@ -60,7 +60,7 @@ errvt methodimpl(std_Buffer, Resize, u64 new_size){
 return OK;
 }
 
-std_Buffer* methodimpl(std_Buffer, fromView, void* start, std_typeData type, u64 len){
+std_Buffer* methodimpl(std_Buffer, fromView, void* start, Type type, u64 len){
 	nonull(start || self, return nil);
 	
 	if(priv.data) del(self);

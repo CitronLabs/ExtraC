@@ -17,17 +17,17 @@ static inline std_DSN_fieldType resolveDSNType(std_typeData type){
 }
 
 
-static inline std_typeData typeDataFromDSNType(std_DSN_fieldType type){
+static inline std_typeData TFromDSNType(std_DSN_fieldType type){
 
-	if(type == DSN_QUEUE)	    { return typeDataOf(std_Queue);  }
+	if(type == DSN_QUEUE)	    { return T(std_Queue);  }
 	                                         
-	else if(type == DSN_STACK)  { return typeDataOf(std_Stack);  }
+	else if(type == DSN_STACK)  { return T(std_Stack);  }
 	                                        
-	else if(type == DSN_LIST)   { return typeDataOf(std_List);   }
+	else if(type == DSN_LIST)   { return T(std_List);   }
 	                                         
-	else if(type == DSN_MAP)    { return typeDataOf(std_Map);    }  
+	else if(type == DSN_MAP)    { return T(std_Map);    }  
 	                                         
-	else if(type == DSN_STRUCT) { return typeDataOf(std_Struct); }
+	else if(type == DSN_STRUCT) { return T(std_Struct); }
 
-	else return typeDataOf(std_Nil);
+	else return T(std_Nil);
 }

@@ -240,7 +240,7 @@ void* methodimpl(std_List, GetPointer, u64 index){
 return result; 
 }
 
-errvt methodimpl(std_List, Cast, std_typeData new_type){
+errvt methodimpl(std_List, Cast, Type new_type){
 	nonull(self, return err)
 
 	priv.items = (priv.items * priv.type.size) / new_type.size; 
@@ -283,7 +283,7 @@ return res;
 }
 
 std_typeData methodimpl(std_List, GetType){
-	nonull(self, return typeDataOf(std_Nil));
+	nonull(self, return T(std_Nil));
 
 return priv.type;
 }

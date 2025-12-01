@@ -225,7 +225,7 @@ return result;
 }
 
 std_typeData methodimpl(std_Queue, GetType){
-	nonull(self, return typeDataOf(std_Nil));
+	nonull(self, return T(std_Nil));
 
 return priv.type;
 }

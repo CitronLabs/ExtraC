@@ -30,7 +30,7 @@ elements from the orignal reference are appended to overide stack
 */
 
 Class(Stack,
-INIT(u64 init_size; std_typeData type; void* literal),
+INIT(u64 init_size; Type type; void* literal),
 FMT(bool debug),
 private(
 	void* start;
@@ -57,12 +57,12 @@ private(
 @def newStack(type, ...)
 @brief allocates a static buffer object on the stack 
 */
-#define newStack(_type, size) new(std_Stack, size, typeDataOf(_type))
+#define newStack(_type, size) new(std_Stack, size, T(_type))
 /**
 @def pushStack(type, size)
 @brief allocates a static buffer object on the stack 
 */
-#define pushStack(_type, size) push(std_Stack, size, typeDataOf(_type))
+#define pushStack(_type, size) push(std_Stack, size, T(_type))
 
 /**
 @def l_s(first, ...)
@@ -75,7 +75,7 @@ be of the same type
 #define l_s(first, ...) 				\
 push(Stack, 						\
 	lenof((typeof(first)[]){first, __VA_ARGS__}),	\
-	typeDataFrom(asObject(first)), 			\
+	TFrom(asObject(first)), 			\
 	(typeof(first)[]){first, __VA_ARGS__}		\
 )
 /**
@@ -87,6 +87,6 @@ be of the same type
 #define L_S(first, ...) 				\
 new(Stack, 						\
 	lenof((typeof(first)[]){first, __VA_ARGS__}),	\
-	typeDataFrom(asObject(first)), 			\
+	TFrom(asObject(first)), 			\
 	(typeof(first)[]){first, __VA_ARGS__}		\
 )

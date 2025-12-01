@@ -30,7 +30,7 @@ elements from the orignal reference are appended to overide list
 
 
 Class(List,
-INIT(len_t init_size; std_typeData type; void* literal),
+INIT(len_t init_size; Type type; void* literal),
 FMT(bool debug),
 private(
 	void* data;
@@ -52,7 +52,7 @@ private(
 	errvt 		method(List, Merge, std_List* merged_list, u64 index);
 	std_List*	method(List, SubList, u64 index, len_t len);
 	errvt 		method(List, Reserve, bool exact, len_t amount);
-	errvt   	method(List, Cast, std_typeData type);
+	errvt   	method(List, Cast, Type type);
 	std_typeData	method(List, GetType);
 
 };
@@ -61,12 +61,12 @@ private(
 @def newList(type, ...)
 @brief allocates a static buffer object on the stack 
 */
-#define newList(_type, _size) new(std_List, _size, typeDataOf(_type))
+#define newList(_type, _size) new(std_List, _size, T(_type))
 /**
 @def pushList(type, size)
 @brief allocates a static buffer object on the stack 
 */
-#define pushList(_type, _size) push(std_List, _size, typeDataOf(_type))
+#define pushList(_type, _size) push(std_List, _size, T(_type))
 
 /**
 @def l(first, ...)
@@ -77,7 +77,7 @@ be of the same type
 #define l(first, ...) 					\
 push(List, 						\
 	lenof((typeof(first)[]){first, __VA_ARGS__}),	\
-	typeDataFrom(asObject(first)), 			\
+	TFrom(asObject(first)), 			\
 	(typeof(first)[]){first, __VA_ARGS__}		\
 )
 
@@ -90,7 +90,7 @@ be of the same type
 #define L(first, ...) 					\
 new(List, 						\
 	lenof((typeof(first)[]){first, __VA_ARGS__}),	\
-	typeDataFrom(asObject(first)), 			\
+	TFrom(asObject(first)), 			\
 	(typeof(first)[]){first, __VA_ARGS__}		\
 )
 

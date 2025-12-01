@@ -34,14 +34,14 @@
 
 
 #define printTo(strm, ...) 	std.Type.data.writeTo( 			\
-				    varDataOf(strm), 			\
+				    V(strm), 			\
 				    (void*[]){__VA_ARGS__}, 		\
 				    __VA_ARG_LEN__(type, __VA_ARGS__) 	\
 	  			)
 
 
 #define scanFrom(strm, ...) 	std.Type.data.readFrom( 		\
-                                     varDataOf(strm), 			\
+                                     V(strm), 			\
                                      (void*[]){__VA_ARGS__}, 		\
                                      __VA_ARG_LEN__(type, __VA_ARGS__) 	\
                                 )

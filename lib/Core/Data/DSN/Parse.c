@@ -73,7 +73,7 @@ len_t methodimpl(std_DSN, parseQueue, std_Queue** data, std_Stream* in){
 	
 	*data = newQueue(pntr, 10);
 
-	scanned_len += parseListLikeDataStruct(self, in, varDataOf(*data));
+	scanned_len += parseListLikeDataStruct(self, in, V(*data));
 	
 return scanned_len;
 }
@@ -94,7 +94,7 @@ len_t methodimpl(std_DSN, parseStack, std_Stack** data, std_Stream* in){
 	
 	*data = newStack(pntr, 10);
 
-	scanned_len += parseListLikeDataStruct(self, in, varDataOf(*data));
+	scanned_len += parseListLikeDataStruct(self, in, V(*data));
 	
 return scanned_len;
 }
@@ -115,7 +115,7 @@ len_t methodimpl(std_DSN, parseList, std_List** data, std_Stream* in){
 	
 	*data = newList(pntr, 10);
 
-	scanned_len += parseListLikeDataStruct(self, in, varDataOf(*data));
+	scanned_len += parseListLikeDataStruct(self, in, V(*data));
 	
 return scanned_len;
 }
@@ -198,8 +198,8 @@ len_t methodimpl(std_DSN, parseMap, std_Map** data, std_Stream* in){
 	;
 
 	std_Map* map = new(std_Map, 
-		     .key 	= typeDataFromDSNType(key.type),
-		     .data	= typeDataFromDSNType(value.type),
+		     .key 	= TFromDSNType(key.type),
+		     .data	= TFromDSNType(value.type),
 		     .init_size 	= buckets->currSize,
 		     .literal 		= buckets->data,
 	);

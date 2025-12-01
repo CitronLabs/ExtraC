@@ -8,7 +8,7 @@
 #define package std
 
 Class(Map,
-INIT(u64 init_size; std_typeData key; std_typeData data; std_data_entry* literal),
+INIT(u64 init_size; Type key, data; std_data_entry* literal),
 FMT(bool debug),
 private(
 	std_typeData key, value;
@@ -32,20 +32,20 @@ private(
 };
 
 
-#define newMap(keyType, valType, size) new(std_Map, size, typeDataOf(keyType), typeDataOf(valType))
+#define newMap(keyType, valType, size) new(std_Map, size, T(keyType), typeDataOf(valType))
 
-#define pushMap(keyType, valType, size) push(std_Map, size, typeDataOf(keyType), typeDataOf(valType))
+#define pushMap(keyType, valType, size) push(std_Map, size, T(keyType), typeDataOf(valType))
 
 #define M(keyType, valType, ...) new(std_Map,		\
 		sizeof((std_data_entry*[]){__VA_ARGS__})\
 			/ sizeof(std_data_entry*),	\
-		typeDataOf(keyType),typeDataOf(valType),\
+		T(keyType),typeDataOf(valType),\
 		(std_data_entry*[]){__VA_ARGS__})
 
 #define m(keyType, valType, ...) push(std_Map,		\
 		sizeof((std_data_entry*[]){__VA_ARGS__})\
 			/ sizeof(std_data_entry*),	\
-		typeDataOf(keyType),typeDataOf(valType),\
+		T(keyType),typeDataOf(valType),\
 		(std_data_entry*[]){__VA_ARGS__})
 
 #define INVALID_MAPINDEX (maxof(u32))

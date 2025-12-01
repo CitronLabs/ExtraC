@@ -75,7 +75,7 @@ READ(std_FSEntry){
 	nonull(self, return 0);
 
 return std.Type.data.readFrom(
-  	varDataFrom(streamHandle_Type, std.Stream.getHandle(self->stream)),
+  	VFrom(streamHandle_Type, std.Stream.getHandle(self->stream)),
   	data, size
 );
 }
@@ -83,7 +83,7 @@ WRITE(std_FSEntry){
 	nonull(self, return 0);
 
 return std.Type.data.writeTo(
-  	varDataFrom(streamHandle_Type, std.Stream.getHandle(self->stream)),
+  	VFrom(streamHandle_Type, std.Stream.getHandle(self->stream)),
   	data, size
 );
 }
