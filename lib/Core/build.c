@@ -1,31 +1,51 @@
-#include "src/Data/DSN.c"
-#include "src/Data/list.c"
-#include "src/Data/queue.c"
-#include "src/Data/stack.c"
-#include "src/Data/structs.c"
-#include "src/Data/map.c"
-#include "src/Data/base-types.c"
+#include "Essential/Features/Type/Alloc/Alloc.c"
+#include "Essential/Features/Type/Data/Data.c"
+#include "Essential/Features/Type/Format/Format.c"
 
-#include "src/Math/numbers.c"
+#include "Essential/Features/Local/Local.c"
+#include "Essential/Features/Stream/Stream.c"
+#include "Essential/Features/Stream/IO.c"
 
-#include "src/Error/logger.c"
-#include "src/Error/errorcodes.c"
+#include "Essential/Features/Error/Error.c"
 
-#include "src/Malloc/pool.c"
-#include "src/Malloc/arena.c"
-#include "src/Malloc/buffer.c"
-#include "src/Malloc/c_malloc.c"
+#include "Essential/Features/BaseTypes/Pointer.c"
+#include "Essential/Features/BaseTypes/Object.c"
+#include "Essential/Features/BaseTypes/Nil.c"
+#include "Essential/Features/BaseTypes/Integer.c"
+#include "Essential/Features/BaseTypes/Float.c"
+#include "Essential/Features/BaseTypes/Char.c"
+#include "Essential/Features/BaseTypes/CString.c"
+#include "Essential/Features/BaseTypes/Boolean.c"
+#include "Essential/Features/BaseTypes/ArrayList.c"
 
-#include "src/String/scan.c"
-#include "src/String/format.c"
-#include "src/String/strings.c"
-#include "src/String/strbuilder.c"
-#include "src/String/regex.c"
 
-#include "src/Time/time.c"
-#include "src/Time/watch.c"
+#include "Essential/Features/BaseTypes/XCTypes/numbers.c"
+#include "Essential/Features/BaseTypes/XCTypes/strings.c"
+#include "Essential/Features/BaseTypes/XCTypes/chars.c"
+#include "Essential/Features/BaseTypes/XCTypes/other.c"
 
-#include "src/Class.c"
+#include "Alloc/Pool/Pool/c"
+#include "Alloc/Arena/Arena.c"
+#include "Alloc/Buffer/Buffer.c"
+
+#include "Data/List/List.c"
+#include "Data/Queue/Queue.c"
+#include "Data/Stack/Stack.c"
+#include "Data/Struct/Struct.c"
+#include "Data/Map/Map.c"
+#include "Data/DSN/DSN.c"
+
+#include "Debug/Logger/Logger.c"
+
+#include "Math/Number/Number.c"
+
+#include "Strings/String/String.c"
+#include "Strings/StringBuilder/StringBuilder.c"
+
+#include "Time/Time/Time.c"
+#include "Time/Date/Date.c"
+#include "Time/Watch/Watch.c"
+
 
 
 

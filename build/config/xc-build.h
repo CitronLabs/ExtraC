@@ -6,4 +6,3 @@
 #define BUILD_OS_WINDOWS   	2
 #define BUILD_OS_TUNDRA   	3
 
-#define isSet(flags, flag) ((flags & flag) == flag)
