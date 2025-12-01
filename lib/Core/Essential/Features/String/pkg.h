@@ -1,7 +1,6 @@
 #pragma once
 #define __XC_FEATURE__
 #include "../pkg.h"
-#include "../Classes/pkg.h"
 #include "../Type/pkg.h"
 #include "../Arrays/pkg.h"
 #include "../Base/pkg.h"

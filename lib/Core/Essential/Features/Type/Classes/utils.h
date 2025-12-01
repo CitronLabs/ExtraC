@@ -1,7 +1,6 @@
 #pragma once
-#define __XC_FEATURE__
+#define __XC_TYPES__
 #include "../pkg.h"
-#include "../types.h"
 
 /*======================|
  *   Construct Utils

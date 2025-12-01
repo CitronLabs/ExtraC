@@ -2,7 +2,6 @@
 #define __XC_FEATURE__
 #include "../pkg.h"
 
-#include "../Classes/pkg.h"
 #include "../Type/pkg.h"
 
 #define package std

@@ -2,11 +2,12 @@
 #define __XC_FEATURE__
 #include "../pkg.h"
 
-#include "../Classes/pkg.h"
 
 //=======EXPORTS========
 #ifndef __XC_TYPES__
 #define package std
+	#include "Classes/pkg.h"
+
 	#include "types.h"
 	#include "utils.h"
 

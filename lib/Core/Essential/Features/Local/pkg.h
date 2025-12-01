@@ -4,7 +4,6 @@
 
 #include "../pkg.h"
 
-#include "../Classes/pkg.h"
 #include "../Type/pkg.h"
 
 #define package std

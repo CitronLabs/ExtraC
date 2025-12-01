@@ -11,7 +11,6 @@
 	#include "types.h"
 	#include "utils.h"
 
-	#include "Classes/pkg.h"
 	#include "Type/pkg.h"
 	#include "XCTypes/pkg.h"
 	#include "Base/pkg.h"
