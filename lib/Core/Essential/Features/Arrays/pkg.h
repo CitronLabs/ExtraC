@@ -4,14 +4,14 @@
 
 #include "../Type/pkg.h"
 
-#define package std
+#define package std_Array
 
-#define ArrayList(type) std_ArrayList*
+#define ArrayList(type) std_Array_List*
 
-#define pushArrayList(type, size) push(std_ArrayList, sizeof(type), size)
-#define newArrayList(type, size) new(std_ArrayList, sizeof(type), size)
+#define pushArrayList(type, size) push(std_Array_List, sizeof(type), size)
+#define newArrayList(type, size) new(std_Array_List, sizeof(type), size)
 
-Data(ArrayList, 
+Data(List, 
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
      	void* data;
@@ -21,12 +21,12 @@ FMT(),
 	    allocSize;
 );
 
-#define ArrayQueue(type) std_ArrayQueue*
+#define ArrayQueue(type) std_Array_Queue*
 
-#define pushArrayQueue(type, size) push(std_ArrayQueue, sizeof(type), size)
-#define newArrayQueue(type, size) new(std_ArrayQueue, sizeof(type), size)
+#define pushArrayQueue(type, size) push(std_Array_Queue, sizeof(type), size)
+#define newArrayQueue(type, size) new(std_Array_Queue, sizeof(type), size)
 
-Data(ArrayQueue,
+Data(Queue,
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
     void
@@ -39,27 +39,27 @@ FMT(),
     word items_til_jump;
 );
 
-#define ArrayStack(type) std_ArrayStack*
+#define ArrayStack(type) std_Array_Stack*
 
-#define pushArrayStack(type, size) push(std_ArrayStack, sizeof(type), size)
-#define newArrayStack(type, size) new(std_ArrayStack, sizeof(type), size)
+#define pushArrayStack(type, size) push(std_Array_Stack, sizeof(type), size)
+#define newArrayStack(type, size) new(std_Array_Stack, sizeof(type), size)
 
-Data(ArrayStack,
+Data(Stack,
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
 	void* data;
 	len_t typeSize, allocSize, currSize;
 );
 
-#define ArrayBuffer(type) std_ArrayBuffer*
+#define ArrayBuffer(type) std_Array_Buffer*
 
-#define pushArrayBuffer(type, size) push(std_ArrayBuffer, sizeof(type), size)
-#define newArrayBuffer(type, size) new(std_ArrayBuffer, sizeof(type), size)
+#define pushArrayBuffer(type, size) push(std_Array_Buffer, sizeof(type), size)
+#define newArrayBuffer(type, size) new(std_Array_Buffer, sizeof(type), size)
 
-#define Array(type) std_ArrayBuffer
+#define Array(type) std_Array_Buffer
 #define arr(first, ...) 			\
-	((std_ArrayBuffer){			\
-		std_ArrayBuffer_Type, 		\
+	((std_Array_Buffer){			\
+		std_Array_Buffer_Type, 		\
 		sizeof(typeof(first)),  	\
 		lenof((typeof(first)[])		\
 			{first, __VA_ARGS__}),  \
@@ -67,10 +67,10 @@ FMT(),
   			{first, __VA_ARGS__}	\
 	})
 
-#define none (std_ArrayBuffer){0}
+#define none (std_Array_Buffer){0}
 
 
-Data(ArrayBuffer,
+Data(Buffer,
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
 	len_t typeSize, items;

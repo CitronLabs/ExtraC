@@ -1,9 +1,10 @@
-#include "../../../../pkg.h"
+#include "../../../pkg.h"
 
 import(std)
+use(std_Array, List, Queue, Stack, Buffer)
 
 
-WRITE(std_ArrayList){
+WRITE(std_Array_List){
 
 	if(self->currSize + size > self->allocSize){
 	    len_t realloc_len = (self->allocSize + (self->allocSize / 2) + size) * self->typeSize;
@@ -31,15 +32,7 @@ WRITE(std_ArrayList){
 return size;
 }
 
-COPY(std_ArrayList){
-	return create(std_ArrayList, where,  
-		.initSize = self->currSize,
-	       	.typeSize = self->typeSize,
-	       	.data = self->data
-	);
-}
-
-READ(std_ArrayList){
+READ(std_Array_List){
 
 	if(size > self->currSize) size = self->currSize;
 
@@ -54,22 +47,70 @@ READ(std_ArrayList){
 return size;
 }
 
-HASH(std_ArrayList){
+COPY(std_Array_List){
+
+	std_Object* dest_obj = where;
+
+	switchT(dest_obj->__type){
+	caseT(std_Array_Buffer){
+	    Buffer* dest = where;
+
+	    if(dest->typeSize != this.typeSize){
+		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		return null;
+	    }
+
+	break;}
+	caseT(std_Array_Stack){
+	    Stack* dest = where;
+
+	    if(dest->typeSize != this.typeSize){
+		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		return null;
+	    }
+
+	break;}
+	caseT(std_Array_Queue){
+	    Queue* dest = where;
+
+	    if(dest->typeSize != this.typeSize){
+		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		return null;
+	    }
+
+	    loop(i, this.currSize)
+		write(dest, pntr_shiftcpy(this.data, this.typeSize * i));
+	    
+	break;}
+	defaultT{
+		ERR(ERR_INVALID, "invalid copy destination type detected");
+		return null;
+	}
+	}
+
+	create(List, where,  
+		.initSize = self->currSize,
+	       	.typeSize = self->typeSize,
+	       	.data = self->data
+	);
+}
+
+HASH(std_Array_List){
 	
 	return hash_bytes(self->data, self->typeSize * self->currSize);
 }
 
-ITER(std_ArrayList){
+ITER(std_Array_List){
 	if(index > self->currSize) return null;
 
 	return pntr_shiftcpy(self->data, (self->currSize + index) * self->typeSize);
 }
 
-SIZE(std_ArrayList){
+SIZE(std_Array_List){
 	return elements ? self->currSize : self->currSize * self->typeSize;
 }
 
-SET(std_ArrayList){
+SET(std_Array_List){
 	
 	if(value == null)
 		memset(self->data, 0, self->allocSize * self->typeSize);
@@ -85,14 +126,14 @@ SET(std_ArrayList){
 return OK;
 }
 
-DESTROY(std_ArrayList){
+DESTROY(std_Array_List){
 
 	free(self->data);
 
 return OK;
 }
 
-PRINT(std_ArrayList){
+PRINT(std_Array_List){
 
 	return write(out, 
 	      "(ArrayList){ ",
@@ -104,19 +145,19 @@ PRINT(std_ArrayList){
 
 }
 
-construct(std_ArrayList,
+construct(std_Array_List,
 FMT(),
 DEF(),
-	.Print   = std_ArrayList_Op_Print,
-	.Create  = std_ArrayList_Op_Create,
-	.Copy 	 = std_ArrayList_Op_Copy,
-	.Size 	 = std_ArrayList_Op_Size,
-	.Destroy = std_ArrayList_Op_Destroy,
-	.Set	 = std_ArrayList_Op_Set,
-	.Hash	 = std_ArrayList_Op_Hash,
-	.Write   = std_ArrayList_Op_Write,
-	.Read 	 = std_ArrayList_Op_Read,
-	.Iter 	 = std_ArrayList_Op_Iter,
+	.Print   = std_Array_List_Op_Print,
+	.Create  = std_Array_List_Op_Create,
+	.Copy 	 = std_Array_List_Op_Copy,
+	.Size 	 = std_Array_List_Op_Size,
+	.Destroy = std_Array_List_Op_Destroy,
+	.Set	 = std_Array_List_Op_Set,
+	.Hash	 = std_Array_List_Op_Hash,
+	.Write   = std_Array_List_Op_Write,
+	.Read 	 = std_Array_List_Op_Read,
+	.Iter 	 = std_Array_List_Op_Iter,
 	.Scan    = nilmethod,
 ){
 	len_t alloc_size = arg.data ? 

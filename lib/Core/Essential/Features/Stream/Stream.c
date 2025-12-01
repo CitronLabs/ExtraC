@@ -6,8 +6,8 @@ import(XC)
 
 
 use(std,
-	ArrayStack,
-	ArrayList,
+	Array_Stack,
+	Array_List,
     	Local,
     	Stream,
     	Stream_Options
@@ -165,9 +165,9 @@ extern const struct Stream_Proc Stream_Proc_Fail, Stream_Proc_OK;
 
 static inline const struct Stream_Proc setProc(localStreamContext* ctx, const struct Stream_Proc* to){
 
-	if(ctx->activeProc->currSize) 
+	if(ctx->activeProc->items) 
 	    *(const struct Stream_Proc**) index(ctx->activeProc, 
-		  ctx->activeProc->currSize) = to;
+		  ctx->activeProc->items) = to;
 return *to;
 }
 
@@ -402,8 +402,10 @@ noFail std_Stream_Process_end(){
 	localStreamContext* ctx = fetchLocalStreamCtx();
 
 	if(elements(ctx->activeStreamStack) != 0){
-		ctx->activeStream = ((Stream**)ctx->activeStreamStack->data)
-		[ctx->activeStreamStack->currSize];
+		ctx->activeStream = index(
+			ctx->activeStreamStack, 
+			ctx->activeStreamStack->items
+		);
 
 		ctx->activeStreamStack--;
 	} else {
@@ -592,7 +594,7 @@ COPY(std_Stream){
 	if(priv.flags.streamType == STREAM_TYPE_MEM){
 		privof(dest).stream.mem.data =	copy(
 			priv.stream.mem.data,
-			new_alloc(std_ArrayList)
+			new_alloc(std_Array_List)
 		);
 	}
 

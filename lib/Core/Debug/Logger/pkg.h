@@ -28,7 +28,7 @@ FMT(),
 
 private(
 	std_String* 	name;
-	std_ArrayList   logs;
+	std_Array_List   logs;
 )
 ){
       	std_Logger*  fn(getStdLogger)();

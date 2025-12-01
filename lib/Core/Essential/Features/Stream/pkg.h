@@ -32,7 +32,7 @@ private(
 	    streamHandle handle;
 
 	    namespace(mem,
-	        std_ArrayList* data;
+	        std_Array_List* data;
 	        len_t pos;
 	    )
 	    namespace(buff,

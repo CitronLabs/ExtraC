@@ -1,38 +1,19 @@
-#include "../../../../pkg.h"
+#include "../../../pkg.h"
 
 import(std)
 
-
-errvt methodimpl(std_ArrayStack, Grow, u64 add_amount){
-	nonull(self, return err);
-	
-	self->allocSize += add_amount;
-
-	self->data = realloc(self->data, self->allocSize * self->typeSize);
-	
-	if(!self->data) 
-		return ERR(ERR_FAIL , "failed to grow this stack");
-
-return OK;
-}
-
-
-
-WRITE(std_ArrayStack){
+WRITE(std_Array_Buffer){
 	nonull(self, return err;);
 	
-	if((self->currSize + 1) >= self->allocSize){ 
-		self->allocSize = (self->allocSize * 2) + size;
-		self->data = realloc(self->data, self->allocSize * self->typeSize);
-	}
-	loop(i, size)
-		memcpy(&((u8*)self->data)[self->currSize * self->typeSize], data[i], self->typeSize);
-		self->currSize += size;
+	if(size > this.items) size = this.items;
 
-return OK;
+	loop(i, size)
+		memcpy(pntr_shiftcpy(this.data, i * this.typeSize), data[i], this.typeSize);
+
+return size;
 }
 
-READ(std_ArrayStack){
+READ(std_Array_Buffer){
 	nonull(self, return err);
 
 	if(0 == self->currSize) return ERR(DATAERR_EMPTY, "stack is empty");
@@ -47,19 +28,19 @@ READ(std_ArrayStack){
 return OK;
 }
 
-SIZE(std_ArrayStack){
+SIZE(std_Array_Buffer){
 	if(!self)
-		return sizeof(std_ArrayStack);
+		return sizeof(std_Array_Buffer);
 	elif (elements)
 	  	return self->currSize;
 	else
 	  	return self->currSize * self->typeSize;
 }
-COPY(std_ArrayStack){
+COPY(std_Array_Buffer){
 
-	std_ArrayStack* dest = where;
+	std_Array_Buffer* dest = where;
 
-	create(std_ArrayStack, where, 
+	create(std_Array_Buffer, where, 
 		.typeSize = self->typeSize,
 		.initSize = self->currSize,
 		.data = self->data
@@ -68,34 +49,34 @@ COPY(std_ArrayStack){
 return where;
 }
 
-DESTROY(std_ArrayStack){
+DESTROY(std_Array_Buffer){
 	free(self->data);
 return OK;
 }
-SET(std_ArrayStack){
+SET(std_Array_Buffer){
 	free(self->data);
 
-	create(std_ArrayStack, self, 
+	create(std_Array_Buffer, self, 
 		.typeSize = self->typeSize,
 		.initSize = self->currSize,
 		.data = value
 	);
 return OK;
 }
-HASH(std_ArrayStack){
+HASH(std_Array_Buffer){
 	return hash_bytes(self->data, self->typeSize * self->currSize);
 }
-ITER(std_ArrayStack){
+ITER(std_Array_Buffer){
 	if(index > self->currSize) index = self->currSize;
 
 	return pntr_shiftcpy(self->data, self->currSize - index);
 }
 
 
-PRINT(std_ArrayStack){
+PRINT(std_Array_Buffer){
 
 	return write(out, 
-	      "(ArrayStack){ ",
+	      "(ArrayBuffer){ ",
 	       		".size = ", 	$(self->currSize), ", ",
 			".alloced = ", 	$(self->allocSize),", ",
 	       		".typeSize = ", $(self->typeSize), ", ",
@@ -104,19 +85,19 @@ PRINT(std_ArrayStack){
 
 }
 
-construct(std_ArrayStack,
+construct(std_Array_Buffer,
 FMT(),
 DEF(),
-	.Print   = std_ArrayStack_Op_Print,
-	.Create  = std_ArrayStack_Op_Create,
-	.Copy 	 = std_ArrayStack_Op_Copy,
-	.Size 	 = std_ArrayStack_Op_Size,
-	.Destroy = std_ArrayStack_Op_Destroy,
-	.Set	 = std_ArrayStack_Op_Set,
-	.Hash	 = std_ArrayStack_Op_Hash,
-	.Write   = std_ArrayStack_Op_Write,
-	.Read 	 = std_ArrayStack_Op_Read,
-	.Iter 	 = std_ArrayStack_Op_Iter,
+	.Print   = std_Array_Buffer_Op_Print,
+	.Create  = std_Array_Buffer_Op_Create,
+	.Copy 	 = std_Array_Buffer_Op_Copy,
+	.Size 	 = std_Array_Buffer_Op_Size,
+	.Destroy = std_Array_Buffer_Op_Destroy,
+	.Set	 = std_Array_Buffer_Op_Set,
+	.Hash	 = std_Array_Buffer_Op_Hash,
+	.Write   = std_Array_Buffer_Op_Write,
+	.Read 	 = std_Array_Buffer_Op_Read,
+	.Iter 	 = std_Array_Buffer_Op_Iter,
 	.Scan    = nilmethod,
 ){
 	len_t alloc_size = arg.data ? 

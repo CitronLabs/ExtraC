@@ -1,4 +1,4 @@
-#include "../../../../pkg.h"
+#include "../../../pkg.h"
 
 import(std)
 
@@ -19,7 +19,7 @@ import(std)
 #define slot_size (self->typeSize)
 
 
-errvt methodimpl(std_ArrayQueue, Grow, u64 add_amount){
+errvt methodimpl(std_Array_Queue, Grow, u64 add_amount){
 	
 	u64 queue_allocsize = get_slot_dist(self->start, self->end); 
 	
@@ -45,13 +45,13 @@ return OK;
 
 
 
-WRITE(std_ArrayQueue){
+WRITE(std_Array_Queue){
 	nonull(self, return err);
 
 	u64 queue_allocsize = get_slot_dist(self->start, self->end);
 
 	if(self->items + size > queue_allocsize){
-		std_ArrayQueue_Grow(self, (queue_allocsize / 2) + size);
+		std_Array_Queue_Grow(self, (queue_allocsize / 2) + size);
 	}
 
 	loop(i, size){
@@ -61,7 +61,7 @@ WRITE(std_ArrayQueue){
 return size;
 }
 
-READ(std_ArrayQueue){
+READ(std_Array_Queue){
 	nonull(self, return err);
 
 	if(size > self->items)
@@ -84,12 +84,12 @@ READ(std_ArrayQueue){
 return size;
 }
 
-SIZE(std_ArrayQueue){ return self ? elements ? self->items : self->items * self->typeSize : sizeof(std_ArrayQueue); }
-COPY(std_ArrayQueue){
+SIZE(std_Array_Queue){ return self ? elements ? self->items : self->items * self->typeSize : sizeof(std_Array_Queue); }
+COPY(std_Array_Queue){
 	
-	std_ArrayQueue* dest = where;
+	std_Array_Queue* dest = where;
 
-	create(std_ArrayQueue, dest, 
+	create(std_Array_Queue, dest, 
 		.typeSize = self->typeSize,
 		.initSize = self->items
 	);
@@ -101,14 +101,14 @@ COPY(std_ArrayQueue){
 return where;
 }
 
-DESTROY(std_ArrayQueue){
+DESTROY(std_Array_Queue){
 	free(self->start);
 return OK;
 }
-SET(std_ArrayQueue){
+SET(std_Array_Queue){
 	free(self->start);
 	
-	create(std_ArrayQueue, self,  
+	create(std_Array_Queue, self,  
 		.typeSize = self->typeSize,
 		.initSize = self->items,
 		.data = value
@@ -118,7 +118,7 @@ return OK;
 }
 
 
-errvt std_ArrayQueue_Op_Get(std_ArrayQueue* self, void* buff){
+errvt std_Array_Queue_Op_Get(std_Array_Queue* self, void* buff){
 
 	u8* readhead = self->readhead;
 	loop(i, self->items){
@@ -138,10 +138,10 @@ errvt std_ArrayQueue_Op_Get(std_ArrayQueue* self, void* buff){
 return OK;
 }
 
-HASH(std_ArrayQueue){
+HASH(std_Array_Queue){
 	void* temp_buff = malloc(self->typeSize * self->items);
 
-	std_ArrayQueue_Op_Get(self, temp_buff);
+	std_Array_Queue_Op_Get(self, temp_buff);
 
 	u32 result = hash_bytes(temp_buff, self->typeSize * self->items);
 	
@@ -150,7 +150,7 @@ HASH(std_ArrayQueue){
 return result;
 }
 
-ITER(std_ArrayQueue){
+ITER(std_Array_Queue){
 	nonull(self, return null);
 
 	if(self->items <= index) {
@@ -178,7 +178,7 @@ return pntr_shiftcpy(index_start, index * self->typeSize);
 }
 
 
-PRINT(std_ArrayQueue){
+PRINT(std_Array_Queue){
 	return write(out, 
 	      "(ArrayQueue){ ",
 	       	".size = ", 		$(self->items), 	", ",
@@ -191,24 +191,24 @@ PRINT(std_ArrayQueue){
 	      	".items_til_jump = ",	$(self->items_til_jump),", ",
 	      " }", fmt_end);
 }
-construct(std_ArrayQueue,
+construct(std_Array_Queue,
 FMT(),
 DEF(),
-	.Print   = std_ArrayQueue_Op_Print,
-	.Create  = std_ArrayQueue_Op_Create,
-	.Copy 	 = std_ArrayQueue_Op_Copy,
-	.Size 	 = std_ArrayQueue_Op_Size,
-	.Destroy = std_ArrayQueue_Op_Destroy,
-	.Set	 = std_ArrayQueue_Op_Set,
-	.Hash	 = std_ArrayQueue_Op_Hash,
-	.Write   = std_ArrayQueue_Op_Write,
-	.Read 	 = std_ArrayQueue_Op_Read,
-	.Iter 	 = std_ArrayQueue_Op_Iter,
+	.Print   = std_Array_Queue_Op_Print,
+	.Create  = std_Array_Queue_Op_Create,
+	.Copy 	 = std_Array_Queue_Op_Copy,
+	.Size 	 = std_Array_Queue_Op_Size,
+	.Destroy = std_Array_Queue_Op_Destroy,
+	.Set	 = std_Array_Queue_Op_Set,
+	.Hash	 = std_Array_Queue_Op_Hash,
+	.Write   = std_Array_Queue_Op_Write,
+	.Read 	 = std_Array_Queue_Op_Read,
+	.Iter 	 = std_Array_Queue_Op_Iter,
 	.Scan    = nilmethod,
 ){
 	u64 start_size = arg.initSize == 0 ? 10 : args->initSize;
 
-	*self = (std_ArrayQueue){
+	*self = (std_Array_Queue){
 		.start 	  = calloc(start_size, arg.typeSize),
 		.typeSize = arg.typeSize,
 		.items = 0,

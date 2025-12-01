@@ -131,7 +131,7 @@ DEF(),
 	  	return null;
 	}
 	
-	if(create(std_ArrayList, &priv.logs, sizeof(std_Stream*), 10) == null){
+	if(create(std_Array_List, &priv.logs, sizeof(std_Stream*), 10) == null){
 	  	ERR(ERR_FAIL, "failed to initialize logs array");
 		return null;
 	}
