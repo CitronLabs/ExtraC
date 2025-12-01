@@ -1,8 +1,3 @@
-
-// This file was automatically generated to support up to 150 arguments using _Generic.
-
-#include <stddef.h> // For size_t
-
 /**
  * __ARGS_calc_size(A): Calculates the size of the argument A.
  * Special case: Treats string literals (char*) as sizeof(char*) instead of sizeof("literal"),
