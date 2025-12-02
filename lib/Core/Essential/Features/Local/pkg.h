@@ -8,9 +8,10 @@
 
 #define package std
 
+#define Local(type) std_Local*
 
 Class(Local,
-INIT(len_t len),,
+INIT(len_t len; void* init),,
 private(
 	registerHandle local_register;
 )){
