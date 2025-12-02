@@ -8,6 +8,7 @@
 #define pntr_shift(ptr, shift_amt) ptr = ((pntr)(&(((u8*)ptr)[shift_amt])))
 #define pntr_shiftcpy(ptr, shift_amt) ((pntr)(&(((u8*)ptr)[shift_amt])))
 #define pntr_asVal(addr) (*(u64*)&addr)
+#define pntr_dist(a, b) (pntr_asVal(b) - pntr_asVal(a))
 
 #define usign_max(type) (~(type){0})   
 #define sign_max(type)  ((~(type){0})>>1)
@@ -57,11 +58,11 @@ void*:  ((pntr){0})	\
 #define __ vargs args, ...
 #define varg(type) args.size ? (args.size -= sizeof(type), __XC_VARGS_GETARG(*args.data, type)) : (type){0}
 
-#define va_use if(!args.data) 				\
-		for(args.data = &(__XC_VARGS_TYPE){0}, 	\
-		    __XC_VARGS_START(*args.data, args); \
-		    args.data; 				\
-		    __XC_VARGS_END(*args.data), 	\
-		    args.data = NULL)
+#define va_use for(int __data_is_set = args.data ? 2 : 1; __data_is_set > 0;)		\
+		for((args.data = !args.data ? &(__XC_VARGS_TYPE){0} : args.data), 	\
+		    __XC_VARGS_START(*args.data, args); 				\
+		    __data_is_set-- > 0; 						\
+		    __XC_VARGS_END(*args.data), 					\
+		    args.data = __data_is_set-- ? args.data : NULL)
 
 
