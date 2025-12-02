@@ -73,7 +73,7 @@ u64 methodimpl(std_Number, IntPrintHex, std_Stream* out) {
 	u64 num_digits = std.List.Size(priv.digits);
 	char buffer[(sizeof(u32) * 2) + 1] = {0};
 	
-	write(out, s("0x"));
+	printTo(out, "0x");
 	
 	u32 digit = 0;
 	
@@ -95,7 +95,7 @@ u64 methodimpl(std_Number, IntPrintBin, std_Stream* out) {
 	u64 num_digits = std.List.Size(priv.digits);
 	char buffer[(sizeof(u32) * 8) + 1] = {0};
 	
-	write(out, s("0b"));
+	printTo(out, "0b");
 	
 	// Print the most significant digit first, without padding
 	u32 digit = 0;

@@ -14,12 +14,31 @@
 
 #define f (*format)
 
+#define __AS_FMT_OBJ(var) 			\
+_Generic((var), 				\
+i32:    	&(std_Types_Format_Value){0},	\
+u32:		&(std_Types_Format_Value){0}, 	\
+i64:    	&(std_Types_Format_Value){0}, 	\
+u64:    	&(std_Types_Format_Value){0}, 	\
+i16:   		&(std_Types_Format_Value){0}, 	\
+u16:   		&(std_Types_Format_Value){0},	\
+i8:   		&(std_Types_Format_Value){0},	\
+u8:   		&(std_Types_Format_Value){0},	\
+float:   	&(std_Types_Format_Value){0},	\
+double:   	&(std_Types_Format_Value){0},	\
+const char*: 	&(std_Types_Format_Text) {0},	\
+char*:	 	&(std_Types_Format_Text) {0},	\
+char:	 	&(std_Types_Format_Text) {0},	\
+void*:	  	&(std_Types_Format_Value){0},	\
+bool:		&(std_Types_Format_Value){0}, 	\
+default: 	var)	
+
 #define $(expr)   	  null, generic &asObject((expr))->__type->ops, generic asObject((expr)), NULL
 #define $use(typeData, data)   null, generic &((typeData)->ops), generic data, NULL
 
 #define $F(expr, ...)    							\
 	null, generic &asObject((expr))->__type->ops, generic asObject((expr)), 	\
-	generic &(typeof(*asObject(expr)->__type->format)){__VA_ARGS__}
+	generic &(typeof(*((__AS_FMT_OBJ(expr))->__type->format))){__VA_ARGS__}
 
 #define $Fwith(expr, args)    									\
 	null, generic &asObject((expr))->__type->ops, generic asObject((expr)), generic &args	\
@@ -33,14 +52,14 @@
 
 
 
-#define printTo(strm, ...) 	std.Type.data.writeTo( 			\
+#define printTo(strm, ...) 	std.Types.data.writeTo( 			\
 				    V(strm), 			\
 				    (void*[]){__VA_ARGS__}, 		\
 				    __VA_ARG_LEN__(type, __VA_ARGS__) 	\
 	  			)
 
 
-#define scanFrom(strm, ...) 	std.Type.data.readFrom( 		\
+#define scanFrom(strm, ...) 	std.Types.data.readFrom( 		\
                                      V(strm), 			\
                                      (void*[]){__VA_ARGS__}, 		\
                                      __VA_ARG_LEN__(type, __VA_ARGS__) 	\
@@ -50,4 +69,20 @@
 #define scan(...) 	 scanFrom(std.Stream.stdIn(),  __VA_ARGS__) 
 #define println(...) 	 printTo(std.Stream.stdOut(), __VA_ARGS__ , "\n") 
 #define scanln(...) 	 scanFrom(std.Stream.stdIn(), __VA_ARGS__ , "\n") 
+
+#define package std_Types_Format
+
+Data(Value,
+INIT(),
+FMT(len_t precision; double percentOf; byte base),
+	
+)
+
+Data(Text,
+INIT(),
+FMT(),
+	
+)
+
+#undef package
 

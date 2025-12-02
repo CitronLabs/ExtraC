@@ -63,7 +63,7 @@ u64 methodimpl(std_Number, FloatPrint, std_Stream* out) {
 			return 0;
 		}
 
-		iferr(std.String.streamDecoder(mantissa_strm, mantissa_string)){
+		if(!scanFrom(mantissa_strm, $(mantissa_string))){
 			ERR(ERR_FAIL, "failed to decode string from mantissa stream");
 			pop(mantissa_string, mantissa_strm);
 			return 0;
