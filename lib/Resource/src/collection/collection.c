@@ -22,7 +22,7 @@ __METHODS(
 	};
 
 	if(arg.memMap == null)
-		failinit(ERR_nullPTR, "memory map cannot be null");
+		failinit(ERR_NULLPTR, "memory map cannot be null");
 	
 	if(priv.resources == null)
 		failinit(ERR_INITFAIL, "failed to create resource list");

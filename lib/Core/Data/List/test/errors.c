@@ -6,7 +6,7 @@ TEST(LIST_ERRORS){
 	NEW_SUBTEST("Append with null data"){
 		errnm = ERR_NONE;
 		List.Append(test_list, null, 5);
-		if (errnm == ERR_nullPTR) {
+		if (errnm == ERR_NULLPTR) {
 		    PASS_TEST
 		} else {
 		    FAIL_TEST

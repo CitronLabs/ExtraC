@@ -82,12 +82,12 @@ ITER(std_Logger){
 WRITE(std_Logger){
 	nonull(self, return 0);
 	
-	return std.Type.data.writeTo(V(&priv.logs), data, size);
+	return std.Types.data.writeTo(V(&priv.logs), data, size);
 }
 READ(std_Logger){
 	nonull(self, return 0);
 
-	return std.Type.data.readFrom(V(&priv.logs), data, size);
+	return std.Types.data.readFrom(V(&priv.logs), data, size);
 }
 COPY(std_Logger){
 	
@@ -124,7 +124,7 @@ DEF(),
 
 	nonull(arg.name, return null);
 
-	priv.name = newString(arg.name, 1048);
+	priv.name = new(std_String, arg.name, 1048);
 
 	if(!priv.name){
 		ERR(ERR_FAIL, "failed to duplicate logger name");

@@ -39,9 +39,10 @@ Module(std){
 	MINOR,
 	PATCH
   )
-	interface(std_Type)		Type;
+	interface(std_Types)		Types;
 	interface(std_Error)		Error;
 	interface(std_Local) 	  	Local;
+	interface(std_Array) 		Array;
 	interface(std_Stream) 		Stream;
 	interface(std_FS) 		FS;
    	interface(std_String) 		String;

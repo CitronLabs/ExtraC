@@ -137,7 +137,7 @@
 
 #define asXCType(type)						\
 	Decl(type)						\
-	extern const char type##_TypeID[];				\
+	extern const char type##_TypeID[];			\
 	typedef type type##_Instance; 				\
 	typedef type type##_ConstructArgs;			\
 	typedef type type##_FormatArgs;				\
@@ -153,6 +153,46 @@
 	extern const type##_Type_t type##_TypeData;  		\
 	static const type##_Type_t* 				\
 	type##_Type = &type##_TypeData; 			\
+
+#define asXCType_INIT(type, ...)				\
+	Decl(type)						\
+	extern const char type##_TypeID[];			\
+	typedef type type##_Instance; 				\
+	typedef struct {__VA_ARGS__;} type##_ConstructArgs;	\
+	typedef type type##_FormatArgs;				\
+	typedef struct type##_Ops_t {OPERATOR_FUNCS(type)}	\
+	type##_Ops_t;						\
+	typedef struct type##_Type_t{				\
+		const type##_Ops_t* ops;			\
+		const len_t size;				\
+		const char* id;					\
+		const type##_FormatArgs* format;		\
+		const type##_ConstructArgs* construct;		\
+	}type##_Type_t;  					\
+	extern const type##_Type_t type##_TypeData;  		\
+	static const type##_Type_t* 				\
+	type##_Type = &type##_TypeData; 			\
+
+
+#define asXCType_FMT(type, ...)					\
+	Decl(type)						\
+	extern const char type##_TypeID[];			\
+	typedef type type##_Instance; 				\
+	typedef type type##_ConstructArgs;			\
+	typedef struct {__VA_ARGS__;}  type##_FormatArgs;	\
+	typedef struct type##_Ops_t {OPERATOR_FUNCS(type)}	\
+	type##_Ops_t;						\
+	typedef struct type##_Type_t{				\
+		const type##_Ops_t* ops;			\
+		const len_t size;				\
+		const char* id;					\
+		const type##_FormatArgs* format;		\
+		const type##_ConstructArgs* construct;		\
+	}type##_Type_t;  					\
+	extern const type##_Type_t type##_TypeData;  		\
+	static const type##_Type_t* 				\
+	type##_Type = &type##_TypeData; 			\
+
 
 #define asClass(type, INIT, FMT)							\
 	Decl(type);									\

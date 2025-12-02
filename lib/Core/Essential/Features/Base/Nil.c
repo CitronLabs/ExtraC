@@ -6,7 +6,7 @@ import(std)
 #undef nilmethod
 
 len_t nilmethod(){
-	ERR(ERR_nullPTR, "nil method called"); return 0;} 
+	ERR(ERR_NULLPTR, "nil method called"); return 0;} 
 
 construct(std_Nil,,,
 

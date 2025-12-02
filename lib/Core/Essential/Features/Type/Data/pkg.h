@@ -3,6 +3,8 @@
 #include "../pkg.h"
 #include "../types.h"
 
+#define package std
+
 #define WRITE(class)	 u64   methodimpl(class, Op_Write, pntr data[], len_t size)			
 #define READ(class)	 u64   methodimpl(class, Op_Read , pntr data[], len_t size)			
 #define SET(class)     	 errvt methodimpl(class, Op_Set  , void* value)			
@@ -27,35 +29,35 @@ Interface(Data_Ops,
 )
 
 
-#define write(var, ...)  	  std.Type.data.writeTo(V(asObject(var)), (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
-#define write_use(type, var, ...)  std.Type.data.writeTo((std_varData){generic type, .data = generic var}, (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
+#define write(var, ...)  	  std.Types.data.writeTo(V(asObject(var)), (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
+#define write_use(type, var, ...)  std.Types.data.writeTo((std_varData){generic type, .data = generic var}, (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
 
-#define read(var, ...)  	  std.Type.data.readFrom(V(asObject(var)), (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
-#define read_use(type, var, ...)   std.Type.data.readFrom((std_varData){generic type, .data = generic var}, (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
+#define read(var, ...)  	  std.Types.data.readFrom(V(asObject(var)), (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
+#define read_use(type, var, ...)   std.Types.data.readFrom((std_varData){generic type, .data = generic var}, (void*[]){__VA_ARGS__}, __VA_ARG_LEN__(type, __VA_ARGS__))
 
-#define set(var, to)      std.Type.data.setTo(V(asObject(var)), to)
-#define copy(var, to)     std.Type.data.copyTo(V(asObject(var)), to)
-#define hash(var)         std.Type.data.hashOf(V(asObject(var)))
-#define index(var, index) std.Type.data.indexOf(V(asObject(var)), index)
+#define set(var, to)      std.Types.data.setTo(V(asObject(var)), to)
+#define copy(var, to)     std.Types.data.copyTo(V(asObject(var)), to)
+#define hash(var)         std.Types.data.hashOf(V(asObject(var)))
+#define index(var, index) std.Types.data.indexOf(V(asObject(var)), index)
 
-#define set_use(type, var, to)      std.Type.data.setTo  ((std_varData){generic type, .data = generic var}, to)
-#define copy_use(type, var, to)     std.Type.data.copyTo ((std_varData){generic type, .data = generic var}, to)
-#define hash_use(type, var)         std.Type.data.hashOf ((std_varData){generic type, .data = generic var})
-#define index_use(type, var, index) std.Type.data.indexOf((std_varData){generic type, .data = generic var}, index)
+#define set_use(type, var, to)      std.Types.data.setTo  ((std_varData){generic type, .data = generic var}, to)
+#define copy_use(type, var, to)     std.Types.data.copyTo ((std_varData){generic type, .data = generic var}, to)
+#define hash_use(type, var)         std.Types.data.hashOf ((std_varData){generic type, .data = generic var})
+#define index_use(type, var, index) std.Types.data.indexOf((std_varData){generic type, .data = generic var}, index)
 
-#define elements(var)     std.Type.data.sizeOf(V(asObject(var)), true)
-#define size(var)         std.Type.data.sizeOf(V(asObject(var)), false)
+#define elements(var)     std.Types.data.sizeOf(V(asObject(var)), true)
+#define size(var)         std.Types.data.sizeOf(V(asObject(var)), false)
 
-#define elements_use(type, var)     std.Type.data.sizeOf((std_varData){generic type, .data = generic var}, true)
-#define size_use(type, var)         std.Type.data.sizeOf((std_varData){generic type, .data = generic var}, false)
+#define elements_use(type, var)     std.Types.data.sizeOf((std_varData){generic type, .data = generic var}, true)
+#define size_use(type, var)         std.Types.data.sizeOf((std_varData){generic type, .data = generic var}, false)
 
 
 
 #define get(var, to)      static_assert(false, "currently unimplemented reserving for future use");
-			  //std.Type.data.getFrom(V(asObject(var)), to)
+			  //std.Types.data.getFrom(V(asObject(var)), to)
 
 #define get_use(type, var, to)    static_assert(false, "currently unimplemented reserving for future use"); 
-				  //std.Type.data.getFrom((std_varData){generic &type, .data = generic var}, to)
+				  //std.Types.data.getFrom((std_varData){generic &type, .data = generic var}, to)
 
 u32 hash_bytes(void* data_ptr, u64 size);
 
@@ -80,4 +82,4 @@ u32 hash_bytes(void* data_ptr, u64 size);
 
 #define HASHMAP_HASH_INIT 2166136261u
 
-
+#undef package

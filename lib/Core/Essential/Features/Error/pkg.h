@@ -24,7 +24,7 @@
 #define catch else for(std_Error* err = std.Error.Get(); err->errorcode != ERR_NONE; std.Error.Clear())
 
 #define throw(code, msg) ERR(code, msg); std.Error.Throw();
-#define nullerr(var) ERR(ERR_nullPTR, #var " is null")
+#define nullerr(var) ERR(ERR_NULLPTR, #var " is null")
 #define nonull(var, ...) if(!(var)){errvt err = nullerr(var); __VA_ARGS__;}
 #define iferr(errorable) for(errvt err = (errorable); err; std.Error.Clear())
 #define NOT_IMPLEM(returnval) ERR(ERR_NOTIMPLEM, "not implemented yet..."); return returnval;

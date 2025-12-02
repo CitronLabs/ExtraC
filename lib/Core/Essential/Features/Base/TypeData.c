@@ -1,4 +1,4 @@
-#include "../../../../pkg.h"
+#include "../../../pkg.h"
 
 import(std)
 

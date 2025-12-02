@@ -1,6 +1,6 @@
 #if defined (			__ERROR_CODES__				)
 /*---------------------------------------------------------------------------*/
-	ERR_NONE, ERR_INVALID, ERR_nullPTR, ERR_INITFAIL, 
+	ERR_NONE, ERR_INVALID, ERR_NULLPTR, ERR_INITFAIL, 
 	ERR_NOTIMPLEM, ERR_FAIL, ERR_BUSY,
 
 	ERR_SEGFAULT, ERR_ABORT,

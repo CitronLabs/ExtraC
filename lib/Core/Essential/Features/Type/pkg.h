@@ -5,7 +5,6 @@
 
 //=======EXPORTS========
 #ifndef __XC_TYPES__
-#define package std
 	#include "Classes/pkg.h"
 
 	#include "types.h"
@@ -15,7 +14,9 @@
 	#include "Alloc/pkg.h"
 	#include "Format/pkg.h"
 
-	Interface(Type,
+#define package std
+
+	Interface(Types,
 		interface(std_Data_Ops)  data;
 		interface(std_Alloc_Ops) alloc;
 	)

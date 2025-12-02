@@ -1,6 +1,7 @@
 #pragma once
 #define __XC_TYPES__
 #include "pkg.h"
+#include "Classes/pkg.h"
 
 #define package std
 
@@ -40,5 +41,7 @@ type(varData,
 	std_typeData type;
        	void* data;
 )
+
+#undef package
 
 

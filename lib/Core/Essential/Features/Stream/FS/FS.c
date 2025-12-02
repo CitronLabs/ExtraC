@@ -74,7 +74,7 @@ return OK;
 READ(std_FSEntry){
 	nonull(self, return 0);
 
-return std.Type.data.readFrom(
+return std.Types.data.readFrom(
   	VFrom(streamHandle_Type, std.Stream.getHandle(self->stream)),
   	data, size
 );
@@ -82,7 +82,7 @@ return std.Type.data.readFrom(
 WRITE(std_FSEntry){
 	nonull(self, return 0);
 
-return std.Type.data.writeTo(
+return std.Types.data.writeTo(
   	VFrom(streamHandle_Type, std.Stream.getHandle(self->stream)),
   	data, size
 );

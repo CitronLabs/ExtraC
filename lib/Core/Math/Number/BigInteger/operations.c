@@ -24,7 +24,7 @@ errvt methodimpl(std_Number, IntAdd, std_Number* other, std_Number* result) {
 	    	case NUM_EQUALS:{
 	    		std_Number_setZero(result);
 	    	break;}
-	    	default:{ ERR(ERR_nullPTR, "invalid input"); }
+	    	default:{ ERR(ERR_NULLPTR, "invalid input"); }
 	    	}
 	    }
 	} catch {
@@ -57,7 +57,7 @@ return OK;
 	    	case NUM_EQUALS:{
 	    		std_Number_setZero(result);
 	    	break;}
-	    	default:{ERR(ERR_nullPTR, "invalid input");}
+	    	default:{ERR(ERR_NULLPTR, "invalid input");}
 	    	}
 	    }
 	} catch {

@@ -117,7 +117,7 @@ construct(Thread,
 	}
 ){
 	if(arg.func == null){
-		ERR(ERR_nullPTR, "start function cannot be null");
+		ERR(ERR_NULLPTR, "start function cannot be null");
 	    	return null;
 	}
 	
