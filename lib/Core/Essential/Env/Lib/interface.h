@@ -103,7 +103,11 @@ Module(XC){
 	errvt fn(protect)(void* ptr, len_t num_pages, word permissions);
   )
   namespace(Time,
-      	errvt fn(get)(timeSource src, timeSpec* ts);
+	values(Source, word,
+		REALTIME,
+		MONOTONIC
+	)
+      	errvt fn(getNow)(word src, timeSpec* ts);
       
       	errvt fn(sleep)(const timeSpec* duration);
       

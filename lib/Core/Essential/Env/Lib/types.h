@@ -92,11 +92,6 @@ typedef struct timeSpec {
     	u64 nanoseconds;
 } timeSpec;
 
-typedef enum {
-	TIME_REALTIME,    // Wall clock time
-	TIME_MONOTONIC    // Non-decreasing time
-} timeSource;
-
 typedef struct __xc_register_type{}* registerHandle;
 typedef struct __xc_device_type{}*   devHandle;
 
