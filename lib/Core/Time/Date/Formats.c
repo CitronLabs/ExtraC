@@ -4,6 +4,19 @@ import(std)
 
 alias(std.Time.Convert, convert);
 
+enum(Date_Format,
+	std_Date_Format_Null,
+	std_Date_Format_US,
+	std_Date_Format_Time_12Hour,
+	std_Date_Format_Time_24Hour,
+	std_Date_Format_EU,
+	std_Date_Format_FullName,
+	std_Date_Format_ISODate,
+	std_Date_Format_ISOTime,
+	std_Date_Format_RFC,
+)
+
+
 PRINT(std_Date){
     nonull(self, return 0);
     if(!std.Date.isValid(self)){

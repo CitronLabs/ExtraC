@@ -9,14 +9,14 @@
 Decl(Time)
 
 Interface(ClockSystem,
-	std_Time* imethod(getTime);
+	 std_Time* fn(getTime)(std_Time*);
 
 )
 
 Class(Clock, 
 INIT(intf(std_ClockSystem) clockSystem), 
-FMT(),
-
+FMT(std_Date_Format type),
+	intf(std_ClockSystem) system;
 ){
       	namespace(Systems,
 	  namespace(UTC,
@@ -34,7 +34,7 @@ FMT(),
 	)
 	std_Time*  fn(getNow)();
 
-	std_Time*  method(Clock, getTime);
+	std_Time*  method(Clock, getTime, std_Time* time_buff);
 	errvt 	   method(Clock, setPrimary);
 	std_Clock* fn(getPrimary)();
 };

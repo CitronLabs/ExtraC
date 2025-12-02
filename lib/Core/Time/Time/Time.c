@@ -160,7 +160,7 @@ return 0;
 }
 
 construct(std_Time,
-FMT(.type = std_Date_Format_Null),
+FMT(),
 DEF(),
 	.Print  = std_Time_Op_Print,
 	.Create = std_Time_Op_Create,

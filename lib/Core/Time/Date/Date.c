@@ -88,6 +88,7 @@ SIZE(std_Date){ return sizeof(std_Date); }
 
 DESTROY(std_Date){ return OK; }
 
+
 construct(std_Date,
 FMT(.type = std_Date_Format_RFC),
 DEF(.time = &nilobj(std_Time)),

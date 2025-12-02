@@ -22,6 +22,16 @@ FMT(std_Date_Format type),
 	u32   second : 6; // 60 seconds fit into 2^6 = 64   
       	// 4 + 5 + 5 + 6 + 6 = 26 bytes fits into a u32 bit integer w. 6 bytes spare 
 ){
+	values(Format, word,
+		US,
+		Time_12Hour,
+		Time_24Hour,
+		EU,
+		FullName,
+		ISODate,
+		ISOTime,
+		RFC
+	)
       	bool method(Date, isValid);
       	std_Time* method(Date, toTime);
       	const char* method(Date, getDayName, bool shortened);
