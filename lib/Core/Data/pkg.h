@@ -14,8 +14,6 @@
 	#include "utils.h"
 	
 	#include "List/pkg.h"
-	#include "Stack/pkg.h"
-	#include "Queue/pkg.h"
 	#include "Map/pkg.h"
 	#include "Struct/pkg.h"
 

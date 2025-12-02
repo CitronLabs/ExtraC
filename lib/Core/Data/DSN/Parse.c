@@ -62,48 +62,6 @@ ERR(DATAERR_DSN, "unexpected end of string");
 return 0;
 }
 
-len_t methodimpl(std_DSN, parseQueue, std_Queue** data, std_Stream* in){
-
-	len_t scanned_len = 0;
-
-	if(!scanFrom(in, "<<[")){ 
-		ERR(DATAERR_DSN, "invalid queue format");
-		return 0;
-	}
-	
-	*data = newQueue(pntr, 10);
-
-	scanned_len += parseListLikeDataStruct(self, in, V(*data));
-	
-return scanned_len;
-}
-
-errvt QueueDSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.Queue.parse(null, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to parse queue");
-}
-
-len_t methodimpl(std_DSN, parseStack, std_Stack** data, std_Stream* in){
-
-	len_t scanned_len = 0;
-
-	if(!scanFrom(in, ">>[")){ 
-		ERR(DATAERR_DSN, "invalid stack format");
-		return 0;
-	}
-	
-	*data = newStack(pntr, 10);
-
-	scanned_len += parseListLikeDataStruct(self, in, V(*data));
-	
-return scanned_len;
-}
-
-errvt StackDSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.Stack.parse(null, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to parse stack");
-}
-
 len_t methodimpl(std_DSN, parseList, std_List** data, std_Stream* in){
 	
 	len_t scanned_len = 0;
@@ -200,8 +158,8 @@ len_t methodimpl(std_DSN, parseMap, std_Map** data, std_Stream* in){
 	std_Map* map = new(std_Map, 
 		     .key 	= TFromDSNType(key.type),
 		     .data	= TFromDSNType(value.type),
-		     .init_size 	= buckets->currSize,
-		     .literal 		= buckets->data,
+		     .init_size 	= buckets->items,
+		     .literal 		= privof(buckets).data,
 	);
 
 	*data = map;

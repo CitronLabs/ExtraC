@@ -6,8 +6,6 @@
 #include "../utils.h"
 
 #include "../List/pkg.h"
-#include "../Stack/pkg.h"
-#include "../Queue/pkg.h"
 #include "../Map/pkg.h"
 #include "../Struct/pkg.h"
 
@@ -51,20 +49,6 @@ private(
 	    std_StreamEncoder encoder;
 	    len_t method(DSN, format, std_List* data, std_Stream* out);
 	    len_t method(DSN, parse, std_List** data, std_Stream* out);
-	)
-
-	namespace(Stack,   
-	    std_StreamDecoder decoder; 
-	    std_StreamEncoder encoder;
-	    len_t method(DSN, format, std_Stack* data, std_Stream* out);
-	    len_t method(DSN, parse, std_Stack** data, std_Stream* out);
-	)
-
-	namespace(Queue,   
-	    std_StreamDecoder decoder; 
-	    std_StreamEncoder encoder;
-	    len_t method(DSN, format, std_Queue* data, std_Stream* out);
-	    len_t method(DSN, parse, std_Queue** data, std_Stream* out);
 	)
 
 	namespace(Map,   

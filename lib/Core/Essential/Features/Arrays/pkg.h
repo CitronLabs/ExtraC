@@ -4,6 +4,18 @@
 
 #include "../Type/pkg.h"
 
+#define package std
+
+Interface(Array,
+	errvt  imethod(Write,    void* data, len_t num);
+	errvt  imethod(Read,     void* data, len_t num);
+	void*  imethod(ToPointer);
+	errvt  imethod(Reserve,  bool exact, u64 amount);
+	noFail imethod(Clear);
+)
+
+#undef package
+
 #define package std_Array
 
 #define ArrayList(type) std_Array_List*
@@ -14,11 +26,11 @@
 Data(List, 
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
+	len_t typeSize, items;
+private(
      	void* data;
-	len_t 
-	    currSize, 
-	    typeSize,
-	    allocSize;
+	len_t allocSize;
+)
 );
 
 #define ArrayQueue(type) std_Array_Queue*
@@ -29,14 +41,16 @@ FMT(),
 Data(Queue,
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
+    len_t typeSize, items;
+private(
     void
      	* writehead,
      	* readhead,
      	* start,
      	* end, 
      	* jmp_point;
-    len_t typeSize, items;
     word items_til_jump;
+)
 );
 
 #define ArrayStack(type) std_Array_Stack*
@@ -47,8 +61,11 @@ FMT(),
 Data(Stack,
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
+	len_t typeSize, items;
+private(
 	void* data;
-	len_t typeSize, allocSize, currSize;
+	len_t allocSize;
+)
 );
 
 #define ArrayBuffer(type) std_Array_Buffer*
@@ -73,8 +90,7 @@ FMT(),
 Data(Buffer,
 INIT(len_t typeSize; len_t initSize; void* data),
 FMT(),
-	len_t typeSize, items;
-	void* data;
+	len_t typeSize, items; void* data;
 );
 
 

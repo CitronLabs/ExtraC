@@ -32,20 +32,20 @@ private(
 };
 
 
-#define newMap(keyType, valType, size) new(std_Map, size, T(keyType), typeDataOf(valType))
+#define newMap(keyType, valType, size) new(std_Map, size, T(keyType), T(valType))
 
-#define pushMap(keyType, valType, size) push(std_Map, size, T(keyType), typeDataOf(valType))
+#define pushMap(keyType, valType, size) push(std_Map, size, T(keyType), T(valType))
 
 #define M(keyType, valType, ...) new(std_Map,		\
 		sizeof((std_data_entry*[]){__VA_ARGS__})\
 			/ sizeof(std_data_entry*),	\
-		T(keyType),typeDataOf(valType),\
+		T(keyType), T(valType),			\
 		(std_data_entry*[]){__VA_ARGS__})
 
 #define m(keyType, valType, ...) push(std_Map,		\
 		sizeof((std_data_entry*[]){__VA_ARGS__})\
 			/ sizeof(std_data_entry*),	\
-		T(keyType),typeDataOf(valType),\
+		T(keyType),T(valType),			\
 		(std_data_entry*[]){__VA_ARGS__})
 
 #define INVALID_MAPINDEX (maxof(u32))

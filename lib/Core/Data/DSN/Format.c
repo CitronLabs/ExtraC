@@ -5,57 +5,6 @@ import(std)
 
 #include "Utils.c"
 
-len_t methodimpl(std_DSN, formatQueue, std_Queue* data, std_Stream* out){
-	
-	std_DSN_fieldType dsn_type = resolveDSNType(std.Queue.GetType(data));
-
-	if(!dsn_type) return 0;
-
-	len_t formated_len = write(out, "<<[ ", fmt_end);
-	
-	foreach(data, void, elmnt){
-	    formated_len += std.DSN.format(self, &(std_DSN_data){dsn_type, elmnt}, out);
-
-	    if(elmnt_iterator + 1 < elements(data))
-		formated_len += write(out, ", ", fmt_end);
-	}
-
-	formated_len += write(out, " ]", fmt_end);
-	
-return formated_len;
-}
-
-errvt QueueDSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.Queue.format(null, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to format queue");
-}
-
-
-len_t methodimpl(std_DSN, formatStack, std_Stack* data, std_Stream* out){
-
-	std_DSN_fieldType dsn_type = resolveDSNType(std.Stack.GetType(data));
-
-	if(!dsn_type) return 0;
-
-	len_t formated_len = write(out, ">>[ ", fmt_end);
-	
-	foreach(data, void, elmnt){
-	    formated_len += std.DSN.format(self, &(std_DSN_data){dsn_type, elmnt}, out);
-
-	    if(elmnt_iterator + 1 < elements(data))
-		formated_len += write(out, ", ");
-	}
-
-	formated_len += write(out, " ]", fmt_end);
-	
-return formated_len;
-}
-
-errvt StackDSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.Stack.format(null, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to format stack");
-}
-
 len_t methodimpl(std_DSN, formatList, std_List* data, std_Stream* out){
 	
 	std_DSN_fieldType dsn_type = resolveDSNType(std.List.GetType(data));
@@ -152,5 +101,4 @@ errvt StringDSN_Encoder(std_Stream* strm, void* data){
 	return std.DSN.String.format(null, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to format struct");
 }
-
 

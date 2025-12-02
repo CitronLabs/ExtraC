@@ -8,36 +8,6 @@ import(std)
 #include "Parse.c"
 #include "DSB.c"
 
-errvt handleQueueOverride(std_DSN_data* reference, std_DSN_data* override){
-	std_Queue* ref = reference->data;
-	std_Queue* ovr = override->data;
-	
-	if(std.Queue.GetType(ref).id != std.Queue.GetType(ovr).id)
-		return ERR(DATAERR_DSN, "override types dont match that of the reference");
-	
-	len_t ref_size = std.Queue.Count(ref), ovr_size = std.Queue.Count(ovr);
-
-	if(ref_size > ovr_size){
-		void* ref_ovr = std.Queue.ToPointer(ref);
-		std.Queue.Enqueue(ovr, ref_ovr, ref_size - ovr_size);
-	}
-return OK;
-}
-errvt handleStackOverride(std_DSN_data* reference, std_DSN_data* override){
-	std_Stack* ref = reference->data;
-	std_Stack* ovr = override->data;
-	
-	if(std.Stack.GetType(ref).id != std.Stack.GetType(ovr).id)
-		return ERR(DATAERR_DSN, "override types dont match that of the reference");
-
-	len_t ref_size = std.Stack.Count(ref), ovr_size = std.Stack.Count(ovr);
-
-	if(ref_size > ovr_size){
-		void* ref_ovr = std.Stack.ToPointer(ref);
-		std.Stack.Push(ovr, ref_ovr, ref_size - ovr_size);
-	}
-return OK;
-}
 errvt handleListOverride(std_DSN_data* reference, std_DSN_data* override){
 	std_List* ref = reference->data; 
 	std_List* ovr = override->data;
@@ -147,12 +117,6 @@ len_t resolveReference(std_DSN* self, std_DSN_data* ds, std_Stream* in){
 		case DSN_LIST:{
 			err = handleListOverride(reference, &override);
 		break;}
-		case DSN_QUEUE:{
-			err = handleQueueOverride(reference, &override);
-		break;}
-		case DSN_STACK:{
-			err = handleStackOverride(reference, &override);
-		break;}
 		case DSN_MAP:{
 			err = handleMapOverride(reference, &override);
 		break;}
@@ -190,14 +154,6 @@ len_t methodimpl(std_DSN, parse, std_DSN_data* ds, std_Stream* in){
 		while(iswblank(c)) process->next(); 
 
 		switch (c) {
-		case '>':{
-			ds->type = DSN_STACK;
-			return std.DSN.Stack.parse(self, &ds->asStack, in);
-		break;}
-		case '<':{
-			ds->type = DSN_QUEUE;
-			return std.DSN.Queue.parse(self, &ds->asQueue, in);
-		break;}
 		case '[':{
 			ds->type = DSN_LIST;
 			return std.DSN.List.parse(self, &ds->asList, in);
@@ -241,12 +197,6 @@ errvt DSN_Decoder(std_Stream* strm, void* data){
 len_t methodimpl(std_DSN, format, std_DSN_data* ds, std_Stream* out){
 
 	switch (ds->type) {
-	case DSN_STACK:{
-		return std.DSN.Stack.format(self, ds->data, out);
-	break;}
-	case DSN_QUEUE:{
-		return std.DSN.Queue.format(self,  ds->data, out);
-	break;}
 	case DSN_LIST:{
 		return std.DSN.List.format(self,   ds->data, out);
 	break;}
@@ -477,7 +427,7 @@ SCAN(std_DSN){
 		    	return 0;
 		    }
 
-		    iferr(std.Struct.AddField(header, name->data.utf8, &field_data)){
+		    iferr(std.Struct.AddField(header, name->data, &field_data)){
 			ERR(DATAERR_DSN, "failed to add field to struct");
 		    	del(header, body);
 		    	pop(name);
@@ -528,7 +478,7 @@ construct(std_DSN,
 FMT(), 
 DEF(),
 ){
-	this.name = newString(args->name, 255);
+	this.name = new(std_String, args->name, 255);
 	this.body = new(std_Struct);
 
 	priv.header 	 = new(std_Struct);

@@ -1,6 +1,32 @@
-#include "../../../pkg.h"
+#include "includes.h"
 
-import(std)
+void*  methodimpl(std_Array_Buffer, ToPointer){
+	
+
+
+}
+void*  methodimpl(std_Array_Buffer, FreeToPointer){
+
+
+
+}
+errvt  methodimpl(std_Array_Buffer, Reserve, bool exact, u64 amount){
+
+
+
+
+}
+u64    methodimpl(std_Array_Buffer, Count){
+
+
+
+}
+bool   methodimpl(std_Array_Buffer, Check){
+
+
+
+}
+noFail methodimpl(std_Array_Buffer, Clear);
 
 WRITE(std_Array_Buffer){
 	nonull(self, return err;);
@@ -16,14 +42,16 @@ return size;
 READ(std_Array_Buffer){
 	nonull(self, return err);
 
-	if(0 == self->currSize) return ERR(DATAERR_EMPTY, "stack is empty");
+	if(0 == this.items) return ERR(DATAERR_EMPTY, "stack is empty");
 	
-	size = self->currSize < size ? self->currSize : size;
+	size = this.items < size ? this.items : size;
 
-	loop(i, size){
-		self->currSize--;
-		memcpy(&((u8*)self->data)[i * self->typeSize], &((u8*)self->data)[self->currSize * self->typeSize], self->typeSize);
-	}
+	loop(i, size)
+	    memcpy(&((u8*)this.data)[i * this.typeSize],
+	           &((u8*)this.data)[this.items * this.typeSize], 
+	           this.typeSize
+	    );
+	
 
 return OK;
 }
@@ -32,44 +60,116 @@ SIZE(std_Array_Buffer){
 	if(!self)
 		return sizeof(std_Array_Buffer);
 	elif (elements)
-	  	return self->currSize;
+	  	return this.items;
 	else
-	  	return self->currSize * self->typeSize;
+	  	return this.items * this.typeSize;
 }
+errvt methodimpl(std_Array_Queue, Grow, u64 add_amount);
+errvt methodimpl(std_Array_List, Grow, u64 add_amount);
+errvt methodimpl(std_Array_Stack, Grow, u64 add_amount);
+
 COPY(std_Array_Buffer){
 
-	std_Array_Buffer* dest = where;
+	std_Object* dest_obj = where;
 
-	create(std_Array_Buffer, where, 
-		.typeSize = self->typeSize,
-		.initSize = self->currSize,
-		.data = self->data
+	switchT(dest_obj->__type){
+	caseT(List){
+	    List* dest = where;
+
+	    if(dest->typeSize != this.typeSize){
+		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		return null;
+	    }
+
+	    
+	    if(dest->items + this.items > privof(dest).allocSize)
+			std_Array_List_Grow(dest, (privof(dest).allocSize / 2) + this.items);
+
+	    memcpy(
+		pntr_shiftcpy(privof(dest).data, this.typeSize * dest->items), 
+		this.data,
+		this.items * this.typeSize);
+
+	break;}
+	caseT(Buffer){
+	    Buffer* dest = where;
+
+	    if(dest->typeSize != this.typeSize){
+		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		return null;
+	    }
+
+	break;}
+	caseT(Stack){
+	    Stack* dest = where;
+
+	    if(dest->typeSize != this.typeSize){
+		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		return null;
+	    }
+
+	    if(dest->items + this.items > privof(dest).allocSize)
+			std_Array_Stack_Grow(dest, (privof(dest).allocSize / 2) + this.items);
+
+	    
+	    memcpy(
+		pntr_shiftcpy(privof(dest).data, this.typeSize * dest->items), 
+		this.data,
+		this.items * this.typeSize);
+
+	break;}
+	caseT(Queue){
+	    Queue* dest = where;
+
+	    if(dest->typeSize != this.typeSize){
+		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		return null;
+	    }
+
+	    len_t alloc_size = 
+		(pntr_asVal(privof(dest).end) - pntr_asVal(privof(dest).start)) / this.typeSize;
+	    
+	    if(dest->items + this.items > alloc_size)
+			std_Array_Queue_Grow(dest, (alloc_size / 2) + this.items);
+	    
+	    loop(i, this.items)
+		write(dest, pntr_shiftcpy(this.data, this.typeSize * i));
+	    
+	break;}
+	defaultT{
+		ERR(ERR_INVALID, "invalid copy destination type detected");
+		return null;
+	}
+	}
+
+	create(List, where,  
+		.initSize = this.items,
+	       	.typeSize = this.typeSize,
+	       	.data = this.data
 	);
-
-return where;
 }
 
 DESTROY(std_Array_Buffer){
-	free(self->data);
+	free(this.data);
 return OK;
 }
 SET(std_Array_Buffer){
-	free(self->data);
+	free(this.data);
 
 	create(std_Array_Buffer, self, 
-		.typeSize = self->typeSize,
-		.initSize = self->currSize,
+		.typeSize = this.typeSize,
+		.initSize = this.items,
 		.data = value
 	);
 return OK;
 }
 HASH(std_Array_Buffer){
-	return hash_bytes(self->data, self->typeSize * self->currSize);
+	return hash_bytes(this.data, this.typeSize * this.items);
 }
 ITER(std_Array_Buffer){
-	if(index > self->currSize) index = self->currSize;
+	if(index > this.items) index = this.items;
 
-	return pntr_shiftcpy(self->data, self->currSize - index);
+	return pntr_shiftcpy(this.data, this.items - index);
 }
 
 
@@ -77,10 +177,9 @@ PRINT(std_Array_Buffer){
 
 	return write(out, 
 	      "(ArrayBuffer){ ",
-	       		".size = ", 	$(self->currSize), ", ",
-			".alloced = ", 	$(self->allocSize),", ",
-	       		".typeSize = ", $(self->typeSize), ", ",
-	       		".data = ", 	$(self->data),
+	       		".size = ", 	$(this.items), ", ",
+	       		".typeSize = ", $(this.typeSize), ", ",
+	       		".data = ", 	$(this.data),
 	      " }", fmt_end);
 
 }
@@ -100,19 +199,14 @@ DEF(),
 	.Iter 	 = std_Array_Buffer_Op_Iter,
 	.Scan    = nilmethod,
 ){
-	len_t alloc_size = arg.data ? 
-	 			arg.initSize + (args->initSize / 2) :
-	  			arg.initSize;
+	this.data = calloc(arg.initSize, arg.typeSize);
 
-	self->data = calloc(alloc_size, arg.typeSize);
-
-	self->allocSize = alloc_size;
-	self->typeSize = arg.typeSize;
+	this.typeSize = arg.typeSize;
 
 	if(arg.data){
-		memcpy(self->data, arg.data, args->initSize * args->typeSize);
+		memcpy(this.data, arg.data, args->initSize * args->typeSize);
 	  	
-	  	self->currSize = arg.initSize;
+	  	this.items = arg.initSize;
 	}
 
 return self;

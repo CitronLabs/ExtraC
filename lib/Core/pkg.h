@@ -48,8 +48,6 @@ Module(std){
    	interface(std_String) 		String;
    	interface(std_Memory) 		Memory;
 	interface(std_List)   		List;
-	interface(std_Stack)  		Stack;
-	interface(std_Queue)  		Queue;
 	interface(std_Map)    		Map;
 	interface(std_Struct) 		Struct;
 	interface(std_DSN)    		DSN;
