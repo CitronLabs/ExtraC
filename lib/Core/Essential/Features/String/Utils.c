@@ -1,10 +1,10 @@
-#include "../../../../pkg.h"
+#include "../../../pkg.h"
 #include "Encodings/utils.h"
 
 import(std)
 
 
-static inline len_t UTF8_strnlen(void* in, len_t len) {
+len_t vmethodimpl(std_String_Utils_Str, len, void* in, len_t len, void** end) {
 	const char* str = in;
 	len_t length = 0;
 	while (*str != '\0' && len >= length) {
@@ -25,7 +25,15 @@ static inline len_t UTF8_strnlen(void* in, len_t len) {
 return length;
 }
 
-static inline len_t UTF8_strncmp(void* str1, void* str2, len_t len){
+len_t vmethodimpl(std_String_Utils_Str, siz, void* in, len_t len) {
+	void* end = null;
+
+	std.String.Utils.Str.len(in, len, &end);
+
+return pntr_dist(in, end);
+}
+
+bool vmethodimpl(std_String_Utils_Str, cmp, void* str1, void* str2, len_t len){
 
 	char
 	    * s1 = str1,
@@ -36,10 +44,10 @@ static inline len_t UTF8_strncmp(void* str1, void* str2, len_t len){
 
 	while (*s1 != '\0' && *s2 != '\0' && len_compared < len) {
 		// Decode codepoint for s1
-		u32 codepoint1 = 0, codepoint2 = 0;
+		rune codepoint1 = 0, codepoint2 = 0;
 		
-		if(std.UTF8.decode(&s1, &codepoint1) != OK &&
-		   std.UTF8.decode(&s2, &codepoint2) != OK
+		if(std.String.UTF8.decode(&s1, &codepoint1) != OK &&
+		   std.String.UTF8.decode(&s2, &codepoint2) != OK
 		){
 			return false;
 		}

@@ -1,6 +1,6 @@
 #pragma once
 #include "utils.h"
-#include "../../../../../pkg.h"
+#include "../../../../pkg.h"
 
 import(std)
 
@@ -8,7 +8,7 @@ import(std)
 #undef rewind
 
 // Helper function to encode a UTF-16 codepoint
-static inline u64 encode_utf16(c16 *dest, u32 codepoint) {
+static inline u64 encode_utf16(c16 *dest, rune codepoint) {
     if (codepoint <= UTF8_3BYTE_MAX) { // Corresponds to the basic multilingual plane
         *dest = (c16)codepoint;
         return 1;
@@ -24,6 +24,10 @@ return 0; // Invalid codepoint
 static inline errvt UTF8_decode(char** start, rune* codepoint){
 
 	char* encoding = *start;
+	rune c = 0;
+
+	if(!codepoint)
+		codepoint = &c;
 
 	if((*encoding & UTF8_1BYTE_MASK) == UTF8_1BYTE_HEADER){
 		*codepoint = *encoding++;
@@ -43,7 +47,7 @@ static inline errvt UTF8_decode(char** start, rune* codepoint){
       		*codepoint = (*encoding++ & UTF8_CONT_BYTE_MASK)  << 6;
       		*codepoint = (*encoding++ & UTF8_CONT_BYTE_MASK);
 	}
-	else{	*codepoint = maxof(u32);	}
+	else{	*codepoint = maxof(u32);    }
 
 	if(*codepoint == maxof(u32)){
 	    encoding++;
@@ -94,7 +98,7 @@ errvt UTF8_streamDecoder(std_Stream* stream, void* data){
 	strc8 str_data = &((strc8)std.Stream.GetPointer(stream))
 				[std.Stream.GetCursorPos(stream)];
 
-	iferr(std.UTF8.decode(&str_data, data))
+	iferr(std.String.UTF8.decode(&str_data, data))
 		return ERR(ERR_FAIL, "failed to decode stream");
 
 return OK;
@@ -106,10 +110,10 @@ errvt UTF8_toUtf16(c8* in, len_t in_max, c16* dest, len_t dest_max) {
 	nonull(dest, return err);
 
 	u64 new_len = 0;
-	u32 codepoint;
+	rune codepoint;
 
 	while (*in || new_len >= dest_max) {
-		if (std.UTF8.decode(&in, &codepoint) != OK) 
+		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
 			return ERR(STRINGERR_ENCODING, "Invalid UTF8 sequence");
 		
 		u64 encoded_len = encode_utf16(&dest[new_len], codepoint);
@@ -131,10 +135,10 @@ errvt UTF8_toUtf32(c8* in, len_t in_max, c32* dest, len_t dest_max) {
 	nonull(dest, return err);
 
 	u64 new_len = 0;
-	u32 codepoint;
+	rune codepoint;
 
 	while (*in || new_len >= dest_max) {
-		if (std.UTF8.decode(&in, &codepoint) != OK) 
+		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
 			return ERR(STRINGERR_ENCODING, "Invalid UTF8 sequence");
 		
 		dest[new_len++] = codepoint;
@@ -151,10 +155,10 @@ errvt UTF8_toAscii(c8* in, len_t in_max, char* dest, len_t dest_max) {
 
 
 	u64 new_len = 0;
-	u32 codepoint;
+	rune codepoint;
 
 	while (*in || new_len >= dest_max) {
-		if (std.UTF8.decode(&in, &codepoint) != OK) 
+		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
 			return ERR(STRINGERR_ENCODING, "Invalid UTF8 sequence");
 		
 		if (codepoint <= ASCII_MAX) {

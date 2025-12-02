@@ -15,7 +15,7 @@ INIT(c8* data; len_t max_len; bool view),
 FMT(),
       c8* data; len_t len;
 private(
-	len_t len_bytes; ArrayList(String) views;
+	len_t len_bytes; ArrayList(String) views; bool IsView : 1;
 )
 ){	
 	
@@ -32,7 +32,7 @@ private(
 	namespace(Utils,
 	   namespace(Str,
 		len_t fn(siz)(void* str,  len_t maxlen);
-		len_t fn(len)(void* str,  len_t maxlen);
+		len_t fn(len)(void* str,  len_t maxlen, void** end);
 		void* fn(cpy)(void* dest, void* src,  len_t maxlen);
 		bool  fn(cmp)(void* str1, void* str2, len_t maxlen);
 	   )
@@ -50,7 +50,7 @@ private(
 	std_String* 	method(String, Cat, Array(std_String*) strings);
 
 	std_String*	method(String, View,          len_t from, len_t to);
-	errvt		method(String, ViewShift,     len_t up, len_t down);
+	errvt		method(String, ViewShift,     len_t up,   len_t down);
 	
 	bool 		method(String, IsView);
 

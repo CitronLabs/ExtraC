@@ -10,7 +10,7 @@
 
 
 #undef strnlen
-#define strnlen(_string, maxlen) (std.String.Utils.Str.len(_string, maxlen))
+#define strnlen(_string, maxlen) (std.String.Utils.Str.len(_string, maxlen, null))
 #define strsize(_string, maxlen) (std.String.Utils.Str.siz(_string, maxlen))
 
 

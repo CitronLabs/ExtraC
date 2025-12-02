@@ -1,359 +1,232 @@
-#include "../../../../pkg.h"
+#include "../../../pkg.h"
+
+#include "Encodings/utils.h"
 
 import(std)
 
 
-/**
- * @details This method compares the contents of two String objects. It first
- * checks for mismatches in length and encoding type. If they match, it iterates
- * through the strings, decoding codepoints from the UTF-8 representation and
- * comparing them.
-*/
 bool methodimpl(std_String, Compare, std_String* cmp_string){
 	
 	if(elements(self) != elements(cmp_string) 		|| 
-	   self->type  != cmp_string->type 			||
-	   priv.len_bytes != cmp_string->__private->len_bytes
+	   priv.len_bytes != privof(cmp_string).len_bytes
 	) 
 		return false;
 
-	switch (self->type) {
-	case CHAR_UTF8:
-	case CHAR_UTF16:
-	case CHAR_UTF32:
-	case CHAR_ASCII:
-	default:{
-
-	}
-	}
-
+	std.String.Utils.Str.cmp(this.data, cmp_string->data, this.len);
+	
 return false;
 }
 
-std_String* methodimpl(std_String,Copy){
-
-	std_String* res = priv.inline_alloc ?
-		malloc(sizeof(std_String)) : 
-		malloc(sizeof(std_String)  + priv.len_bytes)
-	;
-
-	res->__private.len_bytes = priv.len_bytes;
-	res->__private.inline_alloc = priv.inline_alloc;
-
-	res->len 	= self->len;
-	res->type       = res->type,
-	res->data.utf8 = priv.inline_alloc ? 
-			pntr_shiftcpy(res, sizeof(std_String)) : 
-			malloc(priv.len_bytes);
-
-	memcpy(res->data.utf8, self->data.utf8, priv.len_bytes);
-
-return res;
+errvt methodimpl(std_String, Copy, std_String* to){
+	return to == copy(self, to) ? OK : ERR(ERR_FAIL, "failed to copy");
 }
 
-std_String* methodimpl(std_String, Cat, ...){
-	
-	va_list args;
-	va_start(args, self);
+errvt methodimpl(std_String, Cat,  Array(std_String*) strings){
 
-	var builder = push(std_StringBuilder, .init_str = self);
-	
-	std.StringBuilder.Append(builder, args);
-
-	std_String* result = std.StringBuilder.CreateStr(builder);
-
-	del(builder);
-
-return result;
-}
-
-std_String* methodimpl(std_String, Convert, std_char_type type){
-	nonull(self, return nil);
-	
-	// If the target encoding is the same as the source, just return a copy.
-	if (self->type == type) {
-		return std.String.Copy(self);
-	}
-
-	len_t init_allocLen = (self->len + 1) * sizeof(rune), actual_allocLen = 0;
-	void* new_strbuff = malloc(init_allocLen);
-
-	switch (self->type) {
-	case CHAR_UTF8:
-		switch (type) {
-		case CHAR_UTF16: { actual_allocLen = std.UTF8.toUtf16(self->data.utf8, self->len, new_strbuff, init_allocLen); break; }
-		case CHAR_UTF32: { actual_allocLen = std.UTF8.toUtf32(self->data.utf8, self->len, new_strbuff, init_allocLen); break; }
-		case CHAR_ASCII: { actual_allocLen = std.UTF8.toAscii(self->data.utf8, self->len, new_strbuff, init_allocLen); break; }
-		default: ERR(STRINGERR_ENCODING, "Invalid target encoding"); return nil;
-		}
-	case CHAR_UTF16:
-		switch (type) {
-		case CHAR_UTF8:  { actual_allocLen = std.UTF16.toUtf8 (self->data.utf16, self->len, new_strbuff, init_allocLen); break; }
-		case CHAR_UTF32: { actual_allocLen = std.UTF16.toUtf32(self->data.utf16, self->len, new_strbuff, init_allocLen); break; }
-		case CHAR_ASCII: { actual_allocLen = std.UTF16.toAscii(self->data.utf16, self->len, new_strbuff, init_allocLen); break; }
-		default: ERR(STRINGERR_ENCODING, "Invalid target encoding"); return nil;
-		}
-	case CHAR_UTF32:
-		switch (type) {
-		case CHAR_UTF8:  { actual_allocLen = std.UTF32.toUtf8 (self->data.utf32, self->len, new_strbuff, init_allocLen); break; }
-		case CHAR_UTF16: { actual_allocLen = std.UTF32.toUtf16(self->data.utf32, self->len, new_strbuff, init_allocLen); break; }
-		case CHAR_ASCII: { actual_allocLen = std.UTF32.toAscii(self->data.utf32, self->len, new_strbuff, init_allocLen); break; }
-		default: ERR(STRINGERR_ENCODING, "Invalid target encoding"); return nil;
-		}
-	case CHAR_ASCII:
-		// Since ASCII is a valid subset of UTF-8, we can convert to UTF-8 first,
-		// and then to UTF-16 or UTF-32. This avoids redundant code.
-		switch (type) {
-		case CHAR_UTF8:
-		case CHAR_UTF16:
-		case CHAR_UTF32:
-			{ return std.String.Convert(pushString(self->data.utf8, self->len), type); }
-
-		default: ERR(STRINGERR_ENCODING, "Invalid target encoding"); return nil;
-		}
-	default:
-		ERR(STRINGERR_ENCODING, "Invalid source encoding");
-		return nil;
-	}
-
-	if(init_allocLen != actual_allocLen) 
-		new_strbuff = realloc(new_strbuff, actual_allocLen);
-
-	std_String* result = calloc(1, sizeof(std_String));
-
-	*result = (std_String){
-		.len 	   = self->len,
-		.__type    = std_String_Type,
-		.data.utf8 = new_strbuff,
-		.type 	   = type,
-	};
-
-	result->__private = pntr_shiftcpy(result, sizeof(std_String));
-	result->__private->len_bytes = actual_allocLen;
-
-return result;
-}
-
-u64 methodimpl(std_String, Scan, va_list args, ...){
-
-	std_String* scanning_string = 
-		self->type == CHAR_UTF8 || self->type == CHAR_ASCII ? self : std.String.Convert(self, CHAR_UTF8);
-
-	if(scanning_string == nil){ 
-		ERR(ERR_FAIL, "failed to create stream for scanning");
-		return 0;
-	}
-
-
-	var strm = push(std_Stream, 
-		  std.Stream.Preset.staticBuffer(
-		  	scanning_string->data.utf8, 
-		  	scanning_string->__private->len_bytes
-		  )
+	std_Stream* temp_stream =
+		push(std_Stream,
+			.ops.init = {this.data, priv.len_bytes}
 	);
 
-	if(strm == nil){
-		if(self != scanning_string) del(scanning_string);
-		ERR(ERR_FAIL, "failed to create stream for scanning");
-		return 0;
+	foreach(&strings, std_String*, string){
+	    
+	    if(!(*string)->len) continue;
+
+	    if(!printTo(temp_stream, $(*string))){
+	    	pop(temp_stream);
+	    	return ERR(ERR_FAIL, "failed to concatinate an input string");
+	    }
 	}
-	
-	if(!args) va_start(args, args);
 
-	u64 scanned_len = std.Type.fmt.print.varArgs(strm, args);
+	if(!scanFrom(temp_stream, $(self))){
+	    pop(temp_stream);
+	    return ERR(ERR_FAIL, "failed to scan concatinated string");
+	}
 
-	pop(strm);
+	pop(temp_stream);
 
-	va_end(args);
-
-
-return scanned_len;
+return OK;
 }
 
 
-DESTROY(std_String){
+std_String* methodimpl(std_String, View, len_t from, len_t to){
 	
-	nonull(self->data.utf8, return err);
-	
-	if(!priv.inline_alloc)
-		free(self->data.utf8);
-
-	if(priv.views){
-	    foreach(priv.views, std_String, view)
-		del(view);
+	if(to < from){
+		ERR(ERR_INVALID, "to cannot be less than when making a string view");
+		return nil;
 	}
+		
+	if(to > this.len) to = this.len;
+
+	if(!priv.views)
+		priv.views = newArrayList(std_String, 5);
+
+	len_t index = elements(priv.views);
+	
+	write(priv.views, &(std_String){0});
+
+	
+return create(std_String, index(priv.views, index),
+	.data    = pntr_shiftcpy(this.data, from),
+	.max_len = to - from,
+	.view 	 = true
+);
+}
+errvt methodimpl(std_String, ViewShift, len_t up, len_t down){
+	
+	if(!priv.IsView)
+		return ERR(ERR_INVALID, "only string views are able to be shifted");
+	
+	if(down + up > this.len) 
+		return ERR(ERR_INVALID, "string view shift down and up collision detected");
+
+	
+
+	len_t bytes_to_shift = 0;
+
+	if(down){
+		c8 
+		   * new_end = index(self, this.len - down),
+		   * old_end = pntr_shiftcpy(this.data, priv.len_bytes);
+		;
+
+		bytes_to_shift += pntr_asVal(old_end) - pntr_asVal(new_end);
+	}
+
+	if(up){
+		len_t up_shift = strsize(this.data, up * sizeof(rune));
+	
+		pntr_shift(this.data, up_shift);
+
+		bytes_to_shift += up_shift;
+	}
+
+	priv.len_bytes -= bytes_to_shift;
+
+return OK;
+}	
+bool methodimpl(std_String, IsView){ return priv.IsView; }
+
+errvt methodimpl(std_String, StreamTo, std_Stream* stream){
+	std.String.UTF8.Encoder(stream, self);
+return OK;
+}
+
+DESTROY(std_String){
+	nonull(self->data, return err);
+	
+	if(!priv.IsView)
+		free(self->data);
+
+	if(priv.views) del(priv.views);
+
 return OK;
 };
 
 
 PRINT(std_String){
-
-	std_StreamEncoder encoder = 
-		self->type == CHAR_UTF8  ? std.UTF8.streamEncoder :
-		self->type == CHAR_ASCII ? std.UTF8.streamEncoder :
-		self->type == CHAR_UTF16 ? std.UTF16.streamEncoder :
-		self->type == CHAR_UTF32 ? std.UTF32.streamEncoder :
-		null
-	;
 	try(){
 	    std.Stream.Process
 		.start(out)
-		.doEncode(encoder, self->data.utf8)
+		.doEncode(std.String.UTF8.Encoder, self)
 		.end();
 	} catch { return 0; }
 
-return self->len;
+return priv.len_bytes;
 }
 
 SCAN(std_String){
 	nonull(self, return 0);
 
-	u32 len = 0;
-	var builder = push(std_StringBuilder, self->type);
 	rune c = 0;
 
-	std_StreamDecoder decoder = 
-		self->type == CHAR_UTF8  ? std.String.UTF8.Decoder :
-		self->type == CHAR_ASCII ? std.String.UTF8.Decoder :
-		self->type == CHAR_UTF16 ? std.UTF16.streamDecoder :
-		self->type == CHAR_UTF32 ? std.UTF32.streamDecoder :
-		null
+	len_t 
+	  prev_pos 	= std.Stream.GetCursorPos(in), 
+	  string_size 	= 0, 
+	  string_len 	= 0
 	;
 
-	if(!decoder) return 0;
+	std.Stream.Process
+	    .start(in)
 
-	try(){
-	    std.Stream.Process
-		.start(in)
-		.doDecode(decoder, c){
-			std.StringBuilder.Append(builder, null, $(c));			
+	    .doDecode(std.String.UTF8.Decoder, c){ string_len++; } 
+
+	    then.rewind((string_size = std.Stream.GetCursorPos(in) - prev_pos))
+
+	    .doRun(1){
+		if(this.data && !priv.IsView){ 
+			destroy(self); 
 		}
-		then.end();
-	} catch { return 0; }
 
-	pop(builder);
+		this.data 	= malloc(string_size);
+		this.len 	= string_len;
+		priv.len_bytes 	= string_size;
+		priv.IsView 	= false;
+		priv.views 	= null;
+	    }
 
-return len;
+	    then.end();
+	;
+
+return string_size;
 }
 
+ITER(std_String){
+	
+	c8* result = this.data;
 
-HASH(std_String){
+	loop(i, index){	std.String.UTF8.decode(&result, null); }
 
-return hash_bytes(self->data.utf8, priv.len_bytes);
+return result;
 }
 
-len_t vmethodimpl(std_String_Utils, strnlen, void* str, len_t len){
+SIZE(std_String){ return elements ? this.len : priv.len_bytes; }
 
-	switch (std.String.Detect(str)) {
-	case CHAR_ASCII:{
-		return strnlen((char*)str, len);
-	break;}
-	case CHAR_UTF8:{
-		return std.String.UTF8.len(str, len);
-	break;}
-	case CHAR_UTF16:{
-		return std.String.UTF16.len(str, len);
-	break;}
-	case CHAR_UTF32:{
-		return std.String.UTF32.len(str, len);
-	break;}
-	default:{
-		ERR(ERR_INVALID, "invalid string type");
-		return 0;
-	}
-	}	
-}
+COPY(std_String){
 
-void* vmethodimpl(std_String_Utils, strncpy, void* dest, void* src,  len_t len){
+	std_String* dest = where;
+	
+	memcpy(dest, self, sizeof(std_String));
 
-	switch (std.String.Detect(src)) {
-	case CHAR_ASCII:{
-		return strncpy((char*)dest, src, len);
-	break;}
-	case CHAR_UTF8:{
-		return std.String.UTF8.cpy(dest, src, len);
-	break;}
-	case CHAR_UTF16:{
-		return std.String.UTF16.cpy(dest, src, len);
-	break;}
-	case CHAR_UTF32:{
-		return std.String.UTF32.cpy(dest, src, len);
-	break;}
-	default:{
-		ERR(ERR_INVALID, "invalid string type");
+	priv.views = null;
+	dest->data = malloc(priv.len_bytes); 
+
+	if(!dest->data){
+		ERR(ERR_FAIL, "failed to allocate new string");
 		return null;
 	}
-	}	
+
+	memcpy(dest->data, this.data, priv.len_bytes);
+
+return where;
 
 }
-bool vmethodimpl(std_String_Utils, strncmp, void* str1, void* str2, len_t len){
 
-	std_char_type 
-		str1_type = std.String.Detect(str1), 
-		str2_type = std.String.Detect(str2)
-	;
-
-	if(str1_type != str2_type) return false;
-
-	switch (str1_type) {
-	case CHAR_ASCII:{
-		return strncmp(str1, str2, len);
-	break;}
-	case CHAR_UTF8:{
-		return std.String.UTF8.cmp(str1, str2, len);
-	break;}
-	case CHAR_UTF16:{
-		return std.String.UTF16.cmp(str1, str2, len);
-	break;}
-	case CHAR_UTF32:{
-		return std.String.UTF32.cmp(str1, str2, len);
-	break;}
-	default:{
-		ERR(ERR_INVALID, "invalid string type");
-		return false;
-	}
-	}	
-
-}
+HASH(std_String){ return hash_bytes(self->data, priv.len_bytes); }
 
 construct(std_String,
 FMT(),
 DEF(),
-	  
+		  
 ){
-	priv.len_bytes = arg.bytes_len;
+	void* end = null;
 
-	self->len = 
-		arg.type == CHAR_ASCII ?
-	  		arg.bytes_len :
-		arg.type == CHAR_UTF8 ?
-	  		std.String.UTF8.len(arg.data, args->bytes_len) :
-		arg.type == CHAR_UTF16 ?
-	  		arg.bytes_len / sizeof(c16) :
-		arg.type == CHAR_UTF32 ?
-	  		arg.bytes_len / sizeof(c32) :
-	  	0
-	;
+	this.len = std.String.Utils.Str.len(arg.data, arg.max_len, &end);
 
-	if(arg.storage == std_StringStorage_Inline){
-		self->data.utf8 = 
-	  		arg.type == CHAR_UTF8 ?
-	  			calloc(self->len + 1, sizeof(char)) : 
-	  		arg.type >= CHAR_INVALID ?
-	  			null :
-	  		calloc(self->len, arg.type)
-	    	;
+	priv.len_bytes = (pntr_asVal(end) - pntr_asVal(arg.data));
 
-	    	priv.inline_alloc = false;
-	}else{
-		self->data.utf8 = pntr_shiftcpy(self, sizeof(std_String) + sizeof(std_String_Private));
-	    	
-		priv.inline_alloc = true;
+	if(arg.view){
+		this.data = arg.data;
+
+		priv.IsView = true;
+	} else {
+		this.data = malloc(priv.len_bytes);
+
+		memcpy(this.data, arg.data, priv.len_bytes);
+	  	
+		this.data[priv.len_bytes] = '\0';
 	}
-
-
-	memcpy(self->data.utf8, arg.data, priv.len_bytes);
-	self->data.utf8[priv.len_bytes] = '\0';
+		
 return self;
 }
 
