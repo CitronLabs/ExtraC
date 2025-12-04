@@ -2,13 +2,8 @@
 #include "./Formats.c"
 
 import(std)
-
 import(XC)
 
-use(std,
-	Time,
-    	Date
-)
 bool methodimpl(std_Date, isValid){
 	return 
 	    this.month   < 12 &&
@@ -20,7 +15,7 @@ bool methodimpl(std_Date, isValid){
 
 }
 
-Time* methodimpl(std_Date, toTime){
+std_Time* methodimpl(std_Date, toTime){
 
 	len_t seconds = 
 		convert->sec.from.years    (this.year) .result  +
@@ -31,7 +26,7 @@ Time* methodimpl(std_Date, toTime){
 		this.second
 	;
 
-return new(Time, .seconds = seconds, .nanosec = this.nanosec);
+return new(std_Time, .seconds = seconds, .nanosec = this.nanosec);
 }
 const char* methodimpl(std_Date, getDayName){
 	XC_Locale_Data* locale = 

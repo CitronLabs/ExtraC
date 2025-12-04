@@ -44,7 +44,7 @@ Interface(memory,
 	void*		vmethod(getAddress,   	memoryHandle handle);
 	bool		vmethod(isCommited,    	memoryHandle handle);
 	errvt 		vmethod(commit,  	memoryHandle handle);
-	namespace(dynlib,
+	submodule(dynlib,
 	memoryHandle 	vmethod(load,   	strc8 path);
 	void* 		vmethod(findSymbol,   	memoryHandle handle, strc8 symbol);
 	errvt 		vmethod(unload, 	memoryHandle handle);

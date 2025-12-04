@@ -13,7 +13,7 @@ Class(Watch,
 INIT(
 	std_Time* limit;
 	std_Clock* clock;
-	namespace(flags,
+	submodule(flags,
       	    bool 
 	   	startOnInit  : 1,
 	   	initTimeline : 1;
@@ -26,7 +26,7 @@ FMT(),
     std_Time* method(Watch, Check);
     std_Time* method(Watch, Stop);
 
-    namespace(Timeline,
+    submodule(Timeline,
 	errvt 		  method(Watch, Init);
 	errvt 		  method(Watch, Merge,    Buffer(std_Watch) merge_buff);
 	errvt 		  method(Watch, MergeOne, std_Watch* merge_watch);

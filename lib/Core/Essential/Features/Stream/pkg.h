@@ -22,7 +22,7 @@ INIT(std_Stream_Options ops),
 FMT(),
 private(
 	len_t 		frameSize;
-	namespace(flags,
+	submodule(flags,
    	  u16 
 	    readOnly   	: 1,
 	    writeOnly  	: 1,
@@ -31,11 +31,11 @@ private(
 	union {
 	    streamHandle handle;
 
-	    namespace(mem,
+	    submodule(mem,
 	        std_Array_List* data;
 	        len_t pos;
 	    )
-	    namespace(buff,
+	    submodule(buff,
 	        len_t pos, size;
 	        void* data;
 	    )
@@ -43,7 +43,7 @@ private(
 	pntr pointer;
 )
 ){
-      	namespace(Preset,
+      	submodule(Preset,
 		const std_Stream_Options 
 			fn(staticBuffer)(void* start, len_t len),
 			fn(fromHandle)(streamHandle handle)

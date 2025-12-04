@@ -36,7 +36,7 @@ Interface(audio,
 	errvt 			vmethod(initSystem);
 	errvt 			vmethod(exitSystem);
 	arry(audioDevice) 	vmethod(enumDevices, u64* numDevices);
-	namespace(stream,
+	submodule(stream,
 	audioHandle 		vmethod(grab,  bool direction, audioDevice* device, len_t framesize, AudioSpec spec);
 	errvt			vmethod(start, audioHandle handle);
 	errvt			vmethod(stop,  audioHandle handle);

@@ -62,14 +62,14 @@ Interface(graphics,
 	errvt 			vmethod(exitSystem);
 	graphicsHandle 		vmethod(grabDevice, 	 graphicsDevice* device);
 	arry(graphicsDevice) 	vmethod(enumDevices, 	 u64* numDevices);
-	namespace(display,
+	submodule(display,
 	graphicsHandle 		vmethod(init, 	  	 u32 x, u32 y, u32 w, u32 h, graphicsHandle parent);
 	errvt	 		vmethod(close,    	 graphicsHandle handle);
 	errvt	 		vmethod(update,   	 graphicsHandle handle, u32 x, u32 y, u32 w, u32 h, graphicsHandle parent);
 	bool	 		vmethod(isClosed, 	 graphicsHandle);
 	u64   			vmethod(pollEvents);
 	)
-	namespace(video,
+	submodule(video,
 	errvt			vmethod(start, 	 	 graphicsHandle handle);
 	errvt			vmethod(stop,  	 	 graphicsHandle handle);
 	errvt			vmethod(close, 	 	 graphicsHandle handle);

@@ -17,7 +17,7 @@ type(userInfo,
 
 Interface(user, 
 	const strc8 stdVersion;
-	namespace(perms,
+	submodule(perms,
 		userPermissions
 		READ, 	    
 		WRITE, 	    

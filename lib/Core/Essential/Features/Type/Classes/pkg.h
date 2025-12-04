@@ -26,7 +26,6 @@
     static const package##_##type##_Type_t* type##_Type = 		\
 	    &package##_##type##_TypeData;				\
     typedef struct package##_##type##_Interface type##_Interface;	\
-    typedef struct package##_##type##_Private type##_Private;		\
     typedef package##_##type##_ConstructArgs type##_ConstructArgs;	\
     typedef package##_##type##_FormatArgs type##_FormatArgs;		\
     typedef package##_##type type;

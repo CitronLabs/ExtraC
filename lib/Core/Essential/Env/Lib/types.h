@@ -112,7 +112,7 @@ typedef struct XC_Locale_Data {
 
 	const char * Identifier;
 
-	namespace(Time,
+	submodule(Time,
 	    const char
 	    	* day_names[7],
 	    	* short_day_names[7],
@@ -123,7 +123,7 @@ typedef struct XC_Locale_Data {
 
 	    byte first_day_in_week;
 	)
-	namespace(Currency,
+	submodule(Currency,
 	    const char 
 	   	* currency_symbol,
 	    	* int_curr_symbol,
@@ -144,7 +144,7 @@ typedef struct XC_Locale_Data {
     	    	neg_sep_by_space,             
     	    	neg_sign_posn;                
 	)
-	namespace(Measure,
+	submodule(Measure,
 	// System of Measurement
 	    word measurement_system;           // The primary system for length, weight, and volume
 	    

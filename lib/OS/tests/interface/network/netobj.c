@@ -1,6 +1,6 @@
 #include "../../extern.h"
 
-using_namespace(OS.network.obj, netObjAPI)
+using_submodule(OS.network.obj, netObjAPI)
 
 void NETOBJ_INTERFACE_TESTS(){
 	netObjAPI->init(&(netobjInfo){

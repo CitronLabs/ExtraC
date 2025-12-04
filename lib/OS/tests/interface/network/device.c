@@ -1,3 +1,3 @@
 #include "../../extern.h"
 
-using_namespace(OS.network.device, netDevAPI)
+using_submodule(OS.network.device, netDevAPI)

@@ -10,7 +10,7 @@ Interface(scheduler,
 	errvt 		vmethod(initSystem);
 	errvt 		vmethod(exitSystem);
 	u64  	 	vmethod(pollEvents);
-	namespace(thread,
+	submodule(thread,
 		noFail 		vmethod(sleep, 		u64 millisec);
 		schedulerHandle vmethod(init,  	  	void fn(thread_start, void* args), void* args);
 		errvt 		vmethod(exit, 	  	schedulerHandle handle);
@@ -19,8 +19,8 @@ Interface(scheduler,
 		errvt 		vmethod(handleEvents, 	schedulerHandle handle, Queue(OSEvent) evntQueue);
 		u64  	 	vmethod(pollEvents);
 	)
-	namespace(process,
-	  namespace(flags,
+	submodule(process,
+	  submodule(flags,
 		int PROC_DEBUG;
 	  )
 		bool 		vmethod(isRunning, 	schedulerHandle handle);
@@ -33,15 +33,15 @@ Interface(scheduler,
 		errvt 		vmethod(kill, 	  	schedulerHandle handle);
 		u64  	 	vmethod(pollEvents);
 	);
-	namespace(ctrl,
-	  namespace(mutex,
+	submodule(ctrl,
+	  submodule(mutex,
 		schedulerHandle vmethod(init);
 		errvt 		vmethod(lock,    	schedulerHandle handle);
 		errvt 		vmethod(unlock,  	schedulerHandle handle);
 		errvt 		vmethod(tryLock, 	schedulerHandle handle);
 		errvt 		vmethod(destroy, 	schedulerHandle handle);
 	  )
-	  namespace(semaphore,
+	  submodule(semaphore,
 		schedulerHandle vmethod(init, 	 	len_t num);
 		errvt 		vmethod(wait, 	 	schedulerHandle handle);
 		errvt 		vmethod(post, 	 	schedulerHandle handle);

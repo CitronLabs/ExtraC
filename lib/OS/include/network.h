@@ -82,8 +82,8 @@ Interface(network,
 	const strc8 stdVersion;
 	errvt 		vmethod(initSystem);
 	errvt 		vmethod(exitSystem);
-	namespace(socket,
-	  namespace(type,
+	submodule(socket,
+	  submodule(type,
 	     	socketType
 		LOCAL,
 		IPV4,
@@ -99,14 +99,14 @@ Interface(network,
 	networkHandle	vmethod(accept,     	networkHandle handle);
 	errvt 		vmethod(send, 	    	networkHandle handle, inst(Buffer) message);
 	errvt 		vmethod(recv,    	networkHandle handle, inst(Buffer) message);
-	namespace(group,
+	submodule(group,
 	errvt 		vmethod(join,  		networkHandle handle, socketAddress address, const char* interface_name);
 	errvt 		vmethod(leave,   	networkHandle handle);
 	errvt 		vmethod(send,    	networkHandle handle, inst(Buffer) message);
 	errvt 		vmethod(recive,  	networkHandle handle, inst(Buffer) message);
 	)
 	)
-	namespace(obj,
+	submodule(obj,
 	const bool implemented; // for compatibiliy reasons
 	errvt 		vmethod(init,    netobjInfo* blueprint);
 	errvt 		vmethod(getInfo,   strc8 path, netobjInfo* info);
@@ -117,7 +117,7 @@ Interface(network,
 	errvt 		vmethod(set,   networkHandle object, netCall_Flags flags, strc8 field,  DSN_data value);
 	errvt 		vmethod(close, networkHandle handle);
 	)
-	namespace(device,
+	submodule(device,
 	networkHandle 	vmethod(grab, 	 	networkDevice* device);
 	errvt 		vmethod(drop, 	 	networkHandle);
 	networkDevice* 	vmethod(enumerate, 	u64* numDevices);

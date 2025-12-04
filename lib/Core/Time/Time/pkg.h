@@ -16,9 +16,9 @@ FMT(std_Date_Format type),
 ){
 	errvt method(Time, Difference, std_Time* time2, std_Time* result);
 	bool  method(Time, Compare, std_Time* time2, std_Time* tolerance);
-	namespace(Convert,
-	    namespace(sec,
-	      namespace(to,
+	submodule(Convert,
+	    submodule(sec,
+	      submodule(to,
 		struct TimeConversion
 		fn(minutes)(len_t sec),
 		fn(hours)(len_t sec),
@@ -26,7 +26,7 @@ FMT(std_Date_Format type),
 		fn(months)(len_t sec),
 		fn(years)(len_t sec);
 	      )
-	      namespace(from,
+	      submodule(from,
 		struct TimeConversion
 		fn(minutes)(len_t sec),
 		fn(hours)(len_t sec),
@@ -35,14 +35,14 @@ FMT(std_Date_Format type),
 		fn(years)(len_t sec);
 	      )
 	    )	
-	    namespace(nano,
-	      namespace(to,
+	    submodule(nano,
+	      submodule(to,
 		struct TimeConversion
 		fn(micro)(len_t nanosec),
 		fn(milli)(len_t nanosec),
 		fn(second)(len_t nanosec);
 	      )
-	      namespace(from,
+	      submodule(from,
 		struct TimeConversion
 		fn(micro)(len_t nanosec),
 		fn(milli)(len_t nanosec),

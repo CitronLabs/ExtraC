@@ -26,10 +26,10 @@ typedef struct {
 
 
 Module(runtime){
-  namespace(setup,
+  submodule(setup,
     runtimeSetupData_Core* fn(core)();
   )
-  namespace(info,
+  submodule(info,
     const bool implemented;
     len_t fn(pagesAlloced)();
   )

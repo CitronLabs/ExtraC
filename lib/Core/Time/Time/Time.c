@@ -3,12 +3,8 @@
 import(std)
 
 
-use(std,
-	Time
-)
 
-
-errvt methodimpl(std_Time, Difference, Time* time_cmp, Time* result){
+errvt methodimpl(std_Time, Difference, std_Time* time_cmp, std_Time* result){
 	nonull(self || time_cmp || result, return err);
 
 	result->seconds = this.seconds < time_cmp->seconds ?
@@ -22,9 +18,9 @@ errvt methodimpl(std_Time, Difference, Time* time_cmp, Time* result){
 return OK;
 }
 
-bool methodimpl(Time, Compare, Time* time_cmp, Time* tolerence){
+bool methodimpl(std_Time, Compare, std_Time* time_cmp, std_Time* tolerence){
 	
-	Time* differ = push(Time);
+	std_Time* differ = push(std_Time);
 
 	iferr(std.Time.Difference(self, time_cmp, differ)){
 		ERR(ERR_FAIL, "failed to compare times");
@@ -131,7 +127,7 @@ PRINT(std_Time){
 	    );
 	else
 	    return printTo(out,
-		"(Time){" 
+		"(std_Time){" 
 	      	    ".seconds = ", $(this.seconds), ", ",
 	      	    ".nanosec = ", $(this.nanosec), 
 	      	" }"
@@ -172,9 +168,4 @@ DEF(),
   this.nanosec = arg.nanosec;
 return self;
 }
-
-
-
-
-
 

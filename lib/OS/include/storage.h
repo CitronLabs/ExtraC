@@ -24,11 +24,11 @@ type(storageDevice,
 
 
 Interface(storage,
-    namespace(device,
+    submodule(device,
 	
     )
-    namespace(fs,
-	namespace(ext,
+    submodule(fs,
+	submodule(ext,
 		const bool implemented;
 		errvt vmethod(readLink,     fsPath path, fsPath result)
 		errvt vmethod(makeLink,     fsPath path, fsPath result)

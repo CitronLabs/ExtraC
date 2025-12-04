@@ -19,7 +19,7 @@ private(
 )
 ){	
 	
-	namespace(UTF8,
+	submodule(UTF8,
 		len_t fn(charSize) (rune codepoint);
 		errvt fn(decode) (char** start, rune* codepoint);
 		errvt fn(encode) (char* dest,   rune codepoint);
@@ -29,14 +29,14 @@ private(
 		const std_StreamEncoder Encoder;
 		const std_StreamDecoder Decoder;
 	)
-	namespace(Utils,
-	   namespace(Str,
+	submodule(Utils,
+	   submodule(Str,
 		len_t fn(siz)(void* str,  len_t maxlen);
 		len_t fn(len)(void* str,  len_t maxlen, void** end);
 		void* fn(cpy)(void* dest, void* src,  len_t maxlen);
 		bool  fn(cmp)(void* str1, void* str2, len_t maxlen);
 	   )
-	   namespace(Char,
+	   submodule(Char,
 		bool fn(blank)(rune c);
 		bool fn(alpha)(rune c);
 		bool fn(digit)(rune c);

@@ -18,16 +18,16 @@ INIT(intf(std_ClockSystem) clockSystem),
 FMT(std_Date_Format type),
 	intf(std_ClockSystem) system;
 ){
-      	namespace(Systems,
-	  namespace(UTC,
+      	submodule(Systems,
+	  submodule(UTC,
 	     interface(std_ClockSystem) interface;
 	     std_Clock* fn(getClock)();
 	  )
-	  namespace(TAI,
+	  submodule(TAI,
 	     interface(std_ClockSystem) interface;
 	     std_Clock* fn(getClock)();
 	  )
-	  namespace(TT,
+	  submodule(TT,
 	     interface(std_ClockSystem) interface;
 	     std_Clock* fn(getClock)();
 	  )

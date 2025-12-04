@@ -1,6 +1,6 @@
 #include "../../extern.h"
 
-using_namespace(OS.network.socket, socketAPI)
+using_submodule(OS.network.socket, socketAPI)
 
 void SOCKET_INTERFACE_TESTS(){
 	const int type = socketAPI->type.IPV4 | socketAPI->type.TCP;

@@ -37,42 +37,42 @@ private(
 	std_StreamDecoder decoder;
 	std_StreamEncoder encoder;
 	
-	namespace(DSB,    
+	submodule(DSB,    
 	    std_StreamDecoder decoder; 
 	    std_StreamEncoder encoder;
 	    len_t	method(DSN, format, std_DSN_data* ds, std_Stream* out);
 	    len_t	method(DSN, parse, std_DSN_data* ds, std_Stream* in);
 	)
 
-	namespace(List,   
+	submodule(List,   
 	    std_StreamDecoder decoder; 
 	    std_StreamEncoder encoder;
 	    len_t method(DSN, format, std_List* data, std_Stream* out);
 	    len_t method(DSN, parse, std_List** data, std_Stream* out);
 	)
 
-	namespace(Map,   
+	submodule(Map,   
 	    std_StreamDecoder decoder; 
 	    std_StreamEncoder encoder;
 	    len_t method(DSN, format, std_Map* data, std_Stream* out);
 	    len_t method(DSN, parse, std_Map** data, std_Stream* out);
 	)
 
-	namespace(Struct,   
+	submodule(Struct,   
 	    std_StreamDecoder decoder; 
 	    std_StreamEncoder encoder;
 	    len_t method(DSN, format, std_Struct* data, std_Stream* out);
 	    len_t method(DSN, parse, std_Struct** data, std_Stream* out);
 	)
 
-	namespace(Number,   
+	submodule(Number,   
 	    std_StreamDecoder decoder; 
 	    std_StreamEncoder encoder;
 	    len_t method(DSN, format, std_Number* data, std_Stream* out);
 	    len_t method(DSN, parse, std_Number** data, std_Stream* out);
 	)
 
-	namespace(String,   
+	submodule(String,   
 	    std_StreamDecoder decoder; 
 	    std_StreamEncoder encoder;
 	    len_t method(DSN, format, std_String* data, std_Stream* out);

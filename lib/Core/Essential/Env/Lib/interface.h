@@ -5,8 +5,8 @@
 
 
 Module(XC){
-  namespace(Dev,
-    namespace(Register,
+  submodule(Dev,
+    submodule(Register,
 	values(Attrib, word,
 	    READ,
 	    WRITE,
@@ -36,7 +36,7 @@ Module(XC){
 	registerHandle fn(stdHandle)(word id); 
     )
        
-    namespace(Stream,
+    submodule(Stream,
 	values(Attrib, word,
 	    READ,
 	    WRITE,
@@ -90,7 +90,7 @@ Module(XC){
 	devHandle fn(stdHandle)(word id); 
   )
 
-  namespace(Mem,
+  submodule(Mem,
 	void* fn(alloc)(len_t num_pages);
 	errvt fn(dealloc)(void* ptr, len_t num_pages);
 	len_t fn(getPageSize)();
@@ -102,7 +102,7 @@ Module(XC){
 	)
 	errvt fn(protect)(void* ptr, len_t num_pages, word permissions);
   )
-  namespace(Time,
+  submodule(Time,
 	values(Source, word,
 		REALTIME,
 		MONOTONIC
@@ -115,8 +115,8 @@ Module(XC){
       	len_t fn(tickFreq)(); 
   )
   
-  namespace(Sys,
-    namespace(Arch,
+  submodule(Sys,
+    submodule(Arch,
 	void* fn(getInstructionPtr)();
 	
 	void  fn(jmp)(void*);
@@ -141,7 +141,7 @@ Module(XC){
 
         void fn(setFlags)(XC_Sys_Arch_Flags flag_word);
     )
-    namespace(Locale,
+    submodule(Locale,
 	values(Temp, word,
 		Celsius,
 		Fahrenheit
@@ -163,8 +163,8 @@ Module(XC){
       	errvt fn(loadState)(stateData state);
 
   )
-  namespace(Vec,
-    namespace(Mem,
+  submodule(Vec,
+    submodule(Mem,
     	void* fn(cpy)(void* dest, const void* src, len_t size);
     
     	word fn(cmp)(const void* buffer1, const void* buffer2, len_t size);
@@ -174,7 +174,7 @@ Module(XC){
     	// 'pattern_size' MUST be a power of 2 (e.g., 4, 8, 16) for optimal vectorization.
     	void* fn(fillPattern)(void* dest, const void* pattern, len_t pattern_size, len_t total_size);
     )
-    namespace(Math,
+    submodule(Math,
     	// 'element_size' MUST be a power of 2 (1, 2, 4, 8) to define the unit of arithmetic.
     	void* fn(add)(void* dest, const void* src1, const void* src2, len_t total_size, byte element_size);
     
@@ -187,7 +187,7 @@ Module(XC){
 	// Element-wise division of two buffers. *dest = *src1 / *src2.
     	void* fn(div)(void* dest, const void* src1, const void* src2, len_t total_size, byte element_size);
     )
-    namespace(Bits,
+    submodule(Bits,
     
     	// Element-wise bitwise AND of two buffers. *dest = *src1 & *src2.
     	void* fn(and)(void* dest, const void* src1, const void* src2, len_t total_size, byte element_size);

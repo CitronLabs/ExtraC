@@ -1,11 +1,14 @@
-#include "../../../../pkg.h"
+#define module std, Types, alloc
+#include <Core/pkg.h>
 
 import(std);
-;
 
-use(std, typeData, Object);
+use(std, 
+    typeData, 
+    Object
+)
 
-void* __XC_Object_Create(typeData* type, bool freeOnFail, Object* self, void* args){ 
+void* moduleFn(init)(typeData* type, bool freeOnFail, Object* self, void* args){ 
 
 	self->__type = generic type;
 
@@ -28,8 +31,7 @@ return self;
 }								
 
 
-
-errvt __XC_Object_Destroy(bool doFree, void* delObjs[], len_t delObjsNum){
+errvt moduleFn(destruct)(bool doFree, void* delObjs[], len_t delObjsNum){
 
 	for(len_t i = 0; i < delObjsNum; i++) {
 	    if(isImpl(ops((typeData*) delObjs[i]).Destroy)) 
@@ -42,3 +44,11 @@ errvt __XC_Object_Destroy(bool doFree, void* delObjs[], len_t delObjsNum){
 
 return OK;
 }
+
+
+
+export(
+	destruct,
+       	init
+);
+
