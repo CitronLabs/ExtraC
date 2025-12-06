@@ -30,7 +30,7 @@ can save you an extra size parameter for pointers
 */
 
 Class(Buffer,
-INIT(u64 size; Type type; bool isStatic; void* initData),
+INIT(u64 size; Type_t type; bool isStatic; void* initData),
 FMT(),
 private(
 	std_typeData type;
@@ -68,7 +68,7 @@ private(
 @param type_size the size of the new type
 @return ERR_NONE if 
 */
-      	errvt 		method(Buffer, cast, Type type);
+      	errvt 		method(Buffer, cast, Type_t type);
 
 /**
 @brief create a static buffer view from a pointer without copying data
@@ -77,7 +77,7 @@ private(
 @param len the number of items in the buffer view
 @return ERR_NONE if 
 */
-      	std_Buffer* 	method(Buffer, fromView, void* start, Type type, u64 len);
+      	std_Buffer* 	method(Buffer, fromView, void* start, Type_t type, u64 len);
 };
 
 #undef package

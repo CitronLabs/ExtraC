@@ -5,7 +5,7 @@
 import(std)
 
 
-errvt methodimpl(std_Number, IntAdd, std_Number* other, std_Number* result) {
+errvt moduleMethod(std_Number, IntAdd, std_Number* other, std_Number* result) {
 
 	try() {
 	    if (priv.sign == opriv.sign) {
@@ -38,7 +38,7 @@ errvt methodimpl(std_Number, IntAdd, std_Number* other, std_Number* result) {
 return OK;
 }
 
- errvt methodimpl(std_Number, IntSubtract, std_Number* other, std_Number* result) {
+ errvt moduleMethod(std_Number, IntSubtract, std_Number* other, std_Number* result) {
 	
 	try() {
 	    if (priv.sign != opriv.sign) {
@@ -70,7 +70,7 @@ return OK;
 return OK;
 }
 
-errvt methodimpl(std_Number, IntMultiply, std_Number* other, std_Number* result) {
+errvt moduleMethod(std_Number, IntMultiply, std_Number* other, std_Number* result) {
 	
 
 	rpriv.sign = (priv.sign == opriv.sign) ? 1 : -1;
@@ -87,7 +87,7 @@ return OK;
 
 #define rmpriv (remainder->__private)
 
-errvt methodimpl(std_Number, IntDivide, std_Number* other, std_Number* remainder, std_Number* result) {
+errvt moduleMethod(std_Number, IntDivide, std_Number* other, std_Number* remainder, std_Number* result) {
 
     
 	std_Number_setZero(remainder);

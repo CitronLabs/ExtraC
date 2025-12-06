@@ -2,7 +2,7 @@
 
 import(std)
 
-
+#define module std, Object
 
 construct(std_Object,
 FMT(),

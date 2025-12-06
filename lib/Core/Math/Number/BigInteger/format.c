@@ -31,7 +31,7 @@ static u32 std_Number_divide_smallInt(std_Number* self, u32 divisor) {
 	return (u32)remainder;
 }
 
-u64 methodimpl(std_Number, IntPrintDeci, std_Stream* out) {
+u64 moduleMethod(std_Number, IntPrintDeci, std_Stream* out) {
 	
 	const u32 POWER_OF_10 = 1000000000; // 10^9
 	const int CHUNK_SIZE = 9;
@@ -67,7 +67,7 @@ u64 methodimpl(std_Number, IntPrintDeci, std_Stream* out) {
 return formatted_len;
 }
 
-u64 methodimpl(std_Number, IntPrintHex, std_Stream* out) {
+u64 moduleMethod(std_Number, IntPrintHex, std_Stream* out) {
 	
 	u64 formatted_len = 0;
 	u64 num_digits = std.List.Size(priv.digits);
@@ -89,7 +89,7 @@ u64 methodimpl(std_Number, IntPrintHex, std_Stream* out) {
 return formatted_len;
 }
 
-u64 methodimpl(std_Number, IntPrintBin, std_Stream* out) {
+u64 moduleMethod(std_Number, IntPrintBin, std_Stream* out) {
 	
 	u64 formatted_len = 0;
 	u64 num_digits = std.List.Size(priv.digits);

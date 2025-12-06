@@ -6,13 +6,13 @@ import(std)
 
 
 #ifndef HIDE_USE
-use(std,
-    Number,
-    Stream
+from(std,
+    use(Number),
+    use(Stream)
 )
 #endif
 
-u64 methodimpl(std_Number, IntScan, Number_FormatArgs* format, std_Stream* in) {
+u64 moduleMethod(std_Number, IntScan, Number_FormatArgs* format, std_Stream* in) {
 
 	std_Number_setZero(self); // Initialize 'self' to zero before parsing
 	

@@ -1,0 +1,215 @@
+// 1. Stringify: Turns the token A into a string literal "A".
+#define PP_STRINGIFY(A) #A
+
+// 2. Paste: Joins tokens A and B.
+#define PP_PASTE_IMPL(A, B) A##B
+#define PP_PASTE(A, B) PP_PASTE_IMPL(A, B)
+
+// 3. Argument Counting (Handles up to 64 arguments)
+#define PP_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, _28, _29, _30, _31, _32, _33, _34, _35, _36, _37, _38, _39, _40, _41, _42, _43, _44, _45, _46, _47, _48, _49, _50, _51, _52, _53, _54, _55, _56, _57, _58, _59, _60, _61, _62, _63, _64, N, ...) N
+
+#define PP_NARG(...) PP_ARG_N(__VA_ARGS__, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+
+// --- RECURSIVE ITERATION HELPERS ---
+
+// Helper macro for one element: Stringify and add a comma for the next element.
+#define PP_COMMA_QUOTE_ONE(A) PP_STRINGIFY(A),
+
+#define PP_QUOTE_LIST_64(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_63(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_63(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_62(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_62(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_61(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_61(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_60(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_60(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_59(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_59(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_58(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_58(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_57(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_57(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_56(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_56(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_55(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_55(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_54(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_54(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_53(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_53(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_52(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_52(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_51(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_51(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_50(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_50(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_49(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_49(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_48(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_48(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_47(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_47(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_46(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_46(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_45(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_45(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_44(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_44(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_43(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_43(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_42(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_42(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_41(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_41(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_40(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_40(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_39(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_39(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_38(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_38(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_37(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_37(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_36(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_36(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_35(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_35(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_34(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_34(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_33(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_33(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_32(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_32(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_31(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_31(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_30(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_30(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_29(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_29(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_28(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_28(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_27(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_27(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_26(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_26(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_25(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_25(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_24(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_24(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_23(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_23(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_22(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_22(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_21(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_21(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_20(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_20(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_19(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_19(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_18(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_18(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_17(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_17(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_16(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_16(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_15(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_15(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_14(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_14(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_13(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_13(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_12(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_12(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_11(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_11(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_10(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_10(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_9(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_9(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_8(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_8(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_7(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_7(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_6(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_6(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_5(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_5(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_4(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_4(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_3(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_3(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_2(__VA_ARGS__)
+
+#define PP_QUOTE_LIST_2(M1, ...) \
+    PP_COMMA_QUOTE_ONE(M1) PP_QUOTE_LIST_1(__VA_ARGS__)
+
+// Base case: The last element is quoted without a trailing comma.
+#define PP_QUOTE_LIST_1(M1) PP_STRINGIFY(M1)
+// --- MAIN DISPATCH MACRO (Recursion Terminator) ---
+
+// The recursion must be explicitly terminated for the last element.
+// This macro expands to the correct PP_QUOTE_LIST_N macro based on the argument count.
+#define PP_QUOTE_LIST_DISPATCHER(N, ...) PP_PASTE(PP_QUOTE_LIST_, N)(__VA_ARGS__)
+#define QUOTE_LIST(...) \
+    PP_QUOTE_LIST_DISPATCHER(PP_NARG(__VA_ARGS__), __VA_ARGS__)

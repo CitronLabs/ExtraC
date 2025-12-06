@@ -4,6 +4,8 @@
 
 #include "../Type/pkg.h"
 
+#include "macro_utils.h"
+
 #define package std
 
 
@@ -25,7 +27,23 @@
 
 #define throw(code, msg) ERR(code, msg); std.Error.Throw();
 #define nullerr(var) ERR(ERR_NULLPTR, #var " is null")
-#define nonull(var, ...) if(!(var)){errvt err = nullerr(var); __VA_ARGS__;}
+
+
+#define nonull(...)								\
+    for(errvt __i = sizeof((const void*[]){__VA_ARGS__}), err = OK; __i; __i--)	\
+        if(!err){								\
+            if(((const void*[]){__VA_ARGS__})[__i - 1]) { continue; }		\
+            else {								\
+                err = ERR(ERR_NULLPTR, "null value detected"); 			\
+                println("NULL VALUE: ",  					\
+			((char*[]){QUOTE_LIST(__VA_ARGS__)}[__i]));		\
+            }									\
+	} else
+
+    
+
+
+
 #define iferr(errorable) for(errvt err = (errorable); err; std.Error.Clear())
 #define NOT_IMPLEM(returnval) ERR(ERR_NOTIMPLEM, "not implemented yet..."); return returnval;
 

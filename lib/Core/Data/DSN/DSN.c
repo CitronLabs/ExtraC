@@ -2,13 +2,14 @@
 
 import(std)
 
-
-
 #include "Format.c"
 #include "Parse.c"
 #include "DSB.c"
 
-errvt handleListOverride(std_DSN_data* reference, std_DSN_data* override){
+
+#define module std, DSN
+
+errvt handleListOverride(std_DSN_Data* reference, std_DSN_Data* override){
 	std_List* ref = reference->data; 
 	std_List* ovr = override->data;
 	
@@ -23,7 +24,7 @@ errvt handleListOverride(std_DSN_data* reference, std_DSN_data* override){
 	}
 return OK;
 }
-errvt handleMapOverride(std_DSN_data* reference, std_DSN_data* override){
+errvt handleMapOverride(std_DSN_Data* reference, std_DSN_Data* override){
 	std_Map* ref = reference->data; 
 	std_Map* ovr = override->data;
 
@@ -40,29 +41,29 @@ errvt handleMapOverride(std_DSN_data* reference, std_DSN_data* override){
 	}
 return OK;
 }
-errvt handleStructOverride(std_DSN_data* reference, std_DSN_data* override){
+errvt handleStructOverride(std_DSN_Data* reference, std_DSN_Data* override){
 	std_Struct* ref = reference->data; 
 	std_Struct* ovr = override->data;
 
 	List(data_entry) entries = std.Map.GetEntries(ref->fields);
 
 	foreach(entries, std_data_entry, ent){
-		std_DSN_data* res = std.Struct.SearchField(ovr, ent->key);
-		if(res == null){
+		std_DSN_Data* res = std.Struct.SearchField(ovr, ent->key);
+		if(res == nil){
 		    if(std.Struct.AddField(ovr, ent->key, ent->data) != ERR_NONE){
 			return ERR(DATAERR_DSN, "failed to add missing field to override");
 		    }
 		}
-		if(res->type != (*(std_DSN_data**)ent->data)->type)
+		if(res->type != (*(std_DSN_Data**)ent->data)->type)
 			return ERR(DATAERR_DSN, "override does not match reference type");
 	}
 
 return OK;
 }
 
-len_t resolveReference(std_DSN* self, std_DSN_data* ds, std_Stream* in){
+len_t resolveReference(std_DSN* self, std_DSN_Data* ds, std_Stream* in){
 
-	if(self == null){
+	if(self == nil){
 		ERR(DATAERR_DSN, "unable to resolve reference due to no DSN instance being provided");
 		return 0;
 	}
@@ -71,7 +72,7 @@ len_t resolveReference(std_DSN* self, std_DSN_data* ds, std_Stream* in){
 
 	std_StringBuilder* name_builder = push(std_StringBuilder);
 
-	std_DSN_data* reference = null;
+	std_DSN_Data* reference = nil;
 	rune c = 0;
 
 	std.Stream.Process
@@ -82,7 +83,7 @@ len_t resolveReference(std_DSN* self, std_DSN_data* ds, std_Stream* in){
 
 		reference = std.DSN.search(self, std.StringBuilder.GetStr(name_builder));
 		
-		if(!reference){
+		if(reference == nil){
 			ERR(DATAERR_DSN, "reference not found");
 			pop(name_builder);
 			return 0;
@@ -101,7 +102,7 @@ len_t resolveReference(std_DSN* self, std_DSN_data* ds, std_Stream* in){
 
 		while(iswblank(c)) process->next();
 		
-		std_DSN_data override = {0};
+		std_DSN_Data override = {0};
 		errvt err = ERR_NONE;
 
 		if(!std.DSN.parse(self, &override, in)){
@@ -136,14 +137,14 @@ len_t resolveReference(std_DSN* self, std_DSN_data* ds, std_Stream* in){
 	    then.end()
 	;
 
-	copy_use(std_DSN_data_Type, reference, ds);
+	copy_use(std_DSN_Data_Type, reference, ds);
 
 return prev_pos - size(in);
 }
 
 
 
-len_t methodimpl(std_DSN, parse, std_DSN_data* ds, std_Stream* in){
+len_t moduleMethod(std_DSN, parse, std_DSN_Data* ds, std_Stream* in){
 
 	rune c = 0;
 
@@ -190,11 +191,11 @@ return 0;
 }
 
 errvt DSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.parse(null, data, strm) == 0 ? 
+	return std.DSN.parse(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to parse DSN");
 }
 
-len_t methodimpl(std_DSN, format, std_DSN_data* ds, std_Stream* out){
+len_t moduleMethod(std_DSN, format, std_DSN_Data* ds, std_Stream* out){
 
 	switch (ds->type) {
 	case DSN_LIST:{
@@ -221,11 +222,11 @@ return 0;
 }
 
 errvt DSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.format(null, data, strm) == 0 ? 
+	return std.DSN.format(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to format DSN");
 }
 
-errvt methodimpl(std_DSN, import, std_DSN* import_data){
+errvt moduleMethod(std_DSN, import, std_DSN* import_data){
 	
 	if(std.Map.SearchIndex(priv.import_resolve, import_data->name) != INVALID_MAPINDEX){
 		return ERR(DATAERR_DSN, "name already in use by another import");
@@ -239,21 +240,21 @@ errvt methodimpl(std_DSN, import, std_DSN* import_data){
 return OK;	
 }
 
-std_DSN_data* methodimpl(std_DSN, search, std_String* name){
+std_DSN_Data* moduleMethod(std_DSN, search, std_String* name){
 	
-	std_String* view = std.String.View(name, 0, name->len);
-	std_Struct* curr_struct = null;
-	std_DSN_data* result = null;
+	std_String* view        = std.String.View(name, 0, name->len);
+	std_Struct* curr_struct = nil;
+	std_DSN_Data* result    = nil;
 
 	foreach(name, rune, c){
 	    if(*c == '.' || c_iterator + 1 == name->len){
 		std.String.ViewShift(view, c_iterator, 0); 
 
-		if(curr_struct == null){
+		if(curr_struct == nil){
 
 		    u32* index = std.Map.Search(priv.import_resolve, &view);
 
-		    if(index != null){
+		    if(index != nil){
 			std_DSN* import = std.List.GetPointer(priv.imports, *index);
 			curr_struct = import->body;
 		    }else{
@@ -262,14 +263,14 @@ std_DSN_data* methodimpl(std_DSN, search, std_String* name){
 		}
 
 		result = std.Struct.SearchField(curr_struct, view);
-	 	if(result == null){
+	 	if(result == nil){
 			ERR(DATAERR_DSN, "unable to resolve reference");
-			return null;
+			return nil;
 	    	}
 		if(*c == '.'){
 			if(result->type != DSN_STRUCT){
 				ERR(DATAERR_DSN, "only structs ({}) can be subreferenced");
-				return null;
+				return nil;
 			}
 			curr_struct = result->data;
 		}else{
@@ -279,7 +280,7 @@ std_DSN_data* methodimpl(std_DSN, search, std_String* name){
 	}
 
 ERR(DATAERR_DSN, "unexpected end of reference");
-return null;
+return nil;
 };
 
 
@@ -287,7 +288,7 @@ HASH(std_DSN){ return hash(self->name); }
 SIZE(std_DSN){ return sizeof(std_DSN); }
 
 COPY(std_DSN){
-	nonull(self || where, return nil);
+	nonull(self, where){ return nil; }
 
 	std_DSN* dest = where;
 
@@ -327,7 +328,7 @@ return where;
 }
 
 DESTROY(std_DSN){
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	return del(
 	    priv.header, 
@@ -339,7 +340,7 @@ DESTROY(std_DSN){
 }
 
 SET(std_DSN){
-	nonull(self || value, return err);
+	nonull(self, value){ return err; }
 
 return set(self->name, value);
 }
@@ -353,7 +354,7 @@ READ(std_DSN){
 
 		query->data = std.DSN.search(self, query->key);
 		
-		if(!query->data) num_resolved--;
+		if(query->data == nil) num_resolved--;
 	}
 
 return num_resolved;
@@ -366,10 +367,17 @@ WRITE(std_DSN){
 	loop(i, size){
 		std_DSN* include = data[i];
 		
-		if(!include){ num_included--; continue; }
+		nonull(include){ 
+			if(--num_included) 
+				continue; 
+			else 
+				break; 
+		}
 
 		iferr(std.DSN.include(self, include)){ num_included--; continue; }
 	}
+
+return num_included;
 }
 
 PRINT(std_DSN){
@@ -382,21 +390,21 @@ PRINT(std_DSN){
 		u64*        index = import_entry->data;
 		std_DSN*    data  = index(priv.imports, *index); 
 
-		if(!data) continue;
+		if(data == nil) continue;
 
-		write(out, "import ", $(name), "; ");
+		printTo(out, "import ", $(name), "; ");
 	}
 
 	
 	foreach(std.Map.GetEntries(priv.header->fields), std_data_entry, header_entry){
 		
 		std_String*   name  = import_entry->key;
-		std_DSN_data* data  = import_entry->data;
+		std_DSN_Data* data  = import_entry->data;
 
-		write(out, $(name), " = ", $use(std_DSN_data_Type, data), ", ");
+		printTo(out, $(name), " = ", $use(std_DSN_Data_Type, data), ", ");
 	}
 
-	write(out, $(self->body));
+	printTo(out, $(self->body));
 
 return size(out) - prev_pos;
 }
@@ -416,7 +424,7 @@ SCAN(std_DSN){
 	    .doDecode(std.String.UTF8.Decoder, c){
 	
 		while(scanFrom(in, $(name), " = ")){
-		    std_DSN_data field_data = {0};
+		    std_DSN_Data field_data = {0};
 
 		    if(!std.DSN.parse(self, &field_data, in)){
 			ERR(DATAERR_DSN, "failed to parse field data");

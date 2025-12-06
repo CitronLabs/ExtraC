@@ -3,10 +3,11 @@
 
 
 import(std)
-import(C)
+
+#define module std, Map
 
 
-errvt methodimpl(std_Map, SetDefault, void* data){
+errvt moduleMethod(std_Map, SetDefault, void* data){
 	
 	nonull(self);
 	nonull(data);
@@ -28,7 +29,7 @@ errvt methodimpl(std_Map, SetDefault, void* data){
 return OK;
 }
 
-u32 methodimpl(std_Map, Insert, void* key_data, void* itemptr){
+u32 moduleMethod(std_Map, Insert, void* key_data, void* itemptr){
 	
 	nonull(self,     return INVALID_MAPINDEX);
 	nonull(key_data, return INVALID_MAPINDEX);
@@ -85,7 +86,7 @@ u32 methodimpl(std_Map, Insert, void* key_data, void* itemptr){
 return index;
 }
 
-u32 methodimpl(std_Map, SearchIndex, void* key){
+u32 moduleMethod(std_Map, SearchIndex, void* key){
 
 	nonull(key, return INVALID_MAPINDEX);
 	nonull(self, return INVALID_MAPINDEX);
@@ -122,12 +123,12 @@ return priv.default_index;
 }
 
 
-void* methodimpl(std_Map, Search, void* key){
+void* moduleMethod(std_Map, Search, void* key){
 
 return std.Map.Index(self, std.Map.SearchIndex(self, key));
 }
 
-void* methodimpl(std_Map,Index, u32 key){
+void* moduleMethod(std_Map,Index, u32 key){
 	nonull(self, return NULL)
 
 	void* result = NULL;
@@ -147,7 +148,7 @@ void* methodimpl(std_Map,Index, u32 key){
 
 return result;
 }
-errvt methodimpl(std_Map, Remove, void* key){
+errvt moduleMethod(std_Map, Remove, void* key){
 	nonull(self, return err)
 
 	u32 mindex = std.Map.SearchIndex(self, key);
@@ -169,27 +170,27 @@ errvt methodimpl(std_Map, Remove, void* key){
 
 return OK;
 }
-List(data_entry) methodimpl(std_Map, GetEntries){
+List(data_entry) moduleMethod(std_Map, GetEntries){
 
 return priv.buckets;
 }
 
-u64 methodimpl(std_Map, Count){
+u64 moduleMethod(std_Map, Count){
 return std.List.Size(priv.buckets);
 }
 
-errvt methodimpl(std_Map, Limit, u64 limit){
+errvt moduleMethod(std_Map, Limit, u64 limit){
 return std.List.Limit(priv.buckets, limit);
 }
 
-std_typeData	methodimpl(std_Map, GetValType){nonull(self, return T(std_Nil)) return priv.value; }
-std_typeData	methodimpl(std_Map, GetKeyType){nonull(self, return T(std_Nil)) return priv.key; }
+std_typeData	moduleMethod(std_Map, GetValType){nonull(self, return T(std_Nil)) return priv.value; }
+std_typeData	moduleMethod(std_Map, GetKeyType){nonull(self, return T(std_Nil)) return priv.key; }
 
 DESTROY(std_Map){
-	nonull(self, return err);
+	nonull(self){ return err; }
 	
 	foreach(priv.buckets, std_data_entry, entry){
-		if(entry->data != NULL){
+		if(entry->data && entry->key){
 			free(entry->data);
 			free(entry->key);
 		}
@@ -208,7 +209,7 @@ WRITE(std_Map){
 
 	loop(i, size){
 	    std_data_entry* entry = data[i];
-	    if(entry->key != NULL){
+	    if(entry->key){
 	    	iferr(std.Map.Insert(self, entry->key, entry->data)){
 		    len_added--;
 		}
@@ -229,9 +230,9 @@ READ(std_Map){
 
 	loop(i, size){
 	    std_data_entry* entry = data[i];
-	    if(entry->key != NULL){
+	    if(entry->key){
 		entry->data = std.Map.Search(self, entry->key);
-		if(!entry->data)
+		if(entry->data == nil)
 		    len_gotten--;
 	    }
 	    else{
@@ -245,7 +246,7 @@ return size;
 }
 
 COPY(std_Map){
-	nonull(self, return nil);
+	nonull(self){ return nil; }
 	
 	std_Map* dest = where;
 
@@ -270,7 +271,7 @@ return where;
 }
 
 ITER(std_Map){
-	nonull(self, return NULL);
+	nonull(self){ return nil; }
 return index(priv.buckets, index);
 }
 
@@ -286,7 +287,7 @@ SIZE(std_Map){
 SCAN(std_Map){
 	
 	std_Map* result = NULL;
-	u64 len = std.DSN.Map.parse(NULL, &result, in);
+	u64 len = std.DSN.Map.parse(nil, &result, in);
 
 	if(len == 0){
 		ERR(DATAERR_DSN, "failed to scan for map");
@@ -300,8 +301,8 @@ return len;
 PRINT(std_Map){
 
 	u64 formated_len = 0;
-	if(!format || !format->debug)
-		formated_len += std.DSN.Map.format(NULL, self, out);
+	if(format == nil || !format->debug)
+		formated_len += std.DSN.Map.format(nil, self, out);
 
 	void* data = priv.buckets;
 
@@ -331,9 +332,9 @@ DEF(),
 	priv.default_index  	= INVALID_MAPINDEX;
 	
 
-	if(args->literal != NULL){
+	if(args->literal){
 	    loop(i, args->init_size){
-		    if(args->literal[i].key != NULL){
+		    if(args->literal[i].key){
 			std.Map.Insert(self, arg.literal[i].key, args->literal[i].data);
 		    }
 		    else if(priv.default_index == INVALID_MAPINDEX){

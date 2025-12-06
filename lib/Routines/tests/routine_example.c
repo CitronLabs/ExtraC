@@ -33,7 +33,7 @@ arthFunc parseOperator(strc8 op){
 
 
 
-return null;
+return nil;
 }
 
 void FileNFib(strc8 path, u32 num){

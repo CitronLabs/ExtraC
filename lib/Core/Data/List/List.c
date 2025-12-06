@@ -4,24 +4,24 @@
 
 import(std)
 
-
+#define module std, List
 
 
 #define insertIntoListAt(index, _data, len) \
 	memcpy(&(((u8*)priv.data)[index * priv.type.size]), _data, priv.type.size * len);
 
 
-errvt methodimpl(std_List, Limit, len_t limit_size){
+errvt moduleMethod(std_List, Limit, len_t limit_size){
 	
-	nonull(self, return err);
-	nonull(self, return err);
+	nonull(self){ return err; }
+	nonull(self){ return err; }
 	priv.limit = limit_size;
 	
 	if(priv.items > limit_size || priv.items_alloced > priv.limit){
 	    // reallocating to fit with the limits new bounds
 		priv.data = realloc(priv.data, priv.type.size * priv.limit);
 		
-		if(null == priv.data ) return ERR( 
+		if(!priv.data) return ERR( 
 			DATAERR_MEMALLOC, "failed to reallocate list");
 	
 		priv.items = priv.items > priv.limit ? limit_size : priv.items;
@@ -31,7 +31,7 @@ errvt methodimpl(std_List, Limit, len_t limit_size){
 return OK;
 }
 
-errvt methodimpl(std_List, Grow, len_t plus_amount){
+errvt moduleMethod(std_List, Grow, len_t plus_amount){
 
 	if(priv.items == priv.limit) return ERR(
 		DATAERR_LIMIT, "limit has been reached for this list");
@@ -43,14 +43,14 @@ errvt methodimpl(std_List, Grow, len_t plus_amount){
 	}
 	priv.data = realloc(priv.data, priv.items_alloced * priv.type.size);
 	
-	if(null ==  priv.data ) return ERR(
+	if(!priv.data) return ERR(
 		DATAERR_MEMALLOC , "failed to grow this list");
 
 return OK;
 }
 
-errvt methodimpl(std_List, Reserve, bool exact, len_t amount){
-	nonull(self, return err);
+errvt moduleMethod(std_List, Reserve, bool exact, len_t amount){
+	nonull(self){ return err; }
 
 	errvt result = OK;
 
@@ -62,7 +62,7 @@ errvt methodimpl(std_List, Reserve, bool exact, len_t amount){
 return result;
 }
 
-errvt methodimpl(std_List, Append, void* in, len_t len){
+errvt moduleMethod(std_List, Append, void* in, len_t len){
 	nonull(self, return err;)
 	nonull(in, return err;)
 
@@ -79,14 +79,14 @@ errvt methodimpl(std_List, Append, void* in, len_t len){
 return OK;
 }
 
-errvt methodimpl(std_List, SetFree, u64 index){
+errvt moduleMethod(std_List, SetFree, u64 index){
     	nonull(self, return err;)
 
 
-	if(priv.free_slots_buff == null){
+	if(priv.free_slots_buff == nil){
 		priv.free_slots_buff = calloc(10, sizeof(len_t));
 		priv.free_slots_buff_alloced = 10;
-		if(priv.free_slots_buff == null){
+		if(priv.free_slots_buff == nil){
 			return ERR(DATAERR_MEMALLOC, "failed to allocate free_slots_buff");
 		}
 	}
@@ -96,12 +96,12 @@ errvt methodimpl(std_List, SetFree, u64 index){
 
 return OK;	
 }
-u64 methodimpl(std_List, FillSlot, void* in){
+u64 moduleMethod(std_List, FillSlot, void* in){
 	nonull(self, return err;)
 	
 	u64 index = maxof(len_t);
 
-	if(priv.free_slots_buff == null || priv.free_slots_buff_size == 0){
+	if(priv.free_slots_buff == nil || priv.free_slots_buff_size == 0){
 		index = priv.items;
 		std.List.Append(self, in, 1);
 
@@ -111,9 +111,9 @@ u64 methodimpl(std_List, FillSlot, void* in){
 return index;
 }
 
-errvt methodimpl(std_List, Insert, len_t len, u64 index, void* in){
+errvt moduleMethod(std_List, Insert, len_t len, u64 index, void* in){
 
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	
 	index = index == maxof(len_t) ? priv.items : index;	
@@ -158,7 +158,7 @@ return OK;
 }
 
 #define mergpriv merged_list->__private
-errvt methodimpl(std_List, Merge, std_List* merged_list, u64 index){
+errvt moduleMethod(std_List, Merge, std_List* merged_list, u64 index){
 
 	nonull(self, return err;)
 	nonull(merged_list, return err;)
@@ -178,15 +178,15 @@ errvt methodimpl(std_List, Merge, std_List* merged_list, u64 index){
 return result;
 }
 
-std_List* methodimpl(std_List, SubList, u64 index, len_t len){
+std_List* moduleMethod(std_List, SubList, u64 index, len_t len){
+	nonull(self){ return nil; }
 
-	nonull(self, return null;)
-	std_List* out_list = null;
+	std_List* out_list = 0;
 
 
 	if(index >= priv.items) {
 		ERR(DATAERR_OUTOFRANGE , "index out of range");
-		return null;
+		return nil;
 	}
 
 	if(len == maxof(len_t))len = priv.items - index;
@@ -202,7 +202,7 @@ std_List* methodimpl(std_List, SubList, u64 index, len_t len){
 return out_list;
 }
 
-errvt methodimpl(std_List, Index, bool write, u64 index, len_t len, void* data){
+errvt moduleMethod(std_List, Index, bool write, u64 index, len_t len, void* data){
 	
 	nonull(self, return err;)
 	nonull(data, return err;)
@@ -223,16 +223,15 @@ errvt methodimpl(std_List, Index, bool write, u64 index, len_t len, void* data){
 
 return OK;
 }
-void* methodimpl(std_List, GetPointer, u64 index){
-	
-	nonull(self, return null)
+void* moduleMethod(std_List, GetPointer, u64 index){
+	nonull(self, return nil)
 
-	void* result = null;
+	void* result = 0;
 
 
 	if(index > priv.items_alloced) {
 		ERR(DATAERR_EMPTY, "index out of range");
-		return null;
+		return nil;
 	}
 
 	result = &(((u8*)priv.data)[index * priv.type.size]);
@@ -240,7 +239,7 @@ void* methodimpl(std_List, GetPointer, u64 index){
 return result; 
 }
 
-errvt methodimpl(std_List, Cast, Type new_type){
+errvt moduleMethod(std_List, Cast, Type_t new_type){
 	nonull(self, return err)
 
 	priv.items = (priv.items * priv.type.size) / new_type.size; 
@@ -252,17 +251,17 @@ errvt methodimpl(std_List, Cast, Type new_type){
 
 return OK;
 }
-len_t methodimpl(std_List, Size){
+len_t moduleMethod(std_List, Size){
 	nonull(self, return maxof(len_t);)
 	
 return priv.items;
 }
-void methodimpl(std_List, Flush){
+void moduleMethod(std_List, Flush){
 	nonull(self, return)
 	
 	priv.items = 0; 
 }
-u32 methodimpl(std_List,Pop, u32 num){
+u32 moduleMethod(std_List,Pop, u32 num){
 	nonull(self, return 0)
 
 	if(num > priv.items) 
@@ -273,8 +272,8 @@ return num;
 }
 
 
-void* methodimpl(std_List, FreeToPointer){
-	nonull(self, return null);
+void* moduleMethod(std_List, FreeToPointer){
+	nonull(self){ return nil; }
 
 	void* res = priv.data;
 	free(self);
@@ -282,7 +281,7 @@ void* methodimpl(std_List, FreeToPointer){
 return res;
 }
 
-std_typeData methodimpl(std_List, GetType){
+std_typeData moduleMethod(std_List, GetType){
 	nonull(self, return T(std_Nil));
 
 return priv.type;
@@ -294,13 +293,14 @@ HASH(std_List){ return hash_bytes(priv.data, priv.items * priv.type.size); }
 SIZE(std_List){ if(elements) return priv.items; else return sizeof(std_List); }
 
 SET(std_List){ 
+	nonull(self, value){ return err; }
 
-	std.List.Flush(self);
-
-	if(value != null)
+	if(value != nil){
+	   std.List.Flush(self);
 	   for(int i = 0; ((void**)value)[i]; i++)
 		std.List.Append(self, ((void**)value)[i], 1);
-		
+	}
+
 return OK;
 }
 
@@ -319,23 +319,23 @@ return size;
 }
 
 COPY(std_List){
-	nonull(self, return nil);
+	nonull(self){ return nil; }
 
-	if(!create(std_List, 
+	if(create(std_List, 
 	    where, 
 	    	.type = priv.type, 
 	    	.init_size = priv.items, 
 	    	.literal = priv.data
 	    )
-	){ ERR(ERR_FAIL, "failed to copy list"); return nil; } 
+	== nil){ ERR(ERR_FAIL, "failed to copy list"); return nil; } 
 
 return where;
 }
 
 DESTROY(std_List){
-	nonull(self, return err);
+	nonull(self){ return err; }
 	
-	if(priv.data != null) free(priv.data); 
+	if(priv.data) free(priv.data); 
 return OK;
 }
 
@@ -343,8 +343,8 @@ PRINT(std_List){
 	nonull(self, return 0);
 	len_t formated_len = 0;
 
-	if(!format || !format->debug)
-	formated_len += std.DSN.List.format(null, self, out);
+	if(format == nil || !format->debug)
+	formated_len += std.DSN.List.format(nil, self, out);
 			
 	formated_len += write(out, "(List){ ",
 		 	".items = ", $(priv.items), ", ",
@@ -369,8 +369,8 @@ return formated_len;
 SCAN(std_List){
 	nonull(self, return 0);
 	
-	std_List* result = null;
-	len_t len = std.DSN.List.parse(null, &result, in);
+	std_List* result = 0;
+	len_t len = std.DSN.List.parse(nil, &result, in);
 
 	if(len == 0){
 		ERR(DATAERR_DSN, "failed to scan for list");
@@ -400,9 +400,9 @@ DEF(),
         priv.limit = __List.maxSize;
 	
 
-	if(null == (priv.data = calloc(priv.items_alloced, priv.type.size))) { 
+	if(!(priv.data = calloc(priv.items_alloced, priv.type.size))) { 
 		ERR(DATAERR_MEMALLOC, "failed to allocate list");
-		return null;
+		return nil;
 	}
 	
 	if(arg.init_size && args->literal){

@@ -8,7 +8,7 @@
 #define package std
 
 Class(Map,
-INIT(u64 init_size; Type key, data; std_data_entry* literal),
+INIT(u64 init_size; Type_t key, data; std_data_entry* literal),
 FMT(bool debug),
 private(
 	std_typeData key, value;

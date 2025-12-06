@@ -1,7 +1,7 @@
 #pragma once
 
 #define __stream_for_each(type) 	\
-    for (type* __var = null;		\
+    for (type* __var = nil;		\
 	 (__var = std_Stream_Type->ops.Iter(std.Stream.Process.current(), i)); i++) 
 
 #define each(type) 				\

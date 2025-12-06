@@ -27,14 +27,12 @@
 
 
 #define intf(Class) const Class##_Interface*
-#define ifob(interface) struct{ intf(interface) intf; void* objt;}
+#define ifob(_interface) struct{ intf(_interface) interface; void* object;}
 #define obj(Class) struct { Class public; Class##_Private private; }
 #define argsof(Class) Class##_ConstructArgs
-#define i(ifob) (*((ifob)->intf))
-#define o(ifob) ((ifob)->objt)
+#define i(ifob) (*((ifob)->interface))
+#define o(ifob) ((ifob)->object)
 
 #define generic (void*)
 #define like(var) (typeof(var))
-
-#define useIntf(obj, ...) (ifob){generic &((*obj->__methods)__VA_ARGS__), generic obj}
 

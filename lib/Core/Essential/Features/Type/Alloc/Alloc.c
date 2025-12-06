@@ -3,9 +3,9 @@
 
 import(std);
 
-use(std, 
-    typeData, 
-    Object
+from(std, 
+    use(typeData), 
+    use(Object)
 )
 
 void* moduleFn(init)(typeData* type, bool freeOnFail, Object* self, void* args){ 

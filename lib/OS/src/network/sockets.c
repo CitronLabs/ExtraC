@@ -1,16 +1,16 @@
 #define __NETWORK_SOURCE_DEF__
 #include "posix.h"
 
-socket_settings methodimpl(Socket, GetSettings){
+socket_settings moduleMethod(Socket, GetSettings){
 	return priv.settings;
 }
 
-errvt methodimpl(Socket, Bind, void* address){
+errvt moduleMethod(Socket, Bind, void* address){
 
 
 }
 
-errvt methodimpl(Socket, Listen, u32 num_connects){
+errvt moduleMethod(Socket, Listen, u32 num_connects){
 	nonull(self);
 
 	if(-1 == listen(priv.fd, num_connects) ) return ERR(
@@ -18,13 +18,13 @@ errvt methodimpl(Socket, Listen, u32 num_connects){
 return OK;
 }
 
-inst(Connection) methodimpl(Socket, Accept){
+inst(Connection) moduleMethod(Socket, Accept){
 	struct sockaddr address;
 	socklen_t len;
 	int fd;
 	if(-1 ==(fd = accept(priv.fd, &address, &len)) ){
 		ERR(NETERR_CONNECT, "could not accept incoming socket connection");
-	      	return null;
+	      	return nil;
 	}
 	
 	inst(Connection) res = calloc(1, sizeof(Connection_Instance));
@@ -39,14 +39,14 @@ inst(Connection) methodimpl(Socket, Accept){
 return res;
 }
 
-errvt methodimpl(Socket, GetAddress, void* address){
+errvt moduleMethod(Socket, GetAddress, void* address){
 	nonull(socket);
 	nonull(address);
 
 return unixAddrToXCAddr(priv.settings.domain, &priv->address, address);
 }
 
-errvt imethodimpl(Socket, Close,){
+errvt moduleIMethod(Socket, Close,){
 	self(Socket)
 
 	nonull(socket);
@@ -78,10 +78,10 @@ construct(Socket,
 		-1;
 
 	if(-1 == domain ) {ERR(
-	      NETERR_SOCKINVAL, "invalid domain setting"); return null;}
+	      NETERR_SOCKINVAL, "invalid domain setting"); return nil;}
 	
 	if(-1 == protocol ) {ERR(
-	      NETERR_SOCKINVAL, "invalid protocol setting"); return null;}
+	      NETERR_SOCKINVAL, "invalid protocol setting"); return nil;}
 
 	setpriv(Socket){
 		.fd = socket(domain, protocol, 0),

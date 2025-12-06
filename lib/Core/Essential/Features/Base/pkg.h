@@ -19,10 +19,7 @@ len_t nilmethod();
 #define nil (generic __nil_obj)
 #define nilobj(type) (type){0}
 
-#define isNil(object) (object && object != nil)
 #define isImpl(func)  (func && func != nilmethod)
-
-#define null ((void*)0)
 
 typefrom(pntr, typeID)
 

@@ -1,34 +1,29 @@
+#define module std, Array, Buffer
 #include "includes.h"
 
-void*  methodimpl(std_Array_Buffer, ToPointer){
+
+void*  moduleMethod(Buffer, ToPointer){ return this.data;}
+
+errvt  moduleMethod(Buffer, Reserve, bool exact, u64 amount){
 	
+	if(amount > this.items) return OK;
 
+	void* old_buff  = this.data;
+	len_t prev_size = this.items;
 
+	create(std_Array_Buffer, self, 
+		.typeSize = this.typeSize,
+		.initSize = exact ? amount : (this.items / 2) + amount,
+	);
+
+	memcpy(this.data, old_buff, prev_size * this.typeSize);
+
+return OK;
 }
-void*  methodimpl(std_Array_Buffer, FreeToPointer){
 
+noFail moduleMethod(std_Array_Buffer, Clear){ memset(this.data, 0, this.items * this.typeSize); }
 
-
-}
-errvt  methodimpl(std_Array_Buffer, Reserve, bool exact, u64 amount){
-
-
-
-
-}
-u64    methodimpl(std_Array_Buffer, Count){
-
-
-
-}
-bool   methodimpl(std_Array_Buffer, Check){
-
-
-
-}
-noFail methodimpl(std_Array_Buffer, Clear);
-
-WRITE(std_Array_Buffer){
+WRITE(Buffer){
 	nonull(self, return err;);
 	
 	if(size > this.items) size = this.items;
@@ -39,8 +34,8 @@ WRITE(std_Array_Buffer){
 return size;
 }
 
-READ(std_Array_Buffer){
-	nonull(self, return err);
+READ(Buffer){
+	nonull(self){ return err; }
 
 	if(0 == this.items) return ERR(DATAERR_EMPTY, "stack is empty");
 	
@@ -56,17 +51,10 @@ READ(std_Array_Buffer){
 return OK;
 }
 
-SIZE(std_Array_Buffer){
-	if(!self)
-		return sizeof(std_Array_Buffer);
-	elif (elements)
-	  	return this.items;
-	else
-	  	return this.items * this.typeSize;
+SIZE(Buffer){
+	return elements ? this.items : this.items * this.typeSize;
 }
-errvt methodimpl(std_Array_Queue, Grow, u64 add_amount);
-errvt methodimpl(std_Array_List, Grow, u64 add_amount);
-errvt methodimpl(std_Array_Stack, Grow, u64 add_amount);
+
 
 COPY(std_Array_Buffer){
 
@@ -78,7 +66,7 @@ COPY(std_Array_Buffer){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    
@@ -96,7 +84,7 @@ COPY(std_Array_Buffer){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	break;}
@@ -105,7 +93,7 @@ COPY(std_Array_Buffer){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    if(dest->items + this.items > privof(dest).allocSize)
@@ -123,7 +111,7 @@ COPY(std_Array_Buffer){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    len_t alloc_size = 
@@ -138,11 +126,11 @@ COPY(std_Array_Buffer){
 	break;}
 	defaultT{
 		ERR(ERR_INVALID, "invalid copy destination type detected");
-		return null;
+		return nil;
 	}
 	}
 
-	create(List, where,  
+return create(Buffer, where,  
 		.initSize = this.items,
 	       	.typeSize = this.typeSize,
 	       	.data = this.data

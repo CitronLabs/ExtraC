@@ -3,7 +3,7 @@
 #include "posix.h"
 
 
-errvt methodimpl(Connection, Send, msg_packet message){
+errvt moduleMethod(Connection, Send, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 
@@ -13,7 +13,7 @@ errvt methodimpl(Connection, Send, msg_packet message){
 	priv.io_ready &= 0;
 return OK;
 }
-errvt methodimpl(Connection, Recieve, msg_packet message){
+errvt moduleMethod(Connection, Recieve, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 	
@@ -22,7 +22,7 @@ errvt methodimpl(Connection, Recieve, msg_packet message){
 	priv.io_ready &= 0;
 return OK;
 }
-errvt methodimpl(Connection, GroupSend, msg_packet message){
+errvt moduleMethod(Connection, GroupSend, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 
@@ -36,7 +36,7 @@ errvt methodimpl(Connection, GroupSend, msg_packet message){
 	priv.io_ready &= 0;
 return OK;
 }
-errvt methodimpl(Connection, GroupRecive, msg_packet message){
+errvt moduleMethod(Connection, GroupRecive, msg_packet message){
 	nonull(self);
 	nonull(message.buff);
 
@@ -51,7 +51,7 @@ errvt methodimpl(Connection, GroupRecive, msg_packet message){
 return OK;
 }
 
-errvt methodimpl(Connection, UnWatch){
+errvt moduleMethod(Connection, UnWatch){
 	nonull(self);
 
 	if(epoll_fd == 0){
@@ -71,7 +71,7 @@ errvt methodimpl(Connection, UnWatch){
 	priv.watched = false;
 return OK;
 }
-errvt methodimpl(Connection, Watch){
+errvt moduleMethod(Connection, Watch){
 	nonull(self);
 
 	if(epoll_fd == 0){
@@ -91,7 +91,7 @@ errvt methodimpl(Connection, Watch){
 	priv.watched = true;
 return OK;
 }
-bool methodimpl(Connection, Check){
+bool moduleMethod(Connection, Check){
 	
 	nonull(self, return false;)
 
@@ -137,7 +137,7 @@ bool methodimpl(Connection, Check){
 
 return false;
 }
-errvt methodimpl(Connection, GroupJoin, void* address, void* interface_addr){
+errvt moduleMethod(Connection, GroupJoin, void* address, void* interface_addr){
 
 	nonull(self);
 	nonull(address);
@@ -211,7 +211,7 @@ errvt methodimpl(Connection, GroupJoin, void* address, void* interface_addr){
 	}
 	}
 }
-errvt methodimpl(Connection,GroupLeave){
+errvt moduleMethod(Connection,GroupLeave){
 	nonull(self);
 
 	switch (priv.settings.domain) {
@@ -247,11 +247,11 @@ errvt methodimpl(Connection,GroupLeave){
 return OK;
 }
 
-socket_settings methodimpl(Connection, GetSettings){
+socket_settings moduleMethod(Connection, GetSettings){
 	nonull(self, return (socket_settings){0};);
 	return priv.settings;
 }
-errvt methodimpl(Connection, GetAddress, void* address, void* multicast_address){
+errvt moduleMethod(Connection, GetAddress, void* address, void* multicast_address){
 	nonull(self)	
 	nonull(address)	
 
@@ -269,7 +269,7 @@ errvt methodimpl(Connection, GetAddress, void* address, void* multicast_address)
 		multicast_address);
 return error;
 }
-errvt imethodimpl(Connection, Close){
+errvt moduleIMethod(Connection, Close){
 	self(Connection)
 	nonull(self);
 	
@@ -319,12 +319,12 @@ construct(Connection,
 
 	if(-1 == domain ){
 	      ERR(NETERR_CONNECT, "invalid domain setting");
-	      return null;
+	      return nil;
 	}
 	
 	if(-1 == protocol ){
 	      ERR(NETERR_CONNECT, "invalid domain setting");
-	      return null;
+	      return nil;
 	}
 
 	setpriv(Connection){
@@ -338,12 +338,12 @@ construct(Connection,
 	};
 	if(-1 == priv.fd ) {
 	      ERR(NETERR_CONNECT, "could not create connection socket");
-	      ; return null;
+	      ; return nil;
 	}
 
 	if(-1 == connect(priv.fd, &priv->addresses[0], priv->sizeofaddr) ) {
 	      ERR(NETERR_CONNECT , "could not initialize connection");
-	      ; return null;
+	      ; return nil;
 	}
 	
 	Map.Insert(connections, n(priv.fd), &self);

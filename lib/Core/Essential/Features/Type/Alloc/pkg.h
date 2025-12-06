@@ -34,8 +34,8 @@ Interface(Alloc_Ops,
 #define pop(...) std.Types.alloc.destruct(false, (pntr[]){__VA_ARGS__}, sizeof((pntr[]){__VA_ARGS__}) / sizeof(pntr))
 #define destroy(...) std.Types.alloc.destruct(false, (pntr[]){__VA_ARGS__}, sizeof((pntr[]){__VA_ARGS__}) / sizeof(pntr))
 
-#define DESTROY(class) errvt methodimpl(class,  Op_Destroy)							
-#define CREATE(class)  class* methodimpl(class, Op_Create, len_t size, __CONCATE_IMPL(class,ConstructArgs)* args)
+#define DESTROY(class) errvt moduleMethod(class,  Op_Destroy)							
+#define CREATE(class)  class* moduleMethod(class, Op_Create, len_t size, __CONCATE_IMPL(class,ConstructArgs)* args)
 
 #define construct(name, FMT, DEF, ...)  			\
 	CREATE(name); 						\
@@ -54,8 +54,6 @@ Interface(Alloc_Ops,
 		.construct = generic &name##_DefaultArgs,	\
 	};							\
 	CREATE(name)
-
-
 
 #undef package
 

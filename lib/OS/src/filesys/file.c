@@ -14,7 +14,7 @@ inst(File) File_Create(fsPath path, u8 flags, u16 char_size){
 
 	if(0 == userOS->filesys.search(path, &fbuf)){ ERR(
 		IOERR_ALRDYEXST, "file already exists");
-		return null;
+		return nil;
 	}
 	
 	int o_flags = getFileFlags(flags);
@@ -24,7 +24,7 @@ inst(File) File_Create(fsPath path, u8 flags, u16 char_size){
 	if(null == (priv.handle = userOS->filesys.open(path, o_flags | userOS->filesys.CREATE_FLAG))){
 	  	ERR(IOERR_FAIL, "failed to open file");
 		free(self);
-		return null;
+		return nil;
 	}
 
 	priv.char_size = char_size;
@@ -33,7 +33,7 @@ inst(File) File_Create(fsPath path, u8 flags, u16 char_size){
 return self;
 }
 
-FILE* methodimpl(File, ToC){
+FILE* moduleMethod(File, ToC){
 
 	nonull(self, return null)
 
@@ -55,14 +55,14 @@ inst(File) File_FromC(FILE* file, u8 flags, u16 char_size){
 	
 	inst(File) self = calloc(1, sizeof(File_Instance));
 
-	if((priv.fd =  fileno(file)) == -1){ free(self); return null; }
+	if((priv.fd =  fileno(file)) == -1){ free(self); return nil; }
 	priv.char_size = char_size;
 	priv.flags = flags;
 
 return self;
 }
 
-i64 methodimpl(File, Read, void* output , u64 len){
+i64 moduleMethod(File, Read, void* output , u64 len){
 
 	nonull(self, return -1)	
 	nonull(output, return -1)	
@@ -77,7 +77,7 @@ i64 methodimpl(File, Read, void* output , u64 len){
 	}
 return bytes_read;
 }
-i64 methodimpl(File, Write, void* input , u64 len){
+i64 moduleMethod(File, Write, void* input , u64 len){
 
 	nonull(self, return -1)	
 	nonull(input, return -1)	
@@ -95,7 +95,7 @@ return bytes_written;
 }
 
 
-errvt methodimpl(File, Copy, inst(File)* new_file, fsPath path){
+errvt moduleMethod(File, Copy, inst(File)* new_file, fsPath path){
 	
 	u64 bytes_to_transfer = 0, cursor_offset = 0;
 
@@ -172,7 +172,7 @@ errvt methodimpl(File, Copy, inst(File)* new_file, fsPath path){
 
 return OK;
 }
-errvt methodimpl(File, Move, fsPath path){
+errvt moduleMethod(File, Move, fsPath path){
 
 	nonull(self, return err)
 	nonull(path, return err)
@@ -194,15 +194,15 @@ errvt methodimpl(File, Move, fsPath path){
 
 return OK;
 }
-errvt imethodimpl(File, Close){
+errvt moduleIMethod(File, Close){
 	self(File)
 
-	nonull(self, return err);	
+	nonull(self){ return err; }	
 	close(priv.fd);
 
 return OK;
 }
-errvt methodimpl(File, Remove){
+errvt moduleMethod(File, Remove){
 	
 	nonull(self, return err)
 	close(priv.fd);
@@ -210,7 +210,7 @@ errvt methodimpl(File, Remove){
 return OK;
 }
 
-u64 methodimpl(File, Print, FormatID* formats, inst(StringBuilder) out){
+u64 moduleMethod(File, Print, FormatID* formats, inst(StringBuilder) out){
 
 	u64 formated_len = 0;
 	u64 characters_read = 0;
@@ -230,7 +230,7 @@ u64 methodimpl(File, Print, FormatID* formats, inst(StringBuilder) out){
 
 return formated_len;
 }
-u64 methodimpl(File, Scan, FormatID* formats, inst(String) in){
+u64 moduleMethod(File, Scan, FormatID* formats, inst(String) in){
 
 	u32 cursor = 0;
 	while(isblank(in->txt[cursor])) cursor++;
@@ -295,7 +295,7 @@ construct(File,
 	
 	if(entdata.is_dir){
 		ERR(IOERR_NOTFOUND, "path does not lead to a file");
-	 	return null;
+	 	return nil;
 	}
 	
 	int o_flags = getFileFlags(arg.flags);
@@ -306,7 +306,7 @@ construct(File,
 
 	if(priv.fd == -1){ 
 		ERR(IOERR_FAIL, "failed to open file");
- 		return null;
+ 		return nil;
 	}
 
 	strncpy(priv.path, arg.path, 255);

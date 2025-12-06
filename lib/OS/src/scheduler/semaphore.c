@@ -2,13 +2,13 @@
 #define __THREAD_SOURCE_DEF__
 #include "./posix.h"
 
-errvt methodimpl(Semaphore, Wait){
+errvt moduleMethod(Semaphore, Wait){
 	nonull(priv, return err;);
 	sem_wait(&priv.semaphore);
 
 return OK;
 }
-errvt methodimpl(Semaphore, TryWait){
+errvt moduleMethod(Semaphore, TryWait){
 	nonull(priv, return err;);
 	if(sem_trywait(&priv.semaphore) != 0){
 		if(errno == EAGAIN)
@@ -20,13 +20,13 @@ errvt methodimpl(Semaphore, TryWait){
 	
 return OK;
 }
-errvt methodimpl(Semaphore, Post){
+errvt moduleMethod(Semaphore, Post){
 	nonull(priv, return err;);
 	sem_post(&priv.semaphore);
 
 return OK;
 }
-errvt imethodimpl(Semaphore, Destroy){
+errvt moduleIMethod(Semaphore, Destroy){
 	self(Semaphore)
 	nonull(priv, return err;);
 	sem_destroy(&priv.semaphore);

@@ -3,6 +3,7 @@
 import(std)
 import(XC)
 
+#define module std, Error
 
 typedef struct {
 	errvt* errors_to_catch; len_t errors_to_catch_len;
@@ -41,7 +42,7 @@ return err_state;
 }
 
 std_Error* std_err_Get(){
-	static std_Local* local_err = null;
+	static std_Local* local_err = 0;
 
 	if(!local_err){
 		local_err = new(std_Local, sizeof(std_Error));
@@ -88,7 +89,7 @@ noFail std_err_Clear(){
 	local_err->message = "No Error";
 	if(err_state->trying) {
 		err_state->trying = false;
-		err_state->try_throw_jumppoint = null;
+		err_state->try_throw_jumppoint = nil;
 	}
 }
 

@@ -9,9 +9,11 @@ import(std)
  *						|
 -----------------------------------------------*/
 
+#define module bool
+
 PRINT(bool){
 	return printTo(out,
-		self == null ? fmt_skip : 
+		self ? fmt_skip : 
 	       	*self ? "true" : "false",
 	fmt_end);
 }
@@ -92,6 +94,9 @@ DEF(),
  *		Pointer Operations		|
  *						|
 -----------------------------------------------*/
+
+#undef module
+#define module pntr
 
 PRINT(pntr){
 

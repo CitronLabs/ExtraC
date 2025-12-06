@@ -1,7 +1,7 @@
 #include "__macro_utils.h"
 
 
-#define lenof(arr) ((len_t)(sizeof(arr) / sizeof(*arr)))
+#define lenof(...) ((len_t)(sizeof(__VA_ARGS__) / sizeof(*__VA_ARGS__)))
 #define elif(...) else if(__VA_ARGS__)
 
 

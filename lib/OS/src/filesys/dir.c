@@ -61,13 +61,13 @@ inst(Dir) Dir_Create (fsPath path, u8 flags){
 
 	if(0 == stat(path, &statbuf)){ ERR(
 		IOERR_ALRDYEXST, "dir already exists");
-		return null;
+		return nil;
 	}
 
 	if(mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0){
 	switch(errno){
-	case ENOENT:{ERR(IOERR_NOTFOUND, "could not create directory"); return null; }
-	case EACCES:{ERR(IOERR_PERMS, "invalid permissions could not access"); return null; }
+	case ENOENT:{ERR(IOERR_NOTFOUND, "could not create directory"); return nil; }
+	case EACCES:{ERR(IOERR_PERMS, "invalid permissions could not access"); return nil; }
 	}
 	}
 
@@ -84,7 +84,7 @@ inst(Dir) Dir_Create (fsPath path, u8 flags){
 return self;
 }
 
-i64 methodimpl(Dir, Read, fsEntry* output, u64 max_entries){
+i64 moduleMethod(Dir, Read, fsEntry* output, u64 max_entries){
 	struct dirent* entries = null; 
 	u64 ent_count = 0;
 	nonull(self, return -1)	
@@ -121,7 +121,7 @@ i64 methodimpl(Dir, Read, fsEntry* output, u64 max_entries){
 	
 return ent_count;
 };
-i64 methodimpl(Dir, Write, fsEntry* entries, u64 num_entries){
+i64 moduleMethod(Dir, Write, fsEntry* entries, u64 num_entries){
 
 	inst(StringBuilder) path = push(StringBuilder, null, 256);
 	u64 ent_count = 0;
@@ -146,7 +146,7 @@ i64 methodimpl(Dir, Write, fsEntry* entries, u64 num_entries){
 return ent_count;
 }
 
-errvt methodimpl(Dir, Copy, inst(Dir)* new_dir, fsPath path){
+errvt moduleMethod(Dir, Copy, inst(Dir)* new_dir, fsPath path){
 	
 	nonull(self, return err;)	
 	
@@ -207,8 +207,8 @@ errvt methodimpl(Dir, Copy, inst(Dir)* new_dir, fsPath path){
 return OK;
 }
 
-errvt methodimpl(Dir, Move, fsPath path){
-	nonull(self, return err);
+errvt moduleMethod(Dir, Move, fsPath path){
+	nonull(self){ return err; }
 	inst(Dir) new_dir = null;
 	Dir.Copy(self, &new_dir, path);
 	rmdir(priv.path);
@@ -222,7 +222,7 @@ errvt methodimpl(Dir, Move, fsPath path){
 return OK;
 }
 
-errvt imethodimpl(Dir, Close){
+errvt moduleIMethod(Dir, Close){
 	self(Dir)
 
 	nonull(self, return err)	
@@ -231,7 +231,7 @@ errvt imethodimpl(Dir, Close){
 return OK;
 }
 
-errvt methodimpl(Dir, Remove){
+errvt moduleMethod(Dir, Remove){
 
 	nonull(self, return err;)	
 	rmdir(priv.path);
@@ -239,7 +239,7 @@ errvt methodimpl(Dir, Remove){
 return OK;
 }
 
-u64 methodimpl(Dir, Scan, FormatID* formats, inst(String) in){
+u64 moduleMethod(Dir, Scan, FormatID* formats, inst(String) in){
 
 	u32 cursor = 0;
 	while(isblank(in->txt[cursor])) cursor++;
@@ -252,7 +252,7 @@ u64 methodimpl(Dir, Scan, FormatID* formats, inst(String) in){
 return cursor;
 }
 
-u64 methodimpl(Dir, Print, FormatID* formats, inst(StringBuilder) out){
+u64 moduleMethod(Dir, Print, FormatID* formats, inst(StringBuilder) out){
 
 	u64 formated_len = 0;
 	u8 entries_read = 0;

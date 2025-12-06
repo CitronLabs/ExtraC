@@ -1,29 +1,30 @@
+#define module std, Buffer
 #include "../../pkg.h"
 
 import(std)
 
 
-u64  		methodimpl (std_Buffer, getMaxItems)	{ return priv.alloced_size; }
-std_typeData	methodimpl (std_Buffer, getType)	{ return priv.type; }
-u64  		methodimpl (std_Buffer, getMaxSize)	{ return priv.type.size * priv.alloced_size; }
-pntr		methodimpl (std_Buffer, getPointer)	{ return priv.data; }
-u64 		imethodimpl(std_Buffer, getBytesAlloced){ self(std_Buffer); return priv.type.size * priv.size; }
-bool		imethodimpl(std_Buffer, isStatic)	{ self(std_Buffer); return priv.isStatic; }
+u64  		moduleMethod (std_Buffer, getMaxItems)	{ return priv.alloced_size; }
+std_typeData	moduleMethod (std_Buffer, getType)	{ return priv.type; }
+u64  		moduleMethod (std_Buffer, getMaxSize)	{ return priv.type.size * priv.alloced_size; }
+pntr		moduleMethod (std_Buffer, getPointer)	{ return priv.data; }
+u64 		moduleIMethod(std_Buffer, getBytesAlloced){ self(std_Buffer); return priv.type.size * priv.size; }
+bool		moduleIMethod(std_Buffer, isStatic)	{ self(std_Buffer); return priv.isStatic; }
 
-errvt imethodimpl(std_Buffer, setMax, u64 max){ 
+errvt moduleIMethod(std_Buffer, setMax, u64 max){ 
 	self(std_Buffer); 
 	return std.Buffer.resize(self, max); 
 }
 
-pntr imethodimpl(std_Buffer, New, u64 size){
+pntr moduleIMethod(std_Buffer, New, u64 size){
 	self(std_Buffer);
 	if(priv.alloced_size + size > priv.size){
 		if(priv.isStatic){
 			ERR(MEMERR_OVERFLOW, "size exceeds buffer and cannot grow static buffer");
-			return null;
+			return nil;
 		}else{
 			iferr(std.Buffer.resize(self, (priv.size / 2) + size))
-				return null;	
+				return nil;	
 		}
 	}
 
@@ -33,15 +34,15 @@ pntr imethodimpl(std_Buffer, New, u64 size){
 return result;
 }
 
-void* imethodimpl(std_Buffer, Realloc, pntr instance, u64 new_size){
+void* moduleIMethod(std_Buffer, Realloc, pntr instance, u64 new_size){
 	self(std_Buffer);
 	iferr(std.Buffer.resize(self, new_size)){
-		return null;
+		return nil;
 	}
 return priv.data;
 }
 
-errvt methodimpl(std_Buffer, Cast, Type type){
+errvt moduleMethod(std_Buffer, Cast, Type_t type){
 	if(type.size == 0) return ERR(MEMERR_INVALIDSIZE, "cannot cast buffer to type size 0");
 	
 	priv.size = (priv.size * priv.type.size) / type.size;
@@ -50,7 +51,7 @@ errvt methodimpl(std_Buffer, Cast, Type type){
 
 return OK;
 }
-errvt methodimpl(std_Buffer, Resize, u64 new_size){
+errvt moduleMethod(std_Buffer, Resize, u64 new_size){
 	if(priv.isStatic) 
 		return ERR(MEMERR_INITFAIL, "unable to resize a static buffer");
 	priv.data = realloc(priv.data, new_size);
@@ -60,8 +61,8 @@ errvt methodimpl(std_Buffer, Resize, u64 new_size){
 return OK;
 }
 
-std_Buffer* methodimpl(std_Buffer, fromView, void* start, Type type, u64 len){
-	nonull(start || self, return nil);
+std_Buffer* moduleMethod(std_Buffer, fromView, void* start, Type_t type, u64 len){
+	nonull(start, self){ return nil; }
 	
 	if(priv.data) del(self);
 
@@ -92,9 +93,9 @@ SIZE(std_Buffer){
 }
 
 SET(std_Buffer){
-	nonull(self, return err);
+	nonull(self){ return err; }
 
-	if(value == null) 
+	if(value == nil) 
 		memset(priv.data, 0, priv.size * priv.type.size);
 	else 
 		memcpy(priv.data, value, priv.size * priv.type.size);	
@@ -103,18 +104,18 @@ return OK;
 }
 
 ITER(std_Buffer){
-	nonull(self, return null);
+	nonull(self){ return nil; }
 
 	if(index >= priv.size){ 
 		ERR(ERR_INVALID, "index out of range");
-		return null; 
+		return nil; 
 	}
 
 return pntr_shiftcpy(priv.data, priv.type.size * index);
 }
 
 COPY(std_Buffer){
-	nonull(self || where, return nil);
+	nonull(self, where){ return nil };
 
 	if(create(std_Buffer, where, 
 		.type 	  = priv.type,
@@ -132,7 +133,7 @@ return where;
 }
 
 READ(std_Buffer){
-	nonull(self || data, return 0);
+	nonull(self, data){ return 0; }
 
 	if(size > priv.size) size = priv.size;
 
@@ -144,7 +145,7 @@ return size;
 }
 
 WRITE(std_Buffer){
-	nonull(self || data, return 0);
+	nonull(self, data){ return 0; }
 
 	if((size + priv.size) > priv.alloced_size) size = priv.alloced_size - priv.size;
 
@@ -162,7 +163,7 @@ return size;
 }
 
 PRINT(std_Buffer){
-	nonull(self || out, return 0);
+	nonull(self, out){ return 0; }
 
 	u64 formated_len = 0;
 

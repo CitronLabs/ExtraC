@@ -1,3 +1,4 @@
+#define module std, Number
 #include "../../../pkg.h"
 #include "../utils.h"
 
@@ -5,14 +6,16 @@ import(std)
 
 
 #ifndef HIDE_USE
-use(std,
-    Number,
-    Stream
+
+
+from(std,
+    use(Number),
+    use(Stream)
 )
 #endif
 
-u64 methodimpl(std_Number, IntScan, Number_FormatArgs* format, Stream* in);
-u64 methodimpl(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
+u64 moduleMethod(std_Number, IntScan, Number_FormatArgs* format, Stream* in);
+u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 	
 	std_Number_setZero(self); // Initialize to 0.0
 	
@@ -77,7 +80,7 @@ u64 methodimpl(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 			return prev_pos - size(in);
 		}
 		
-		std_Number_IntScan(self, null, mantissa);
+		std_Number_IntScan(self, nil, mantissa);
 		
 		// Calculate initial exponent based on decimal point
 		if (decimal_point_pos != -1) {
@@ -122,3 +125,4 @@ u64 methodimpl(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 return prev_pos - size(in);
 }
 
+#undef module

@@ -1,13 +1,22 @@
+#define module std, Array
 #include "../../../pkg.h"
 
 import(std)
-use(std_Array, List, Queue, Stack, Buffer)
 
-errvt methodimpl(std_Array_Queue, Grow, u64 add_amount);
-errvt methodimpl(std_Array_List, Grow, u64 add_amount);
-errvt methodimpl(std_Array_Stack, Grow, u64 add_amount);
+from(std_Array, 
+     use(List),
+     use(Queue),
+     use(Stack),
+     use(Buffer)
+)
 
-errvt imethodimpl(std_Array, Write, void* data, len_t len){
+
+
+errvt moduleMethod(Queue, Queue_Grow, u64 add_amount);
+errvt moduleMethod(List,  List_Grow, u64 add_amount);
+errvt moduleMethod(Stack, Stack_Grow, u64 add_amount);
+
+errvt moduleIMethod(std_Array, Write, void* data, len_t len){
 	self(std_Object);
 
 	switchT(this.__type){
@@ -70,7 +79,7 @@ return ERR(ERR_NULLPTR, "empty type data");
 }
 
 
-errvt imethodimpl(std_Array, Read, void* data, len_t len){
+errvt moduleIMethod(std_Array, Read, void* data, len_t len){
 	self(std_Object);
 
 	switchT(this.__type){

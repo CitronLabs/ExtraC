@@ -79,7 +79,7 @@ return prev_string_size - string.len;
     checkposterr(current_arg.data.data == null,		\
 	CMDERR_PARSE, "failed to parse usasge string",	\
 	println("parse_error: ",current_arg.name.txt);	\
-	listFree(args); return null;)
+	listFree(args); return nil;)
 
 std_map(std_str->std_data) parseUsageString(std_queue(std_str)* var_args, std_str usage_str){
 	
@@ -123,13 +123,13 @@ std_cmd* cmdInit(std_str name,
 
 	checkposterr((res == calloc(1, sizeof(std_cmd))), 
 	      CMDERR_INIT, "could not allocate command",
-	      return null;)
+	      return nil;)
 	res->name = stringCopy(name);
 	res->func = command_func;
 	res->args = parseUsageString(&res->var_args, usage); 
 	checkposterr(res->args == null, 
 	      CMDERR_INIT, "could not parse usage string", 
-	      return null;)
+	      return nil;)
 
 	va_list args;
 	va_start(args, usage);

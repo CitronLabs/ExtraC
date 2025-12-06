@@ -69,7 +69,8 @@ static std_numEquality std_Number_absoluteCompare(std_Number* a, std_Number* b) 
 }
 
 static errvt std_Number_absoluteAdd(std_Number* result, std_Number* a, std_Number* b) {
-    	std_Number_setZero(result); 
+    	
+	std_Number_setZero(result); 
 
 	rpriv.sign = 1;   
 
@@ -229,8 +230,7 @@ return OK;
 
 static errvt std_Number_Copy(std_Number* dest, std_Number* src) {
 
-	nonull(dest, return err);
-	nonull(src,  return err);
+	nonull(dest, src){ return err; }
 
 	dest->__private.digits = std.List.SubList(src->__private.digits, 0, maxof(u64));
 	dest->__private.sign = src->__private.sign;

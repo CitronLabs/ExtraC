@@ -1,27 +1,15 @@
 #include "../../pkg.h"
 
-/**
- * @struct StringBuilder_Private
- * @brief Internal private data for the StringBuilder object.
- *
- * This struct manages the dynamic data buffer, maximum length, and other
- * state variables for a StringBuilder.
- */
-
-
 import(std)
 
 
-
-
-
-errvt methodimpl(std_StringBuilder, Max, u64 max_len){
+errvt moduleMethod(std_StringBuilder, Max, u64 max_len){
 	nonull(self, return err)
 	std.List.Limit(priv.data, max_len);
 return OK;
 }
 
-u64 methodimpl(std_StringBuilder, Set, va_list args, ...){
+u64 moduleMethod(std_StringBuilder, Set, va_list args, ...){
 	nonull(self, return 0);
 
 	u64 len = 0;
@@ -42,9 +30,10 @@ u64 methodimpl(std_StringBuilder, Set, va_list args, ...){
 	
 return len;
 }
-u64 methodimpl(std_StringBuilder, Append, va_list args, ...){
+u64 moduleMethod(std_StringBuilder, Append, va_list args, ...){
 	
-	nonull(priv, return 0;);
+	nonull(self){ return 0; }
+
 	u64 len = 0;
 
 	if(string != null){
@@ -61,9 +50,8 @@ u64 methodimpl(std_StringBuilder, Append, va_list args, ...){
 	}
 return len;
 }
-u64 methodimpl(std_StringBuilder, Prepend, va_list args, ...){
-	
-	nonull(priv, return 0);
+u64 moduleMethod(std_StringBuilder, Prepend, va_list args, ...){
+	nonull(self, return 0);
 	u64 len = 0;
 	
 
@@ -84,7 +72,7 @@ u64 methodimpl(std_StringBuilder, Prepend, va_list args, ...){
 
 return len;
 }
-u64 methodimpl(std_StringBuilder, Insert, u64 index, va_list args, ...){
+u64 moduleMethod(std_StringBuilder, Insert, u64 index, va_list args, ...){
 	
 	nonull(priv, return 0);
 	u64 len = 0;
@@ -116,13 +104,13 @@ u64 methodimpl(std_StringBuilder, Insert, u64 index, va_list args, ...){
 return string->len;
 }
 
-errvt methodimpl(std_StringBuilder, Clear){
-	nonull(self, return err);
+errvt moduleMethod(std_StringBuilder, Clear){
+	nonull(self){ return err; }
 	std.List.Flush(priv.data);
 return OK;
 }
 
-String_Instance methodimpl(std_StringBuilder, GetStr){
+String_Instance moduleMethod(std_StringBuilder, GetStr){
 	nonull(self, return (String_Instance){0});
 	
 	priv.interalStrPriv.len_bytes = std.List.Size(priv.data);
@@ -140,8 +128,8 @@ String_Instance methodimpl(std_StringBuilder, GetStr){
 return result;
 }
 
-inst(String) methodimpl(std_StringBuilder, CreateStr){
-	nonull(self, return null);
+inst(String) moduleMethod(std_StringBuilder, CreateStr){
+	nonull(self){ return nil; }
 
 	u64 len = std.List.Size(priv.data);
 
@@ -156,7 +144,7 @@ return
 	);
 }
 
-u64 imethodimpl(std_StringBuilder, Print, FormatID* formats, inst(std_StringBuilder) out){
+u64 moduleIMethod(std_StringBuilder, Print, FormatID* formats, inst(std_StringBuilder) out){
 	self(std_StringBuilder);
 
 	std.List.Append(priv.data, "\0", 1);
@@ -173,15 +161,15 @@ u64 imethodimpl(std_StringBuilder, Print, FormatID* formats, inst(std_StringBuil
 return formated_len;
 }
 
-u64 imethodimpl(std_StringBuilder, Scan, FormatID* formats, inst(String) in){
+u64 moduleIMethod(std_StringBuilder, Scan, FormatID* formats, inst(String) in){
 	self(std_StringBuilder);
 
 return std_StringBuilder.Append(self, in);
 }
 
-errvt imethodimpl(std_StringBuilder, Free){
+errvt moduleIMethod(std_StringBuilder, Free){
 	self(std_StringBuilder);
-	nonull(self, return err);
+	nonull(self){ return err; }
 	del(priv.data);
 return OK;
 }
@@ -190,10 +178,10 @@ construct(std_StringBuilder,
 ){
 
 	if(arg.type >= CHAR_INVALID)
-	  	return null;
+	  	return nil;
 
 	setpriv(std_StringBuilder){
-		.data = newList(u8,  arg.init_str == null ? 20 : args->init_str->len),
+		.data = newList(u8,  arg.init_str ? 20 : args->init_str->len),
 		.max_len = arg.limit == 0 ? UINT64_MAX : args->limit,
 	  	.ctype = arg.type,
 	};

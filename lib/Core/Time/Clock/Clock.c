@@ -1,9 +1,11 @@
+#define module std, Clock
 #include "../../pkg.h"
 
 import(std)
 import(XC)
 
-std_Time* vmethodimpl(std_Clock_System_UTC, getTime, std_Time* time_buff){
+
+std_Time* moduleFn(System_UTC_getTime)(std_Time* time_buff){
 	timeSpec XCtime_buff;
 	XC.Time.getNow(XC.Time.Source.REALTIME, &XCtime_buff);
 	
@@ -13,7 +15,7 @@ std_Time* vmethodimpl(std_Clock_System_UTC, getTime, std_Time* time_buff){
 return time_buff;
 }
 
-std_Clock* vmethodimpl(std_Clock_System_UTC,  getClock){
+std_Clock* moduleFn(System_UTC_getClock)(){
 	static std_Clock clock = {0};
 
 	if(!clock.system){
@@ -23,7 +25,7 @@ std_Clock* vmethodimpl(std_Clock_System_UTC,  getClock){
 return &clock;
 }
 
-std_Time* vmethodimpl(std_Clock_System_TAI, getTime, std_Time* time_buff){
+std_Time* moduleFn(System_TAI_getTime)(std_Time* time_buff){
 	timeSpec XCtime_buff;
 	XC.Time.getNow(XC.Time.Source.MONOTONIC, &XCtime_buff);
 	
@@ -33,7 +35,7 @@ std_Time* vmethodimpl(std_Clock_System_TAI, getTime, std_Time* time_buff){
 return time_buff;
 }
 
-std_Clock* vmethodimpl(std_Clock_System_TAI,  getClock){
+std_Clock* moduleFn(System_TAI_getClock)(){
 	static std_Clock clock = {0};
 
 	if(!clock.system){
@@ -47,7 +49,7 @@ return &clock;
 #define TAI_TO_TT_INTEGER_OFFSET 32
 #define TAI_TO_TT_DECIMAL_OFFSET (184 * NUMBER_OF_MILLISEC_IN_MICROSEC)
 
-std_Time* vmethodimpl(std_Clock_System_TT, getTime, std_Time* time_buff){
+std_Time* moduleFn(System_TT_getTime)(std_Time* time_buff){
 	timeSpec XCtime_buff;
 	XC.Time.getNow(XC.Time.Source.MONOTONIC, &XCtime_buff);
 	
@@ -60,7 +62,7 @@ std_Time* vmethodimpl(std_Clock_System_TT, getTime, std_Time* time_buff){
 return time_buff;
 }
 
-std_Clock* vmethodimpl(std_Clock_System_TT,  getClock){
+std_Clock* moduleFn(System_TT_getClock)(){
 	static std_Clock clock = {0};
 
 	if(!clock.system){
@@ -71,8 +73,8 @@ return &clock;
 }
 
 
-std_Time*  vmethodimpl(std_Clock, getNow){
-	Local(std_Time) time_buff = null;
+std_Time*  moduleFn(getNow)(){
+	Local(std_Time) time_buff = 0;
 	
 	if(!time_buff){
 	    time_buff = new(std_Local, 
@@ -87,19 +89,19 @@ return std.Clock.getTime(
        );
 }
 
-std_Time*  methodimpl(std_Clock, getTime, std_Time* time_buff){
+std_Time*  moduleMethod(std_Clock, getTime, std_Time* time_buff){
 	return this.system->getTime(time_buff);
 }
 
-static std_Clock* Primary_Clock = null;
+static std_Clock* Primary_Clock = NULL;
 
-errvt       methodimpl(std_Clock, setPrimary){ Primary_Clock = self; return OK; }
-std_Clock* vmethodimpl(std_Clock, getPrimary){ return Primary_Clock; }
+errvt      moduleMethod(std_Clock, setPrimary){ Primary_Clock = self; return OK; }
+std_Clock* moduleFn(getPrimary)(){ return Primary_Clock; }
 
 construct(std_Clock,
 FMT(), 
 DEF(), 
 ){ 
-    nonull(arg.clockSystem, return nil);
+    nonull(arg.clockSystem){ return nil; }
     this.system = arg.clockSystem; 
 return self; }

@@ -1,10 +1,14 @@
 #include "../../pkg.h"
+
+#define module std, Date
+
 #include "./Formats.c"
+
 
 import(std)
 import(XC)
 
-bool methodimpl(std_Date, isValid){
+bool moduleMethod(std_Date, isValid){
 	return 
 	    this.month   < 12 &&
 	    this.day     < 32 &&
@@ -15,20 +19,20 @@ bool methodimpl(std_Date, isValid){
 
 }
 
-std_Time* methodimpl(std_Date, toTime){
+std_Time* moduleMethod(std_Date, toTime){
 
 	len_t seconds = 
-		convert->sec.from.years    (this.year) .result  +
-		convert->sec.from.months   (this.month).result +
-		convert->sec.from.days     (this.day)  .result   +
-		convert->sec.from.hours    (this.hour) .result  +
-		convert->sec.from.minutes  (this.hour) .result  +
+		std.Time.Convert.sec_from_years	   (this.year) .result  +
+		std.Time.Convert.sec_from_months   (this.month).result  +
+		std.Time.Convert.sec_from_days     (this.day)  .result  +
+		std.Time.Convert.sec_from_hours    (this.hour) .result  +
+		std.Time.Convert.sec_from_minutes  (this.hour) .result  +
 		this.second
 	;
 
 return new(std_Time, .seconds = seconds, .nanosec = this.nanosec);
 }
-const char* methodimpl(std_Date, getDayName){
+const char* moduleMethod(std_Date, getDayName){
 	XC_Locale_Data* locale = 
 		XC.Dev.Register.access( 
 		     XC.Dev.Register.stdHandle
@@ -47,7 +51,7 @@ return locale->Time.day_names[(this.day + monthCode[this.month - 1] + yearCode) 
 }
 
 
-const char* methodimpl(std_Date, getMonthName){
+const char* moduleMethod(std_Date, getMonthName){
 	XC_Locale_Data* locale = 
 		XC.Dev.Register.access( 
 		     XC.Dev.Register.stdHandle
@@ -56,7 +60,7 @@ const char* methodimpl(std_Date, getMonthName){
 
 	if(this.month > 12) { 
 		ERR(ERR_INVALID, "invalid date input");
-		return null;
+		return nil;
 	}
 
 return locale->Time.month_names[this.month];
@@ -70,10 +74,11 @@ return OK;
 }
 
 COPY(std_Date){
+	nonull(self, where){ return nil; }
 
 	if(!memcpy(where, self, sizeof(std_Date))){
 		ERR(ERR_FAIL, "failed to copy date");
-		return null;
+		return nil;
 	}
 
 return where;
@@ -101,12 +106,13 @@ DEF(.time = &nilobj(std_Time)),
 ){
 	this.nanosec = arg.time->nanosec;
 
-	var conv = convert->sec.to.years(arg.time->seconds);
-	
-	conv = (this.year   = conv.result, convert->sec.to.months(conv.remainder));
-	conv = (this.month  = conv.result, convert->sec.to.days(conv.remainder));
-	conv = (this.day    = conv.result, convert->sec.to.hours(conv.remainder));
-	conv = (this.hour   = conv.result, convert->sec.to.minutes(conv.remainder));
+	var conv = std.Time.Convert.sec_from_years(this.year);
+		
+	conv = (this.year   = conv.result, std.Time.Convert.sec_from_months  (conv.remainder));
+	conv = (this.month  = conv.result, std.Time.Convert.sec_from_days    (conv.remainder));
+	conv = (this.day    = conv.result, std.Time.Convert.sec_from_hours   (conv.remainder));
+	conv = (this.hour   = conv.result, std.Time.Convert.sec_from_minutes (conv.remainder));
+
 	this.minute = conv.result;
 	this.second = conv.remainder;
 

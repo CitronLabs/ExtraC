@@ -66,7 +66,7 @@ cache_id cacheSearch(std_cache* cache, std_str label){
 	      CACHYERR_SEARCH, "could not find cache slot with specified label");
 
 	checkposterr(mapIndex(cache->labels, mindex, &slot_id),
-	      CACHYERR_SEARCH, "could not index cache slot", return null;)
+	      CACHYERR_SEARCH, "could not index cache slot", return nil;)
 
 	if(cache->autocleanup) cache->cleanup_counter--;
 }

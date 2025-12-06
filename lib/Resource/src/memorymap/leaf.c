@@ -19,7 +19,7 @@ errvt getLeaf(mmnode node, mmleaf** retleaf, memiddef iddef){
 return OK;
 }
 
-errvt methodimpl(MemoryMap, GetLeaf,memid id, mmleaf_info* metadata){
+errvt moduleMethod(MemoryMap, GetLeaf,memid id, mmleaf_info* metadata){
 
 	nonull(priv);
 
@@ -45,7 +45,7 @@ return OK;
 #define getTokenVal(id) ((memiddef*)&id)
 #define getTokenFromVal(idval) ((memid*)&idval)
 
-errvt methodimpl(MemoryMap, addLeaf, mmnode* node, memid* returnid, mmleaf_info metadata){
+errvt moduleMethod(MemoryMap, addLeaf, mmnode* node, memid* returnid, mmleaf_info metadata){
 
 
 
@@ -77,7 +77,7 @@ errvt methodimpl(MemoryMap, addLeaf, mmnode* node, memid* returnid, mmleaf_info 
 return OK;
 }
 
-memid methodimpl(MemoryMap, AddLeaf, memid maptonode, mmleaf_info metadata){
+memid moduleMethod(MemoryMap, AddLeaf, memid maptonode, mmleaf_info metadata){
 
 	nonull(self);
 
@@ -94,7 +94,7 @@ memid methodimpl(MemoryMap, AddLeaf, memid maptonode, mmleaf_info metadata){
 
 return result;
 }
-errvt methodimpl(MemoryMap, CutLeaf, memid id){
+errvt moduleMethod(MemoryMap, CutLeaf, memid id){
 
 	nonull(priv);
 
@@ -112,7 +112,7 @@ errvt methodimpl(MemoryMap, CutLeaf, memid id){
 
 return OK;
 }
-errvt methodimpl(MemoryMap, MoveLeaf, memid* id, memid maptoid){
+errvt moduleMethod(MemoryMap, MoveLeaf, memid* id, memid maptoid){
 
 	nonull(priv);
 	

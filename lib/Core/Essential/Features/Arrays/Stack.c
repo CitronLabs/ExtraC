@@ -1,8 +1,10 @@
+#define module std, Array, Stack
 #include "includes.h"
 
 
-errvt methodimpl(std_Array_Stack, Grow, u64 add_amount){
-	nonull(self, return err);
+
+errvt std_Array_Stack_Grow(Stack* self, u64 add_amount){
+	nonull(self){ return err; }
 	
 	priv.allocSize += add_amount;
 
@@ -14,10 +16,10 @@ errvt methodimpl(std_Array_Stack, Grow, u64 add_amount){
 return OK;
 }
 
-void*  methodimpl(std_Array_Stack, ToPointer){ return priv.data; }
+void*  moduleMethod(std_Array_Stack, ToPointer){ return priv.data; }
 
-errvt  methodimpl(std_Array_Stack, Reserve, bool exact, u64 amount){
-	nonull(self, return err);
+errvt  moduleMethod(std_Array_Stack, Reserve, bool exact, u64 amount){
+	nonull(self){ return err; }
 
 	errvt result = OK;
 
@@ -31,7 +33,7 @@ errvt  methodimpl(std_Array_Stack, Reserve, bool exact, u64 amount){
 return result;
 }
 
-noFail methodimpl(std_Array_Stack, Clear){ this.items = 0; }
+noFail moduleMethod(std_Array_Stack, Clear){ this.items = 0; }
 
 WRITE(std_Array_Stack){
 	nonull(self, return err;);
@@ -48,7 +50,7 @@ return OK;
 }
 
 READ(std_Array_Stack){
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	if(0 == this.items) return ERR(DATAERR_EMPTY, "stack is empty");
 	
@@ -63,16 +65,8 @@ return OK;
 }
 
 SIZE(std_Array_Stack){
-	if(!self)
-		return sizeof(std_Array_Stack);
-	elif (elements)
-	  	return this.items;
-	else
-	  	return this.items * this.typeSize;
+	return elements ? this.items : this.items * this.typeSize;
 }
-errvt methodimpl(std_Array_Queue, Grow, u64 add_amount);
-errvt methodimpl(std_Array_List, Grow, u64 add_amount);
-errvt methodimpl(std_Array_Stack, Grow, u64 add_amount);
 
 COPY(std_Array_Stack){
 	
@@ -84,7 +78,7 @@ COPY(std_Array_Stack){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    
@@ -102,7 +96,7 @@ COPY(std_Array_Stack){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	break;}
@@ -111,7 +105,7 @@ COPY(std_Array_Stack){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    if(dest->items + this.items > privof(dest).allocSize)
@@ -129,7 +123,7 @@ COPY(std_Array_Stack){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    len_t alloc_size = 
@@ -144,7 +138,7 @@ COPY(std_Array_Stack){
 	break;}
 	defaultT{
 		ERR(ERR_INVALID, "invalid copy destination type detected");
-		return null;
+		return nil;
 	}
 	}
 

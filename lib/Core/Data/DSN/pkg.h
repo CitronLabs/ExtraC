@@ -29,10 +29,19 @@ private(
 	std_Struct*  header;
 );
 ){
+	values(Field, word,
+		NONE,
+		LIST,
+		MAP,
+		STRUCT,
+		STRING,
+		NUMBER
+	);
+
       	errvt 		method(DSN, include, std_DSN* include_data);
-	std_DSN_data*	method(DSN, search, std_String* name);
-	len_t 		method(DSN, parse,  std_DSN_data* ds, std_Stream* in);
-	len_t 		method(DSN, format, std_DSN_data* ds, std_Stream* out);
+	std_DSN_Data*	method(DSN, search, std_String* name);
+	len_t 		method(DSN, parse,  std_DSN_Data* ds, std_Stream* in);
+	len_t 		method(DSN, format, std_DSN_Data* ds, std_Stream* out);
 	
 	std_StreamDecoder decoder;
 	std_StreamEncoder encoder;
@@ -40,8 +49,8 @@ private(
 	submodule(DSB,    
 	    std_StreamDecoder decoder; 
 	    std_StreamEncoder encoder;
-	    len_t	method(DSN, format, std_DSN_data* ds, std_Stream* out);
-	    len_t	method(DSN, parse, std_DSN_data* ds, std_Stream* in);
+	    len_t	method(DSN, format, std_DSN_Data* ds, std_Stream* out);
+	    len_t	method(DSN, parse, std_DSN_Data* ds, std_Stream* in);
 	)
 
 	submodule(List,   

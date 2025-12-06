@@ -2,6 +2,7 @@
 
 import(std)
 
+#define module std, typeData
 
 PRINT(std_typeData){
 
@@ -54,6 +55,9 @@ DEF(),
 	.Read 	 = nilmethod,
 
 ){ passover }
+
+#undef module
+#define module std, typeOperators
 
 
 PRINT(std_typeOperators){
@@ -112,6 +116,8 @@ DEF(),
 	.Read 	 = nilmethod,
 ){ passover }
 
+#undef module
+#define module std, varData
 
 PRINT(std_varData){
 	return write(out, 

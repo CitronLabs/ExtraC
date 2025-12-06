@@ -4,8 +4,8 @@
 #include "./posix.h"
 
 
-errvt methodimpl(Mutex, Lock){
-	nonull(self, return err);
+errvt moduleMethod(Mutex, Lock){
+	nonull(self){ return err; }
 
 	if(pthread_mutex_lock(&priv.mutex) != 0){
 		if(EINVAL == errno) 
@@ -20,8 +20,8 @@ errvt methodimpl(Mutex, Lock){
 	}
 return OK;
 }
-errvt methodimpl(Mutex, TryLock){
-	nonull(self, return err);
+errvt moduleMethod(Mutex, TryLock){
+	nonull(self){ return err; }
 	
 	if(pthread_mutex_trylock(&priv.mutex) != 0){
 		if(EINVAL == errno) 
@@ -35,8 +35,8 @@ errvt methodimpl(Mutex, TryLock){
 	}
 return OK;
 }
-errvt methodimpl(Mutex, UnLock){
-	nonull(self, return err);
+errvt moduleMethod(Mutex, UnLock){
+	nonull(self){ return err; }
 	
 	if(pthread_mutex_unlock(&priv.mutex) != 0){
 		if(EINVAL == errno) 
@@ -51,10 +51,10 @@ errvt methodimpl(Mutex, UnLock){
 	}
 return OK;
 }
-errvt imethodimpl(Mutex, Destroy){
+errvt moduleIMethod(Mutex, Destroy){
 	self(Mutex)
 
-	nonull(self, return err);
+	nonull(self){ return err; }
 	
 	pthread_mutex_destroy(&priv.mutex);
 	;

@@ -72,28 +72,47 @@ typedef struct streamSettings {
 typedef struct streamInfo {
 	streamSettings settings;
 	len_t size, time_created, time_modified, currentPos;
-	const char* name;
+	const char* name,* path;
 	int attributes;
 	bool valid;
 } streamInfo;
 
 typedef struct registerInfo {
 	len_t size, time_created, time_modified;
-	const char* name;
+	const char* name,* path;
 	int attributes;
 	bool valid;
 } registerInfo;
 
+typedef struct deviceInfo {
+	const c8
+     	* name,
+     	* vendorName,
+     	* productName,
+     	* serialCode,
+     	* path;
+
+	int attributes;
+
+     	len_t 
+	    num_streams, 
+	    num_registers, 
+	    num_resources;
+
+	bool valid;
+} deviceInfo;
+
+
 #define streamHandle_Invalid ((streamHandle)0)
-typedef struct __xc_stream_type{}* streamHandle;
+typedef void* streamHandle;
 
 typedef struct timeSpec {
     	u64 seconds;
     	u64 nanoseconds;
 } timeSpec;
 
-typedef struct __xc_register_type{}* registerHandle;
-typedef struct __xc_device_type{}*   devHandle;
+typedef void* registerHandle;
+typedef void* devHandle;
 
 typedef union XC_Sys_Arch_Flags{ 
 	struct{

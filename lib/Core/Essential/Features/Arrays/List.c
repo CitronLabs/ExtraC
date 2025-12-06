@@ -1,6 +1,9 @@
+#define module std, Array, List
 #include "includes.h"
 
-errvt methodimpl(std_Array_List, Grow, u64 add_amount){
+
+
+errvt std_Array_List_Grow(List* self, u64 add_amount){
 	len_t realloc_len = (priv.allocSize + add_amount) * this.typeSize;
 	priv.data = realloc(priv.data, realloc_len);
 
@@ -15,28 +18,24 @@ return OK;
 
 
 
-void*  methodimpl(std_Array_List, ToPointer){
-	
+void*  moduleMethod(std_Array_List, ToPointer){ return priv.data; }
 
+errvt  moduleMethod(std_Array_List, Reserve, bool exact, u64 amount){ 
+	nonull(self){ return err; }
 
+	errvt result = OK;
+
+	if(exact)
+		result = std_Array_List_Grow
+			(self, amount);
+	else
+		result = std_Array_List_Grow
+			(self, (priv.allocSize / 2) + amount);
+
+return result;
 }
-errvt  methodimpl(std_Array_List, Reserve, bool exact, u64 amount){
 
-
-
-
-}
-u64    methodimpl(std_Array_List, Count){
-
-
-
-}
-bool   methodimpl(std_Array_List, Check){
-
-
-
-}
-noFail methodimpl(std_Array_List, Clear);
+noFail moduleMethod(std_Array_List, Clear){ this.items = 0; }
 
 
 
@@ -74,10 +73,6 @@ READ(std_Array_List){
 return size;
 }
 
-errvt methodimpl(std_Array_Queue, Grow, u64 add_amount);
-errvt methodimpl(std_Array_List, Grow, u64 add_amount);
-errvt methodimpl(std_Array_Stack, Grow, u64 add_amount);
-
 COPY(std_Array_List){
 
 	std_Object* dest_obj = where;
@@ -88,7 +83,7 @@ COPY(std_Array_List){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    
@@ -106,7 +101,7 @@ COPY(std_Array_List){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	break;}
@@ -115,7 +110,7 @@ COPY(std_Array_List){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    if(dest->items + this.items > privof(dest).allocSize)
@@ -133,7 +128,7 @@ COPY(std_Array_List){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    len_t alloc_size = 
@@ -148,11 +143,11 @@ COPY(std_Array_List){
 	break;}
 	defaultT{
 		ERR(ERR_INVALID, "invalid copy destination type detected");
-		return null;
+		return nil;
 	}
 	}
 
-	create(List, where,  
+return create(List, where,  
 		.initSize = this.items,
 	       	.typeSize = this.typeSize,
 	       	.data = priv.data
@@ -165,7 +160,7 @@ HASH(std_Array_List){
 }
 
 ITER(std_Array_List){
-	if(index > this.items) return null;
+	if(index > this.items) return nil;
 
 	return pntr_shiftcpy(priv.data, (this.items + index) * this.typeSize);
 }
@@ -175,8 +170,9 @@ SIZE(std_Array_List){
 }
 
 SET(std_Array_List){
+	nonull(self, value, return err)
 	
-	if(value == null)
+	if(value == nil)
 		memset(priv.data, 0, priv.allocSize * this.typeSize);
 
 	else

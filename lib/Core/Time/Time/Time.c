@@ -1,11 +1,21 @@
 #include "../../pkg.h"
-
-import(std)
-
+#include "conversion_macros.h"
 
 
-errvt methodimpl(std_Time, Difference, std_Time* time_cmp, std_Time* result){
-	nonull(self || time_cmp || result, return err);
+import(std) 
+
+
+from(std,
+	use(Time)
+)
+
+#define module std, Time
+
+
+
+errvt moduleMethod(std_Time, Difference, std_Time* time_cmp, std_Time* result){
+	nonull(self, time_cmp, result){ return err; }
+
 
 	result->seconds = this.seconds < time_cmp->seconds ?
 		time_cmp->seconds - this.seconds :
@@ -18,8 +28,9 @@ errvt methodimpl(std_Time, Difference, std_Time* time_cmp, std_Time* result){
 return OK;
 }
 
-bool methodimpl(std_Time, Compare, std_Time* time_cmp, std_Time* tolerence){
-	
+bool moduleMethod(std_Time, Compare, std_Time* time_cmp, std_Time* tolerence){
+	nonull(self, time_cmp, tolerence){ return false; } 
+
 	std_Time* differ = push(std_Time);
 
 	iferr(std.Time.Difference(self, time_cmp, differ)){
@@ -27,7 +38,7 @@ bool methodimpl(std_Time, Compare, std_Time* time_cmp, std_Time* tolerence){
 		return false;
 	}
 
-	if(tolerence == null || tolerence == nil)
+	if(tolerence == nil)
 		return   differ->seconds == 0 &&
 			 differ->nanosec == 0;
 	else
@@ -37,88 +48,6 @@ bool methodimpl(std_Time, Compare, std_Time* time_cmp, std_Time* tolerence){
 		
 return false;
 }
-
-
-#define NS_PER_US 1000
-#define US_PER_MS 1000
-#define MS_PER_S  1000
-#define NS_PER_S  1000000000
-
-#define S_PER_M  60
-#define S_PER_H  3600
-#define S_PER_D  86400
-
-#define DAYS_PER_GREGORIAN_YEAR 365.2425
-#define S_PER_Y (DAYS_PER_GREGORIAN_YEAR * S_PER_D)
-#define S_PER_MO (S_PER_Y / 12)
-
-static double simple_fmod(double dividend, double divisor) {
-    long long quotient_integer = (long long)(dividend / divisor);
-
-    double remainder = dividend - (quotient_integer * divisor);
-
-return remainder;
-}
-
-struct TimeConversion vmethodimpl(std_Time, Convert_sec_to_minutes, len_t sec){
-return (struct TimeConversion){
-	.result = sec /  S_PER_M,
-	.remainder = sec % S_PER_M
-	};
-}
-struct TimeConversion vmethodimpl(std_Time, Convert_sec_to_hours,   len_t sec){
-return (struct TimeConversion){
-	.result = sec /  S_PER_H,
-	.remainder = sec % S_PER_H
-	};
-}
-struct TimeConversion vmethodimpl(std_Time, Convert_sec_to_days,    len_t sec){
-return (struct TimeConversion){
-	.result = sec /  S_PER_D,
-	.remainder = sec % S_PER_D
-	};
-}
-struct TimeConversion vmethodimpl(std_Time, Convert_sec_to_months,  len_t sec){
-return (struct TimeConversion){
-	.result = sec /  S_PER_MO,
-	.remainder = simple_fmod(sec, S_PER_MO)
-	};
-}
-struct TimeConversion vmethodimpl(std_Time, Convert_sec_to_years,   len_t sec){
-return (struct TimeConversion){
-	.result = sec /  S_PER_Y,
-	.remainder = simple_fmod(sec, S_PER_MO)
-	};
-}
-
-len_t vmethodimpl(std_Time, Convert_sec_from_hours,   len_t min)  { return min   * S_PER_M;  }
-len_t vmethodimpl(std_Time, Convert_sec_from_days,    len_t days) { return days  * S_PER_M;  }
-len_t vmethodimpl(std_Time, Convert_sec_from_months,  len_t mon)  { return mon   * S_PER_MO; }
-len_t vmethodimpl(std_Time, Convert_sec_from_years,   len_t years){ return years * S_PER_Y;  }
-
-struct TimeConversion vmethodimpl(std_Time, Convert_nano_to_micro,   len_t nanosec){
-return (struct TimeConversion){
-	.result = nanosec /  NS_PER_US,
-	.remainder = nanosec % NS_PER_US
-	};
-}
-struct TimeConversion vmethodimpl(std_Time, Convert_nano_to_milli,   len_t nanosec){
-return (struct TimeConversion){
-	.result = nanosec /  (NS_PER_US * US_PER_MS),
-	.remainder = nanosec % (NS_PER_US * US_PER_MS)
-	};
-}
-struct TimeConversion vmethodimpl(std_Time, Convert_nano_to_second,  len_t nanosec){
-return (struct TimeConversion){
-	.result = nanosec /  NS_PER_S,
-	.remainder = nanosec % NS_PER_S
-	};
-}
-
-len_t vmethodimpl(std_Time, Convert_nano_from_micro,   len_t microsec){ return microsec * NS_PER_US; }
-len_t vmethodimpl(std_Time, Convert_nano_from_milli,   len_t millisec){ return millisec * (NS_PER_US * US_PER_MS); }
-len_t vmethodimpl(std_Time, Convert_nano_from_second,  len_t sec){ return sec * NS_PER_S; }
-
 
 PRINT(std_Time){
 	if(f.type)
@@ -135,7 +64,8 @@ PRINT(std_Time){
 }
 
 SET(std_Time){
-	if(!value) {
+	nonull(self, value){ return err; }
+	if(value == nil) {
 		this.seconds = 0;
 		this.nanosec = 0;
 	} else {

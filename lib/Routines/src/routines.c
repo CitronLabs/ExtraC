@@ -18,13 +18,13 @@ private(SubRoutine,
 )
 
 
-void methodimpl(SubRoutine, Return){
+void moduleMethod(SubRoutine, Return){
 
 	nonull(self, return);
 
 
 }
-void methodimpl(SubRoutine, Call, void* args){
+void moduleMethod(SubRoutine, Call, void* args){
 	
 	nonull(self, return);
 
@@ -34,9 +34,9 @@ void methodimpl(SubRoutine, Call, void* args){
 
 extern void getSubRoutineContext(SubRoutineContext* context_ptr);
 
-errvt methodimpl(SubRoutine, InitHere, len_t size_of_args, void* args_start){
+errvt moduleMethod(SubRoutine, InitHere, len_t size_of_args, void* args_start){
 
-	nonull(self, return err);
+	nonull(self){ return err; }
 	nonull(args_start);
 
 

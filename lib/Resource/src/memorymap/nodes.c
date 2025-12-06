@@ -115,11 +115,11 @@ errvt getNode(inst(MemoryMap) self,mmnode** returnnode, memiddef token){
 return OK;
 }
 
-errvt methodimpl(MemoryMap, GetNode, memid token, mmnode_info* metadata){
+errvt moduleMethod(MemoryMap, GetNode, memid token, mmnode_info* metadata){
 	
 	mmnode* node = null;
 
-	nonull(self, return err);
+	nonull(self){ return err; }
 	nonull(metadata, return err;);
 
 	if(MemoryMap.validateMemID(self, token))
@@ -138,11 +138,11 @@ errvt methodimpl(MemoryMap, GetNode, memid token, mmnode_info* metadata){
 
 return OK;
 };
-memid methodimpl(MemoryMap, AddNode, memid maptotoken, mmprot_info* metadata){
+memid moduleMethod(MemoryMap, AddNode, memid maptotoken, mmprot_info* metadata){
 
 	mmnode* maptonode = null, * node = NULL;
 
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	if(MemoryMap.validateMemID(self, maptotoken)) return ERR(
 		RESOURCERR_TOKENINDEX, "invalid memid");
@@ -181,7 +181,7 @@ memid methodimpl(MemoryMap, AddNode, memid maptotoken, mmprot_info* metadata){
 
 return OK;
 }
-errvt methodimpl(MemoryMap, CutNode, memid token){
+errvt moduleMethod(MemoryMap, CutNode, memid token){
 
 	mmnode* prevnode,* currentnode;
 	
@@ -209,7 +209,7 @@ return OK;
 
 
 }
-errvt methodimpl(MemoryMap, MoveNode, memid* token, memid maptotoken){
+errvt moduleMethod(MemoryMap, MoveNode, memid* token, memid maptotoken){
 
 	//NOT YET IMPLEMENTED
 

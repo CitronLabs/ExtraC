@@ -1,17 +1,17 @@
+#define module std, Arena
 #include "../../pkg.h"
 #include "../Buffer/pkg.h"
 
 import(std)
 
 
-
-errvt methodimpl(std_Arena, Reserve, u64 num_bytes){
+errvt moduleMethod(std_Arena, Reserve, u64 num_bytes){
 	if(priv.alloc_size - priv.current_size > num_bytes) return OK;
 	
 	std.Arena.Grow(self, num_bytes);
  return OK;	
 }
-errvt methodimpl(std_Arena, Grow, u64 num_bytes){
+errvt moduleMethod(std_Arena, Grow, u64 num_bytes){
 
 	if(priv.isStatic){
 		return ERR(MEMERR_OVERFLOW, "cannot grow a static arena");
@@ -30,9 +30,9 @@ errvt methodimpl(std_Arena, Grow, u64 num_bytes){
 
  return OK;	
 }
-void* methodimpl(std_Arena, Alloc, u64 num_bytes){
+void* moduleMethod(std_Arena, Alloc, u64 num_bytes){
 
-	std_Buffer* alloc_buff = null;
+	std_Buffer* alloc_buff = NULL;
 
 	if(priv.current_size + num_bytes > priv.alloc_size){
 		std.Arena.Grow(self, num_bytes);
@@ -48,36 +48,36 @@ void* methodimpl(std_Arena, Alloc, u64 num_bytes){
 return std.Buffer.Allocator.New(generic alloc_buff, num_bytes);
 }
 
-void* imethodimpl(std_Arena, New, u64 size){ 
+void* moduleIMethod(std_Arena, New, u64 size){ 
 	self(std_Arena); 
 return std.Arena.Alloc(self, size); 
 }
 
-void* imethodimpl(std_Arena, Resize, void* instance, u64 size){ 
+void* moduleIMethod(std_Arena, Resize, void* instance, u64 size){ 
 	self(std_Arena); 
 	std.Arena.Grow(self, size);
 return instance;
 }
 
-errvt imethodimpl(std_Arena, setMax, u64 size){
+errvt moduleIMethod(std_Arena, setMax, u64 size){
 	self(std_Arena);
 	priv.max_size = size;
 return OK;
 }
-u64 imethodimpl(std_Arena, getBytesAlloced){
+u64 moduleIMethod(std_Arena, getBytesAlloced){
 	self(std_Arena);
 return priv.alloc_size;
 }
 
-bool imethodimpl(std_Arena, isStatic){ 
+bool moduleIMethod(std_Arena, isStatic){ 
 	self(std_Arena);
 return priv.isStatic;
 }
 
 COPY(std_Arena){
-	nonull(self || where, return nil);
+	nonull(self, where){ return nil; }
 
-	if(create(std_Arena, where, false, 
+	if(create(std_Arena, where, 
 		.isStatic = priv.isStatic,
 		.init_size = priv.current_size
 	) == nil)
@@ -89,7 +89,7 @@ COPY(std_Arena){
 		memcpy(copy_loc, std.Buffer.getPointer(*buff), size(*buff));
 	}
 
-return OK;
+return where;
 }
 
 SIZE(std_Arena){
@@ -97,7 +97,7 @@ return priv.current_size;
 }
 
 SET(std_Arena){
-	nonull(value, return err);
+	nonull(value){ return err; }
 
 	priv.max_size = *(len_t*)value;
 
@@ -112,16 +112,16 @@ return OK;
 }
 
 PRINT(std_Arena){
-	nonull(self || out, return 0);
+	nonull(self, out){ return 0; }
 
-	return write(out, 
+	return printTo(out, 
 		"(Arena){ "
 	 	    ".in_use = ",   $(priv.current_size), ", ",
 		    ".alloced = ",  $(priv.alloc_size), ", ",
 	 	    ".max_size = ", $(priv.max_size), ", ",
 	 	    ".static = ",   $(priv.isStatic),
-	 	" }",
-	fmt_end);
+	 	" }"
+	);
 }
 
 construct(std_Arena,
@@ -151,3 +151,4 @@ DEF(),
 	
 return self;
 }
+

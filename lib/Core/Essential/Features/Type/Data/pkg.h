@@ -5,16 +5,16 @@
 
 #define package std
 
-#define WRITE(class)	 u64   methodimpl(class, Op_Write, pntr data[], len_t size)			
-#define READ(class)	 u64   methodimpl(class, Op_Read , pntr data[], len_t size)			
-#define SET(class)     	 errvt methodimpl(class, Op_Set  , void* value)			
-#define GET(class)       errvt methodimpl(class, Op_Get  , void* buff);
-#define COPY(class)      void* methodimpl(class, Op_Copy , void* where)			
-#define HASH(class)      u32   methodimpl(class, Op_Hash)				
-#define ITER(class)      void* methodimpl(class, Op_Iter , u64 index)				
-#define SCAN(class)   	 u64   methodimpl(class, Op_Scan , class##_FormatArgs* format,  std_Stream* in)	
-#define PRINT(class)  	 u64   methodimpl(class, Op_Print, class##_FormatArgs* format,  std_Stream* out)	
-#define SIZE(class)   	 len_t methodimpl(class, Op_Size , bool elements)
+#define WRITE(class)	 u64   moduleMethod(class, Op_Write, pntr data[], len_t size)			
+#define READ(class)	 u64   moduleMethod(class, Op_Read , pntr data[], len_t size)			
+#define SET(class)     	 errvt moduleMethod(class, Op_Set  , void* value)			
+#define GET(class)       errvt moduleMethod(class, Op_Get  , void* buff);
+#define COPY(class)      void* moduleMethod(class, Op_Copy , void* where)			
+#define HASH(class)      u32   moduleMethod(class, Op_Hash)				
+#define ITER(class)      void* moduleMethod(class, Op_Iter , u64 index)				
+#define SCAN(class)   	 u64   moduleMethod(class, Op_Scan , class##_FormatArgs* format,  std_Stream* in)	
+#define PRINT(class)  	 u64   moduleMethod(class, Op_Print, class##_FormatArgs* format,  std_Stream* out)	
+#define SIZE(class)   	 len_t moduleMethod(class, Op_Size , bool elements)
  
 
 Interface(Data_Ops,
@@ -72,10 +72,10 @@ u32 hash_bytes(void* data_ptr, u64 size);
 #define foreach(iterableVar, _type, _var) 					\
 	std_typeOperators* _var##_ops = generic &(iterableVar)->__type->ops;	\
 	void*          _var##_iterable = (iterableVar);				\
-	_type* _var = null;							\
+	_type* _var = nil;							\
 	for(len_t _var##_iterator = 0; 						\
      	    (_var = _var##_ops->						\
-		Iter(_var##_iterable, _var##_iterator)); 			\
+		Iter(_var##_iterable, _var##_iterator)) == nil;			\
 	    	_var##_iterator++)						\
 	
 

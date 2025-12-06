@@ -26,7 +26,7 @@ static inline errvt UTF8_decode(char** start, rune* codepoint){
 	char* encoding = *start;
 	rune c = 0;
 
-	if(!codepoint)
+	if(!codepoint || codepoint == nil)
 		codepoint = &c;
 
 	if((*encoding & UTF8_1BYTE_MASK) == UTF8_1BYTE_HEADER){
@@ -86,7 +86,7 @@ return ERR(ERR_INVALID, "invalid codepoint");
 }
 
 errvt UTF8_streamEncoder(std_Stream* stream, void* data){
-	nonull(stream || data, return err);
+	nonull(stream, data){ return err; }
 
 	std.Stream.Process.writeData(data, strnlen((strc8)data, maxof(len_t)));
 
@@ -106,8 +106,7 @@ return OK;
 
 // UTF-8 to UTF-16 conversion
 errvt UTF8_toUtf16(c8* in, len_t in_max, c16* dest, len_t dest_max) {
-	nonull(in, return err);
-	nonull(dest, return err);
+	nonull(in, dest){ return err; }
 
 	u64 new_len = 0;
 	rune codepoint;
@@ -131,8 +130,7 @@ return OK;
 
 // UTF-8 to UTF-32 conversion
 errvt UTF8_toUtf32(c8* in, len_t in_max, c32* dest, len_t dest_max) {
-	nonull(in, return err);
-	nonull(dest, return err);
+	nonull(in, dest){ return err; }
 
 	u64 new_len = 0;
 	rune codepoint;
@@ -150,8 +148,7 @@ return OK;
 
 // UTF-8 to ASCII conversion
 errvt UTF8_toAscii(c8* in, len_t in_max, char* dest, len_t dest_max) {
-	nonull(in, return err);
-	nonull(dest, return err);
+	nonull(in, dest){ return err; }
 
 
 	u64 new_len = 0;

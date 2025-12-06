@@ -14,18 +14,18 @@ u64 getMediaFileSize(const char* path){
 
 	if(getFileSystemEntry((char*)path, &file_ent) != ERR_NONE){
 		ERR(RESOURCERR_INVALID, "could not find media file from path");
-		return null;
+		return nil;
 	}
 	if(file_ent.is_dir){
 		ERR(RESOURCERR_INVALID, "path does not lead to an media file");
-		return null;
+		return nil;
 	}
 
 return file_ent.size;
 }
 
 
-bool methodimpl(Media, isLoaded){
+bool moduleMethod(Media, isLoaded){
 
 	if(priv.is_loaded) return true;
 
@@ -45,7 +45,7 @@ bool methodimpl(Media, isLoaded){
 return true;	
 }
 
-errvt methodimpl(Media, forceLoad){
+errvt moduleMethod(Media, forceLoad){
 	
 	if(priv.is_loaded) return OK;
 
@@ -72,13 +72,13 @@ inst(Media) Media___COLLECT(inst(Collection) collection, Media_ConstructArgs arg
 	if(media_resource == null){
 		ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
 		if(format_data_resource != null) del(format_data_resource);
-		return null;
+		return nil;
 	}
 	
 	if(format_data_resource == null){
 		ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
 		if(media_resource != null) del(media_resource);
-		return null;
+		return nil;
 	}
 
 	inst(Media) self = Resource.getData(media_resource);
@@ -139,13 +139,13 @@ inst(Media) Media_Create(intf(MediaFormat) format, void* metadata, MEDIA_DATA_TY
 		if(media_resource == null){
 			ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
 			if(format_data_resource != null) del(format_data_resource);
-			return null;
+			return nil;
 		}
 	
 		if(format_data_resource == null){
 			ERR(RESOURCERR_FAIL, "failed to create resource handle for media");
 			if(media_resource != null) del(media_resource);
-			return null;
+			return nil;
 		}
 
 		self = Resource.getData(media_resource);
@@ -176,43 +176,43 @@ inst(Media) Media_Create(intf(MediaFormat) format, void* metadata, MEDIA_DATA_TY
 
 	if(priv.format_size == 0){
 		ERR(RESOURCERR_FAIL, "failed to format media data for export");
-		return null;
+		return nil;
 	}
 
 }
 
-inst(Resource) methodimpl(Media, getResource){
+inst(Resource) moduleMethod(Media, getResource){
 	
 	nonull(self, return null;);
 
 	if(priv.resource_handle == null){
 	  	ERR(RESOURCERR_INVALID, "no resource handle associated with this media");
-		return null;
+		return nil;
 	}
 return priv.resource_handle;
 }
 
-MEDIA_DATA_TYPE* methodimpl(Media, getMediaData){
+MEDIA_DATA_TYPE* moduleMethod(Media, getMediaData){
 	
 	if(!Media.isLoaded(self)){
 		ERR(RESOURCERR_NOTLOADED, "media has not loaded yet");
-		return null;
+		return nil;
 	}
 
 return priv.media_data;
 }
 
-void* methodimpl(Media, getFormatData){
+void* moduleMethod(Media, getFormatData){
 	
 	if(!Media.isLoaded(self)){
 		ERR(RESOURCERR_NOTLOADED, "media has not loaded yet");
-		return null;
+		return nil;
 	}
 
 return priv.format_data;
 }
 
-errvt methodimpl(Media, Reformat, void* metadata){
+errvt moduleMethod(Media, Reformat, void* metadata){
 
 
 	u64 new_size = self->format->getAllocSize(metadata, priv.media_data);
@@ -233,7 +233,7 @@ errvt methodimpl(Media, Reformat, void* metadata){
 		
 	if(formatted_len == 0){
 		ERR(RESOURCERR_FAIL, "failed to format media data for export");
-		return null;
+		return nil;
 	}
 
 return OK;

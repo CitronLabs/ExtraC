@@ -1,3 +1,4 @@
+#define module std, Stream
 #include "../../../pkg.h"
 
 import(std)
@@ -5,13 +6,15 @@ import(std)
 import(XC)
 
 
-use(std,
-	Array_Stack,
-	Array_List,
-    	Local,
-    	Stream,
-    	Stream_Options
+from(std,
+	Array_Stack    as Stack,
+	Array_List     as List,
+    	Stream_Options as Options,
+    	use(Local),
+    	use(Stream)
 );
+
+
 
 typedef struct {
 	Stream* 		activeStream;
@@ -27,16 +30,16 @@ typedef struct {
 
 
 localStreamContext* fetchLocalStreamCtx(){
-	static Local* localStreamCtx = null;
+	static Local* localStreamCtx = NULL;
 	
-	localStreamContext* result = null;
+	localStreamContext* result = nil;
 
 	if(!localStreamCtx){
 		localStreamCtx = new(Local, 
 		       sizeof(localStreamContext)
 		);
 
-		if(!localStreamCtx){
+		if(localStreamCtx == nil){
 		    ERR(ERR_INITFAIL, 
        			"failed to initalize local Stream context");
 		
@@ -45,7 +48,7 @@ localStreamContext* fetchLocalStreamCtx(){
 
 	 	result = std.Local.getData(localStreamCtx);
 
-		if(!result){
+		if(result == nil){
 		    ERR(ERR_INITFAIL, 
        			"failed to get local Stream context");
 		
@@ -56,7 +59,7 @@ localStreamContext* fetchLocalStreamCtx(){
 	} else {
 	 	result = std.Local.getData(localStreamCtx);
 
-		if(!result){
+		if(result == nil){
 		    ERR(ERR_INITFAIL, 
        			"failed to get local Stream context");
 		
@@ -75,8 +78,8 @@ Stream* fetchStdStream(int id, Stream** stream){
 		)
 	    );
 
-	    if(!*stream){
-		ERR(ERR_INITFAIL, "failed to initalize stdout stream");
+	    if(*stream == nil){
+		ERR(ERR_INITFAIL, "failed to initalize stream");
 		return nil;
 	    }
 	}
@@ -84,37 +87,37 @@ Stream* fetchStdStream(int id, Stream** stream){
 return *stream;
 }
 
-Stream* std_Stream_stdOut(){ static Stream* stream = null; return fetchStdStream(XC.Dev.Stream.ID.Out, &stream); }
-Stream* std_Stream_stdIn(){  static Stream* stream = null; return fetchStdStream(XC.Dev.Stream.ID.In,  &stream); }
-Stream* std_Stream_stdErr(){ static Stream* stream = null; return fetchStdStream(XC.Dev.Stream.ID.Err, &stream); }
+Stream* std_Stream_stdOut(){ static Stream* stream = NULL; return fetchStdStream(XC.Dev.Stream.ID.Out, &stream); }
+Stream* std_Stream_stdIn(){  static Stream* stream = NULL; return fetchStdStream(XC.Dev.Stream.ID.In,  &stream); }
+Stream* std_Stream_stdErr(){ static Stream* stream = NULL; return fetchStdStream(XC.Dev.Stream.ID.Err, &stream); }
 
 
-const std_Stream_Options std_Stream_Preset_staticBuffer(void* start, len_t len){
-	return (std_Stream_Options){
+const Options std_Stream_Preset_staticBuffer(void* start, len_t len){
+	return (Options){
 		.setMemoryAddr = start,
 		.setMemorySize = len
 	};
 }
 
-const std_Stream_Options std_Stream_Preset_fromHandle(streamHandle handle){
-	return (std_Stream_Options){
+const Options std_Stream_Preset_fromHandle(streamHandle handle){
+	return (Options){
 		.handle = handle
 	};
 }
 
-streamHandle methodimpl(std_Stream, getHandle){
-	nonull(self, return streamHandle_Invalid);
+streamHandle moduleMethod(std_Stream, getHandle){
+	nonull(self){ return streamHandle_Invalid; }
 
 return priv.stream.handle;
 }
 
-errvt methodimpl(std_Stream, Flush){
-	nonull(self, return err)
+errvt moduleMethod(std_Stream, Flush){
+	nonull(self){ return err; }
 
 return priv.stream.handle ? XC.Dev.Stream.flush(priv.stream.handle) : OK;
 }	
-void* methodimpl(std_Stream, ToPointer){
-	nonull(self, return null);
+void* moduleMethod(std_Stream, ToPointer){
+	nonull(self){ return nil; }
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
@@ -122,20 +125,20 @@ void* methodimpl(std_Stream, ToPointer){
 
 		iferr(!info.valid){
 			ERR(ERR_FAIL, "failed to get stream size");
-			return null;
+			return nil;
 		}
 
 		priv.pointer = malloc(info.size);
 		
 		if(!priv.pointer){
 			ERR(ERR_FAIL, "failed to allocate stream pointer buff");
-			return null;
+			return nil;
 		}
 
 		if(!XC.Dev.Stream.readFrom(priv.stream.handle, priv.pointer, info.size)){
 			ERR(ERR_FAIL, "failed to read data into stream pointer buff");
 			free(priv.pointer);
-			return null;
+			return nil;
 	  	}
 
 	break;}
@@ -144,7 +147,7 @@ void* methodimpl(std_Stream, ToPointer){
 
 		if(!priv.pointer){
 			ERR(ERR_FAIL, "failed to allocate stream pointer buff");
-			return null;
+			return nil;
 		}
 	break;}
 	case STREAM_TYPE_BUFF: {
@@ -152,13 +155,13 @@ void* methodimpl(std_Stream, ToPointer){
 	break;}
 	default:{
 		ERR(ERR_INVALID, "invalid stream type");
-	  	return null;
+	  	return nil;
 	}
 	}
 
 return priv.pointer;
 }
-void* methodimpl(std_Stream, GetPointer){ return priv.pointer ? priv.pointer : std.Stream.ToPointer(self); }
+void* moduleMethod(std_Stream, GetPointer){ return priv.pointer ? priv.pointer : std.Stream.ToPointer(self); }
 
 typedef struct Stream_Proc SP_Result;
 extern const struct Stream_Proc Stream_Proc_Fail, Stream_Proc_OK;
@@ -175,10 +178,10 @@ return *to;
 SP_Result std_Stream_Process_start(std_Stream* strm){
 	localStreamContext* ctx = fetchLocalStreamCtx();
 
-	nonull(strm,
+	nonull(strm){
 		setProc(ctx,&Stream_Proc_Fail);
-		return Stream_Proc_Fail
-	);
+		return Stream_Proc_Fail;
+	}
 
 	
 	if(ctx->activeStream)
@@ -202,7 +205,7 @@ return setProc(ctx, &Stream_Proc_OK);
 SP_Result std_Stream_Process_doEncode(std_StreamEncoder encoder, void* data){
 	localStreamContext* ctx = fetchLocalStreamCtx();
 
-	nonull(encoder || data, return setProc(ctx, &Stream_Proc_Fail));
+	nonull(encoder, data){ return setProc(ctx, &Stream_Proc_Fail); }
 
 	iferr(encoder(ctx->activeStream, data)){
 		ERR(ERR_FAIL, "failed to encode data into stream");
@@ -214,7 +217,7 @@ return setProc(ctx, &Stream_Proc_OK);
 SP_Result std_Stream_Process_doDecode(std_StreamDecoder decoder){
 	localStreamContext* ctx = fetchLocalStreamCtx();
 
-	nonull(decoder, return setProc(ctx,&Stream_Proc_Fail));
+	nonull(decoder){ return setProc(ctx,&Stream_Proc_Fail); }
 
 	ctx->activeDecoder = decoder;
 
@@ -409,9 +412,9 @@ noFail std_Stream_Process_end(){
 
 		ctx->activeStreamStack--;
 	} else {
-		ctx->activeStream = null;
+		ctx->activeStream = nil;
 	}
-	ctx->activeProc = null;
+	ctx->activeProc = nil;
 }
 noFail std_Stream_Process_fail(){
 	std.Stream.Process.end();
@@ -428,7 +431,7 @@ pntr std_Stream_Process_next(pntr* buff){
 	if(std.Stream.Process.readData(buff, 1)
 	   .readData == generic std_Stream_Process_SkipAll){
 		ERR(ERR_FAIL, "failed to get next item in stream");
-		return null;
+		return nil;
 	}
 
 return *buff;
@@ -573,7 +576,7 @@ SET(std_Stream){
 	std_Stream store_temp = this;
 
 	if(create(std_Stream, self,  
-		.ops = *(std_Stream_Options*)value
+		.ops = *(Options*)value
 	) == nil){
 		return ERR(ERR_FAIL, "failed to set stream");	
 	}
@@ -604,12 +607,12 @@ return where;
 ITER(std_Stream){
 	if(priv.flags.writeOnly){ 
 		ERR(ERR_FAIL, "cannot iterate through a write only stream");
-	  	return null;
+	  	return nil;
 	}
 
 	if(priv.frameSize * index > size(self)){
 		ERR(ERR_FAIL, "index out of range");
-	  	return null;
+	  	return nil;
 	}
 
 return pntr_shiftcpy(
@@ -633,7 +636,7 @@ return OK;
 }
 
 SIZE(std_Stream){
-	if(!self) return sizeof(std_Stream);
+	nonull(self){ return 0; }
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
@@ -711,22 +714,26 @@ DEF(),
 return self;
 }
 
-COPY(std_Stream_Options){ 
-	if(!memcpy(where, self, sizeof(std_Stream_Options))){
+#undef module
+#define module std, Stream_Options
+
+
+COPY(Options){ 
+	if(!memcpy(where, self, sizeof(Options))){
 		ERR(ERR_FAIL, "failed to copy stream options");
 		return nil;
 	}
 
 return where;}
 
-SET(std_Stream_Options){  
-	if(!memcpy(self, value, sizeof(std_Stream_Options))) 
+SET(Options){  
+	if(!memcpy(self, value, sizeof(Options))) 
 		return ERR(ERR_FAIL, "failed to set stream options");
 return OK;}
 
-SIZE(std_Stream_Options){ return sizeof(std_Stream_Options); }
-DESTROY(std_Stream_Options){ return OK; }
-PRINT(std_Stream_Options){
+SIZE(Options){ return sizeof(Options); }
+DESTROY(Options){ return OK; }
+PRINT(Options){
 
 	return write(out,
 		"(Stream_Options){ "

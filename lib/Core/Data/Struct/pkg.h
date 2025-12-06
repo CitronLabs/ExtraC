@@ -12,10 +12,10 @@ INIT(std_data_entry* fields; u64 num_of_fields),
 FMT(),
 	Map(String, DSN_data) fields;
 ){
-	errvt 		method(Struct, Define, ...);
-	errvt 		method(Struct, AddField, strc8 name, std_DSN_data* data);
+	errvt 		method(Struct, Define, Array(std_data_entry) entries);
+	errvt 		method(Struct, AddField, strc8 name, std_DSN_Data* data);
 	errvt 		method(Struct, Merge, std_Struct* datastruct);
-	std_DSN_data*	method(Struct, SearchField, std_String* name);
+	std_DSN_Data*	method(Struct, SearchField, std_String* name);
 };
 
 #undef package

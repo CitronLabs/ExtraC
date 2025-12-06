@@ -1,33 +1,42 @@
 #pragma once
-#include "pkg.h"
+#include "../../pkg.h"
 
-static inline std_DSN_fieldType resolveDSNType(std_typeData type){
+import(std)
 
-	if(type.id == typeID(std_List))        { return DSN_LIST;   }
+#define DSN_NONE   0
+#define DSN_LIST   1
+#define DSN_STRUCT 2
+#define DSN_MAP    3
+#define DSN_STRING 4
+#define DSN_NUMBER 5
+
+static inline std_DSN_FieldType resolveDSNType(std_typeData type){
+
+	if(type.id == typeID(std_List))     { return std.DSN.Field.LIST;   }
 	
-	else if(type.id == typeID(std_Map))    { return DSN_MAP;    }  
+	elif(type.id == typeID(std_Map))    { return std.DSN.Field.MAP;    }  
 	
-	else if(type.id == typeID(std_Struct)) { return DSN_STRUCT; }
+	elif(type.id == typeID(std_Struct)) { return std.DSN.Field.STRUCT; }
 
-	else if(type.id == typeID(std_Number)) { return DSN_NUMBER; }  
+	elif(type.id == typeID(std_Number)) { return std.DSN.Field.NUMBER; }  
 	
-	else if(type.id == typeID(std_String)) { return DSN_STRING; }
+	elif(type.id == typeID(std_String)) { return std.DSN.Field.STRING; }
 
-	else return DSN_NULL;
+	else return std.DSN.Field.NONE;
 }
 
 
-static inline std_typeData TFromDSNType(std_DSN_fieldType type){
+static inline std_typeData TFromDSNType(std_DSN_FieldType type){
 
-	if(type == DSN_LIST)   	    { return T(std_List);   }
+	if(type == std.DSN.Field.LIST)     { return T(std_List);   }
 	                                         
-	else if(type == DSN_MAP)    { return T(std_Map);    }  
-	                                         
-	else if(type == DSN_STRUCT) { return T(std_Struct); }
+	elif(type == std.DSN.Field.MAP)    { return T(std_Map);    }  
+	             
+	elif(type == std.DSN.Field.STRUCT) { return T(std_Struct); }
 
-	else if(type == DSN_NUMBER) { return T(std_Number); }  
-	                                         
-	else if(type == DSN_STRING) { return T(std_String); }
+	elif(type == std.DSN.Field.NUMBER) { return T(std_Number); }  
+	             
+	elif(type == std.DSN.Field.STRING) { return T(std_String); }
 
 	else return T(std_Nil);
 }

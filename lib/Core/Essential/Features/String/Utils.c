@@ -1,10 +1,12 @@
 #include "../../../pkg.h"
 #include "Encodings/utils.h"
 
+#define module std, String, Utils, Str
+
 import(std)
 
 
-len_t vmethodimpl(std_String_Utils_Str, len, void* in, len_t len, void** end) {
+len_t moduleFn(len)(void* in, len_t len, void** end) {
 	const char* str = in;
 	len_t length = 0;
 	while (*str != '\0' && len >= length) {
@@ -25,7 +27,7 @@ len_t vmethodimpl(std_String_Utils_Str, len, void* in, len_t len, void** end) {
 return length;
 }
 
-len_t vmethodimpl(std_String_Utils_Str, siz, void* in, len_t len) {
+len_t moduleFn(siz)(void* in, len_t len) {
 	void* end = null;
 
 	std.String.Utils.Str.len(in, len, &end);
@@ -33,7 +35,7 @@ len_t vmethodimpl(std_String_Utils_Str, siz, void* in, len_t len) {
 return pntr_dist(in, end);
 }
 
-bool vmethodimpl(std_String_Utils_Str, cmp, void* str1, void* str2, len_t len){
+bool moduleFn(cmp)(void* str1, void* str2, len_t len){
 
 	char
 	    * s1 = str1,

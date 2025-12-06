@@ -4,12 +4,12 @@
 
 int main(int argc, strc8 argv[]);
 
-inst(Error) methodimpl(Thread,GetErr){
+inst(Error) moduleMethod(Thread,GetErr){
 	nonull(self, return null);
 	return priv.errdata;
 }
-errvt methodimpl(Thread,GetExitCode, int* result){
-	nonull(self, return err);
+errvt moduleMethod(Thread,GetExitCode, int* result){
+	nonull(self){ return err; }
 	nonull(result);
 
 	if(priv.is_active) return ERR(
@@ -53,17 +53,17 @@ static void* __all_threads_start_here__(void* args){
 			thread->__private->start_func(thread, thread_args);
 	}
 thread->__private->is_active = false;
-return null;
+return nil;
 }
-errvt methodimpl(Thread,SetFunc, int(*func)(inst(Thread) thread, void* args)){
-	nonull(self, return err);
+errvt moduleMethod(Thread,SetFunc, int(*func)(inst(Thread) thread, void* args)){
+	nonull(self){ return err; }
 	nonull(func);
 
 	priv.start_func = func;
 return OK;
 }
-errvt methodimpl(Thread,Start, void* args){
-	nonull(self, return err);
+errvt moduleMethod(Thread,Start, void* args){
+	nonull(self){ return err; }
 	if(null == priv.start_func) return ERR(
 		THREADERR_DESTROY, "thread has been destroyed or is invalid");
 
@@ -74,15 +74,15 @@ errvt methodimpl(Thread,Start, void* args){
 	priv.is_active = true;
 return OK;
 };
-errvt methodimpl(Thread,Join){
-	nonull(self, return err);
+errvt moduleMethod(Thread,Join){
+	nonull(self){ return err; }
 	if(priv.is_active == false) 
 		return THREADERR_RUNNING;
 	pthread_join(priv.thread, null);
 return OK;
 };
-errvt methodimpl(Thread,Exit,int exitcode){
-	nonull(self, return err);
+errvt moduleMethod(Thread,Exit,int exitcode){
+	nonull(self){ return err; }
 	Thread.GetCurrent()->__private->exit_code = exitcode;
 	pthread_exit(null);
 return OK;
@@ -92,9 +92,9 @@ void Thread_Sleep(u64 milliseconds){
 	usleep(milliseconds * 100);
 
 }
-errvt imethodimpl(Thread, Destroy){
+errvt moduleIMethod(Thread, Destroy){
 	self(Thread);
-	nonull(self, return err);
+	nonull(self){ return err; }
 	
 	if(priv.is_active) return ERR( 
 		THREADERR_DESTROY, "the thread must be exited before its data can be destroyed");
@@ -118,7 +118,7 @@ construct(Thread,
 ){
 	if(arg.func == null){
 		ERR(ERR_NULLPTR, "start function cannot be null");
-	    	return null;
+	    	return nil;
 	}
 	
 		priv.start_func = arg.func;

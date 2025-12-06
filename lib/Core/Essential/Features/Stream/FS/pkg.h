@@ -4,7 +4,7 @@
 
 #define package std
 
-type_array(char, FSPath, 256);
+type_array(const char, FSPath, 256);
 
 Data(FSEntry,
 INIT(std_FSPath path; int flags),
@@ -40,11 +40,12 @@ FMT(
 );
 
 Interface(FS,
-	values(flags, int,
+	values(Flags, int,
 	   	CREATE, 
 	   	APPEND, 
 	   	WRITE, 
 	   	READ, 
+	   	RDWR, 
 	   	DIR, 
 	   	LINK 
 	)
@@ -53,7 +54,9 @@ Interface(FS,
 	errvt  	 	fn(delete)(std_FSPath path);
 	errvt  	 	fn(chdir)(std_FSPath path);
 	errvt  	 	fn(update)(std_FSEntry* ent);
-	errvt 		fn(setname)(std_FSPath path, std_FSPath new_name);
+	errvt 		fn(rename)(std_FSPath path, std_FSPath new_name);
+	errvt  	 	fn(move)(std_FSPath from, std_FSPath to);
+	errvt  	 	fn(cpy)(std_FSPath from, std_FSPath to);
 )
 
 #undef package

@@ -7,7 +7,7 @@ private(Collection,
 
 
 
-u32 methodimpl(Collection, numOfResources){
+u32 moduleMethod(Collection, numOfResources){
 	return List.Size(priv.resources);
 	
 }

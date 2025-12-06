@@ -70,7 +70,7 @@ Module(XC){
 	len_t fn(writeTo)(streamHandle handle, const void* buffer, len_t size);
 	streamInfo fn(info)(streamHandle handle);
 
- 	errvt fn(control)(streamHandle handle, word command, void* arg); // Generic IOCTL/FCNTL abstraction
+ 	errvt fn(control)(streamHandle handle, word command, void* args); // Generic IOCTL/FCNTL abstraction
         errvt fn(flush)(streamHandle handle); // Forces pending writes to the underlying medium
         errvt fn(sync)(streamHandle handle); // Ensures data and metadata are written (fsync)
     )
@@ -87,7 +87,9 @@ Module(XC){
 		Local,
 		IO
 	)
-	devHandle fn(stdHandle)(word id); 
+	devHandle  fn(stdHandle)(word id); 
+	deviceInfo fn(info)(devHandle handle); 
+	errvt 	   fn(close)(devHandle handle);
   )
 
   submodule(Mem,

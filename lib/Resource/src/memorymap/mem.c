@@ -4,14 +4,14 @@
 
 
 
-bool methodimpl(MemoryMap, validateMemID, memid id){
+bool moduleMethod(MemoryMap, validateMemID, memid id){
 	
 	return 
 		((memiddef*)&id)->nodenum < priv.maxvalidtoken.nodenum &&
 		((memiddef*)&id)->leafnum < priv.maxvalidtoken.leafnum;
 }
 
-errvt methodimpl(MemoryMap, registerAllocator, intf(Allocator) interface, void* allocator){
+errvt moduleMethod(MemoryMap, registerAllocator, intf(Allocator) interface, void* allocator){
 	
 	nonull(allocator, return err)
 

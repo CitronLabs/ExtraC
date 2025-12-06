@@ -1,11 +1,12 @@
+#define module std, Number
 #include "../../../pkg.h"
 #include "../utils.h"
 
 import(std)
 
 
-u64 methodimpl(std_Number, IntPrintDeci, std_Stream* out);
-u64 methodimpl(std_Number, FloatPrint, std_Stream* out) {
+u64 moduleMethod(std_Number, IntPrintDeci, std_Stream* out);
+u64 moduleMethod(std_Number, FloatPrint, std_Stream* out) {
 
     	u64 formatted_len = 0;
 	u64 mantissa_len = 0;
@@ -80,3 +81,5 @@ u64 methodimpl(std_Number, FloatPrint, std_Stream* out) {
 
 return formatted_len;
 }
+
+#undef module

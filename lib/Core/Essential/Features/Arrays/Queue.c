@@ -1,3 +1,4 @@
+#define module std, Array, Queue
 #include "includes.h"
 
 #define write_queue(in, index)								\
@@ -15,11 +16,13 @@
 
 #define slot_size (this.typeSize)
 
-errvt methodimpl(std_Array_Queue, Grow, u64 add_amount){
+
+
+errvt std_Array_Queue_Grow(Queue* self, u64 add_amount){
 	
 	u64 queue_allocsize = get_slot_dist(priv.start, priv.end); 
 	
-	if(priv.writehead < priv.readhead && priv.jmp_point == null){
+	if(priv.writehead < priv.readhead && priv.jmp_point == nil){
 		
 		u64 slots_btwn_wrt_rd = get_slot_dist(priv.writehead, priv.readhead);
 
@@ -28,7 +31,7 @@ errvt methodimpl(std_Array_Queue, Grow, u64 add_amount){
 	
 	void* new_buf = realloc(priv.start, get_slot_dist(priv.start, priv.end) + add_amount);
 
-	if(priv.jmp_point != null)
+	if(priv.jmp_point != nil)
 		priv.jmp_point = new_buf + (get_slot_dist(priv.start, priv.jmp_point) * slot_size);
 		
 	priv.end = new_buf + (get_slot_dist(priv.start, priv.end) * slot_size);
@@ -39,8 +42,8 @@ errvt methodimpl(std_Array_Queue, Grow, u64 add_amount){
 return OK;
 }
 
-void*  methodimpl(std_Array_Queue, ToPointer){
-	nonull(self, return null);
+void*  moduleMethod(std_Array_Queue, ToPointer){
+	nonull(self){ return nil; }
 
 	len_t new_buff_size 	= pntr_dist(priv.start, priv.end);
 	void* new_buff 	    	= malloc(new_buff_size);
@@ -56,7 +59,7 @@ void*  methodimpl(std_Array_Queue, ToPointer){
 
 	priv.start 		= new_buff;
 	priv.end   		= pntr_shiftcpy(new_buff, new_buff_size);
-	priv.jmp_point 		= null;
+	priv.jmp_point 		= nil;
 	priv.items_til_jump 	= 0;
 	priv.readhead 		= priv.start;
 	priv.writehead 		= pntr_shiftcpy(priv.readhead, this.typeSize * items_num);
@@ -64,8 +67,8 @@ void*  methodimpl(std_Array_Queue, ToPointer){
 	
 return priv.start;
 }
-errvt  methodimpl(std_Array_Queue, Reserve, bool exact, u64 amount){
-	nonull(self, return err);
+errvt  moduleMethod(std_Array_Queue, Reserve, bool exact, u64 amount){
+	nonull(self){ return err; }
 
 	errvt result = OK;
 
@@ -79,7 +82,7 @@ errvt  methodimpl(std_Array_Queue, Reserve, bool exact, u64 amount){
 return result;
 
 }
-noFail methodimpl(std_Array_Queue, Clear){
+noFail moduleMethod(std_Array_Queue, Clear){
 	nonull(self, return);
 
 	len_t new_buff_size 	= pntr_dist(priv.start, priv.end);
@@ -89,7 +92,7 @@ noFail methodimpl(std_Array_Queue, Clear){
 
 	priv.start 		= new_buff;
 	priv.end   		= pntr_shiftcpy(new_buff, new_buff_size);
-	priv.jmp_point 		= null;
+	priv.jmp_point 		= nil;
 	priv.items_til_jump 	= 0;
 	priv.readhead 		= priv.start;
 	priv.writehead 		= priv.start;
@@ -98,7 +101,7 @@ noFail methodimpl(std_Array_Queue, Clear){
 
 
 WRITE(std_Array_Queue){
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	u64 queue_allocsize = get_slot_dist(priv.start, priv.end);
 
@@ -114,7 +117,7 @@ return size;
 }
 
 READ(std_Array_Queue){
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	if(size > this.items)
 		size = this.items;
@@ -138,10 +141,6 @@ return size;
 
 SIZE(std_Array_Queue){ return self ? elements ? this.items : this.items * this.typeSize : sizeof(std_Array_Queue); }
 
-errvt methodimpl(std_Array_Queue, Grow, u64 add_amount);
-errvt methodimpl(std_Array_List, Grow, u64 add_amount);
-errvt methodimpl(std_Array_Stack, Grow, u64 add_amount);
-
 COPY(std_Array_Queue){
 	
 	std_Object* dest_obj = where;
@@ -152,7 +151,7 @@ COPY(std_Array_Queue){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    
@@ -167,7 +166,7 @@ COPY(std_Array_Queue){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    loop(i, this.items)
@@ -183,7 +182,7 @@ COPY(std_Array_Queue){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    if(dest->items + this.items > privof(dest).allocSize)
@@ -197,7 +196,7 @@ COPY(std_Array_Queue){
 
 	    if(dest->typeSize != this.typeSize){
 		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
-		return null;
+		return nil;
 	    }
 
 	    len_t alloc_size = (pntr_asVal(privof(dest).end) - pntr_asVal(privof(dest).start)) / this.typeSize;
@@ -211,7 +210,7 @@ COPY(std_Array_Queue){
 	break;}
 	defaultT{
 		ERR(ERR_INVALID, "invalid copy destination type detected");
-		return null;
+		return nil;
 	}
 	}
 
@@ -277,16 +276,16 @@ return result;
 }
 
 ITER(std_Array_Queue){
-	nonull(self, return null);
+	nonull(self){ return nil; }
 
 	if(this.items <= index) {
 		ERR(DATAERR_OUTOFRANGE, "index exceeds queue");
-		return null;
+		return nil;
 	}
 
 	void* index_start = priv.readhead;
 
-	if(priv.jmp_point != null && get_slot_dist(priv.readhead, priv.jmp_point) < index){
+	if(priv.jmp_point != nil && get_slot_dist(priv.readhead, priv.jmp_point) < index){
 		index -= get_slot_dist(priv.readhead, priv.jmp_point);
 		index_start = priv.start;
 
@@ -344,7 +343,7 @@ DEF(),
 	priv.readhead  = priv.start;
 	priv.writehead = priv.start;
 
-	if(arg.data != null && args->initSize != 0){
+	if(arg.data != 0 && args->initSize != 0){
 		loop(i, start_size){
 			write_queue(arg.data, i);
 		}

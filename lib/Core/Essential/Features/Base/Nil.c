@@ -2,6 +2,7 @@
 
 import(std)
 
+#define module std, Nil
 
 #undef nilmethod
 

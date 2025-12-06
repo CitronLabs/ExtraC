@@ -18,7 +18,8 @@ enum(Date_Format,
 
 
 PRINT(std_Date){
-    nonull(self, return 0);
+    nonull(self){ return 0; }
+
     if(!std.Date.isValid(self)){
 	ERR(ERR_INVALID, "invalid date");
 	return 0;
@@ -45,7 +46,7 @@ PRINT(std_Date){
 	result = printTo(out, 
        		$(this.year),      "-",
        		$((u8)this.month), "-",
-       		$((u8)this.day),
+       		$((u8)this.day)
        );
     break;}
     case std_Date_Format_Time_12Hour:{
@@ -60,7 +61,7 @@ PRINT(std_Date){
     break;}
     case std_Date_Format_Time_24Hour:{
 	result = printTo(out, 
-       		$((u8)this.hour), ":", $((u8)this.minute),
+       		$((u8)this.hour), ":", $((u8)this.minute)
        	);
     break;}
     case std_Date_Format_ISOTime:{
@@ -68,7 +69,7 @@ PRINT(std_Date){
        		$F((u8)this.hour,   .precision = 2), ":", 
 	 	$F((u8)this.minute, .precision = 2), ":",
 	 	$F((u8)this.second, .precision = 2), ".",
-	 	$F(convert->nano.to.milli(this.nanosec).result, .precision = 3), "Z"
+	 	$F(convert->nano_to_milli(this.nanosec).result, .precision = 3), "Z"
        	);
     break;}
     case std_Date_Format_FullName:{
@@ -100,7 +101,8 @@ return result;
 }
 
 SCAN(std_Date){
-    nonull(self, return 0);
+    nonull(self){ return 0; }
+
     if(!std.Date.isValid(self)){
 	ERR(ERR_INVALID, "invalid date");
 	return 0;
@@ -127,7 +129,7 @@ SCAN(std_Date){
 	result = scanFrom(in, 
        		$(this.year),      "-",
        		$((u8)this.month), "-",
-       		$((u8)this.day),
+       		$((u8)this.day)
        );
     break;}
     case std_Date_Format_Time_12Hour:{
@@ -142,7 +144,7 @@ SCAN(std_Date){
     break;}
     case std_Date_Format_Time_24Hour:{
 	result = scanFrom(in, 
-       		$((u8)this.hour), ":", $((u8)this.minute),
+       		$((u8)this.hour), ":", $((u8)this.minute)
        	);
     break;}
     case std_Date_Format_ISOTime:{
@@ -150,7 +152,7 @@ SCAN(std_Date){
        		$F((u8)this.hour,   .precision = 2), ":", 
 	 	$F((u8)this.minute, .precision = 2), ":",
 	 	$F((u8)this.second, .precision = 2), ".",
-	 	$F(convert->nano.to.milli(this.nanosec).result, .precision = 3), "Z"
+	 	$F(convert->nano_to_milli(this.nanosec).result, .precision = 3), "Z"
        	);
     break;}
     case std_Date_Format_FullName:{

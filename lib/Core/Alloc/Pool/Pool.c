@@ -1,3 +1,4 @@
+#define module std, Pool
 #include "../../pkg.h"
 #include "../Buffer/pkg.h"
 
@@ -5,9 +6,9 @@ import(std)
 
 
 
-void* methodimpl(std_Pool, Alloc, u64 num){
+void* moduleMethod(std_Pool, Alloc, u64 num){
 
-	std_Buffer* alloc_buff = null;
+	std_Buffer* alloc_buff = nil;
 
 	if(priv.current_size + num > priv.alloc_size){
 
@@ -26,24 +27,24 @@ void* methodimpl(std_Pool, Alloc, u64 num){
 return std.Buffer.Allocator.New(generic alloc_buff, num);
 }
 
-void* imethodimpl(std_Pool, New, len_t size){
+void* moduleIMethod(std_Pool, New, len_t size){
 	self(std_Pool);
 return std.Pool.Alloc(self, size);
 }
 
-errvt methodimpl(std_Pool, Return, void* instance){
+errvt moduleMethod(std_Pool, Return, void* instance){
 	write(priv.free_slots, instance);
 return OK;
 }
 
 
-errvt imethodimpl(std_Pool, Delete, void* instance){	
+errvt moduleIMethod(std_Pool, Delete, void* instance){	
 	self(std_Pool);
 	write(priv.free_slots, instance);
 return OK;
 }
 
-errvt methodimpl(std_Pool, Grow, u64 num){
+errvt moduleMethod(std_Pool, Grow, u64 num){
 
 	if(priv.isStatic){
 		return ERR(MEMERR_OVERFLOW, "cannot grow a static pool");
@@ -63,36 +64,36 @@ errvt methodimpl(std_Pool, Grow, u64 num){
 return OK;
 }
 
-errvt methodimpl(std_Pool, Reserve, u64 num){
+errvt moduleMethod(std_Pool, Reserve, u64 num){
 	if(priv.alloc_size - priv.current_size > num) return OK;
 
 	std.Pool.Grow(self, num);
 return OK;}
 
 
-errvt methodimpl(std_Pool, ForceDestroy){
+errvt moduleMethod(std_Pool, ForceDestroy){
 	priv.num_in_use = 0;
 	ops(std_Pool_Type).Destroy(self);
 
 return OK;
 }
 
-errvt imethodimpl(std_Pool, setMax, u64 size){
+errvt moduleIMethod(std_Pool, setMax, u64 size){
 	self(std_Pool);
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	priv.max_size = size;
 return OK;
 }
-bool  imethodimpl(std_Pool, isStatic){ 
+bool  moduleIMethod(std_Pool, isStatic){ 
 	self(std_Pool);
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 return priv.isStatic;
 }
-u64   imethodimpl(std_Pool, getBytesAlloced){
+u64   moduleIMethod(std_Pool, getBytesAlloced){
 	self(std_Pool);
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 return priv.alloc_size * priv.type.size;
 }
@@ -105,7 +106,7 @@ SIZE(std_Pool){
 }
 
 SET(std_Pool){
-	nonull(self || value, return err);
+	nonull(self, value){ return err; }
 
 	priv.max_size = *(len_t*)value;
 
@@ -113,7 +114,7 @@ return OK;
 }
 
 COPY(std_Pool){
-	nonull(self || where, return nil);
+	nonull(self, where){ return nil; }
 
 	if(create(std_Pool, where,  
 		.isStatic = priv.isStatic,
@@ -131,7 +132,7 @@ return where;
 }
 
 DESTROY(std_Pool){
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	if(priv.num_in_use != 0) 
 		return ERR(ERR_FAIL, "not all object have been returned to the pool yet");
@@ -148,7 +149,7 @@ return OK;
 ITER(std_Pool){
 	if(index > priv.current_size){
 		ERR(ERR_INVALID, "index out of range");
-		return null; 
+		return nil; 
 	}
 
 	foreach(priv.pool_buffers, std_Buffer*, buff){
@@ -159,10 +160,10 @@ ITER(std_Pool){
 
 	ERR(ERR_FAIL, "failed to index");
 
-return null;
+return nil;
 }
 WRITE(std_Pool){
-	nonull(self || data, return 0);
+	nonull(self, data){ return 0; }
 
 	loop(i, size){
 	    if(data[i])
@@ -171,7 +172,7 @@ WRITE(std_Pool){
 return size;
 }
 READ(std_Pool){
-	nonull(self || data, return 0);
+	nonull(self, data){ return 0; }
 
 	if(priv.current_size + size > priv.max_size)
 		size = priv.max_size - priv.current_size;
@@ -185,7 +186,7 @@ return size;
 
 }
 PRINT(std_Pool){
-	nonull(self || out, return 0);
+	nonull(self, out){ return 0; }
 
 	return write(out, 
 		"(std_Pool){ "

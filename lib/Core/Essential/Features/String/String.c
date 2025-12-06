@@ -5,7 +5,7 @@
 import(std)
 
 
-bool methodimpl(std_String, Compare, std_String* cmp_string){
+bool moduleMethod(std_String, Compare, std_String* cmp_string){
 	
 	if(elements(self) != elements(cmp_string) 		|| 
 	   priv.len_bytes != privof(cmp_string).len_bytes
@@ -17,11 +17,11 @@ bool methodimpl(std_String, Compare, std_String* cmp_string){
 return false;
 }
 
-errvt methodimpl(std_String, Copy, std_String* to){
+errvt moduleMethod(std_String, Copy, std_String* to){
 	return to == copy(self, to) ? OK : ERR(ERR_FAIL, "failed to copy");
 }
 
-errvt methodimpl(std_String, Cat,  Array(std_String*) strings){
+errvt moduleMethod(std_String, Cat,  Array(std_String*) strings){
 
 	std_Stream* temp_stream =
 		push(std_Stream,
@@ -49,7 +49,7 @@ return OK;
 }
 
 
-std_String* methodimpl(std_String, View, len_t from, len_t to){
+std_String* moduleMethod(std_String, View, len_t from, len_t to){
 	
 	if(to < from){
 		ERR(ERR_INVALID, "to cannot be less than when making a string view");
@@ -72,7 +72,7 @@ return create(std_String, index(priv.views, index),
 	.view 	 = true
 );
 }
-errvt methodimpl(std_String, ViewShift, len_t up, len_t down){
+errvt moduleMethod(std_String, ViewShift, len_t up, len_t down){
 	
 	if(!priv.IsView)
 		return ERR(ERR_INVALID, "only string views are able to be shifted");
@@ -105,15 +105,15 @@ errvt methodimpl(std_String, ViewShift, len_t up, len_t down){
 
 return OK;
 }	
-bool methodimpl(std_String, IsView){ return priv.IsView; }
+bool moduleMethod(std_String, IsView){ return priv.IsView; }
 
-errvt methodimpl(std_String, StreamTo, std_Stream* stream){
+errvt moduleMethod(std_String, StreamTo, std_Stream* stream){
 	std.String.UTF8.Encoder(stream, self);
 return OK;
 }
 
 DESTROY(std_String){
-	nonull(self->data, return err);
+	nonull(self->data){ return err; }
 	
 	if(!priv.IsView)
 		free(self->data);
@@ -136,7 +136,7 @@ return priv.len_bytes;
 }
 
 SCAN(std_String){
-	nonull(self, return 0);
+	nonull(self){ return 0; }
 
 	rune c = 0;
 
@@ -162,7 +162,7 @@ SCAN(std_String){
 		this.len 	= string_len;
 		priv.len_bytes 	= string_size;
 		priv.IsView 	= false;
-		priv.views 	= null;
+		priv.views 	= nil;
 	    }
 
 	    then.end();
@@ -175,7 +175,7 @@ ITER(std_String){
 	
 	c8* result = this.data;
 
-	loop(i, index){	std.String.UTF8.decode(&result, null); }
+	loop(i, index){	std.String.UTF8.decode(&result, nil); }
 
 return result;
 }
@@ -188,12 +188,12 @@ COPY(std_String){
 	
 	memcpy(dest, self, sizeof(std_String));
 
-	priv.views = null;
+	priv.views = NULL;
 	dest->data = malloc(priv.len_bytes); 
 
 	if(!dest->data){
 		ERR(ERR_FAIL, "failed to allocate new string");
-		return null;
+		return nil;
 	}
 
 	memcpy(dest->data, this.data, priv.len_bytes);
@@ -209,7 +209,7 @@ FMT(),
 DEF(),
 		  
 ){
-	void* end = null;
+	void* end = NULL;
 
 	this.len = std.String.Utils.Str.len(arg.data, arg.max_len, &end);
 

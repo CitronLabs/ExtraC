@@ -1,21 +1,20 @@
+#define module std, Number
 #include "../../pkg.h"
 
+from(std,
+	use(Number),
+    	use(Stream),
+    	use(List)
+);
 
-use(std,
-	Number,
-    	Stream,
-    	List
-)
+
 #define HIDE_USE
-
 #include "BigInteger/operations.c"
 #include "BigInteger/format.c"
 #include "BigInteger/parse.c"
 #include "BigFloat/operations.c"
 #include "BigFloat/format.c"
 #include "BigFloat/parse.c"
-
-
 
 
 #define apriv (a->__private)
@@ -37,9 +36,8 @@ use(std,
 	}
 
 
-Number* methodimpl(std_Number, Add, Number* other){
-	nonull(self, 		return nil);
-    	nonull(other,  		return nil);
+Number* moduleMethod(std_Number, Add, Number* other){
+	nonull(self, other){ return nil; }
 	
 	Number* result = new(Number);
 
@@ -50,10 +48,8 @@ Number* methodimpl(std_Number, Add, Number* other){
 
 return result;
 }
-errvt methodimpl(std_Number, AddInto, Number* a, Number* b){
-
-	nonull(a, return err);
-	nonull(b, return err);
+errvt moduleMethod(std_Number, AddInto, Number* a, Number* b){
+	nonull(a, b){ return err; }
 
 	std_Number_setZero(self);
 
@@ -71,7 +67,7 @@ errvt methodimpl(std_Number, AddInto, Number* a, Number* b){
 		return OK;
 	}
 
-	List* tempList = null;
+	List* tempList = NULL;
 
 	ensureNumberCompatibility()
 
@@ -89,9 +85,8 @@ errvt methodimpl(std_Number, AddInto, Number* a, Number* b){
 return OK;
 }
 
-Number* methodimpl(std_Number, Subtract, Number* other){
-	nonull(self, 		return nil);
-    	nonull(other,  		return nil);
+Number* moduleMethod(std_Number, Subtract, Number* other){
+	nonull(self, other){ return nil; }
 	
 	Number* result = new(Number);
 
@@ -104,10 +99,8 @@ return result;
 
 return result;
 }
-errvt methodimpl(std_Number, SubtractInto, Number* a, Number* b){
-
-	nonull(a, return err);
-	nonull(b, return err);
+errvt moduleMethod(std_Number, SubtractInto, Number* a, Number* b){
+	nonull(a, b){ return err; }
 	
 	std_Number_setZero(self);
 
@@ -126,7 +119,7 @@ errvt methodimpl(std_Number, SubtractInto, Number* a, Number* b){
 		return OK;
 	}
 
-	List* tempList = null;
+	List* tempList = NULL;
 	
 	ensureNumberCompatibility()
 
@@ -146,9 +139,8 @@ return OK;
 
 }
 
-Number* methodimpl(std_Number, Multiply, Number* other){
-	nonull(self, 		return nil);
-    	nonull(other,  		return nil);
+Number* moduleMethod(std_Number, Multiply, Number* other){
+	nonull(self, other){ return nil; }
 	
 	Number* result = new(Number);
 
@@ -159,10 +151,8 @@ Number* methodimpl(std_Number, Multiply, Number* other){
 
 return result;
 }
-errvt methodimpl(std_Number, MultiplyInto, Number* a, Number* b){
-
-	nonull(b, return err);
-	nonull(a, return err);
+errvt moduleMethod(std_Number, MultiplyInto, Number* a, Number* b){
+	nonull(a, b){ return err; }
 	
 	std_Number_setZero(self);
 	
@@ -179,7 +169,7 @@ errvt methodimpl(std_Number, MultiplyInto, Number* a, Number* b){
 		elements(priv.digits) + elements(bpriv.digits));
 
 
-	List* tempList = null;
+	List* tempList = NULL;
 
 	ensureNumberCompatibility()
 
@@ -201,10 +191,8 @@ return OK;
 
 }
 
-Number* methodimpl(std_Number, Divide,   Number* other, Number* remainder){
-	nonull(self, 		return nil);
-    	nonull(other,  		return nil);
-    	nonull(remainder,  	return nil);
+Number* moduleMethod(std_Number, Divide,   Number* other, Number* remainder){
+	nonull(self, other, remainder){ return nil; }
 	
 	Number* result = new(Number);
 
@@ -217,11 +205,8 @@ return result;
 
 return result;
 }
-errvt methodimpl(std_Number, DivideInto,   Number* a, Number* b, Number* remainder){
-
-	nonull(b, 		return err);
-    	nonull(a,  		return err);
-    	nonull(remainder,  	return err);
+errvt moduleMethod(std_Number, DivideInto,   Number* a, Number* b, Number* remainder){
+	nonull(a, b, remainder){ return err; }
 
 	if (isZero(b)) {
 		return ERR(ERR_INVALID, "cannot divide by 0");
@@ -247,7 +232,7 @@ errvt methodimpl(std_Number, DivideInto,   Number* a, Number* b, Number* remaind
 		priv.sign = (apriv.sign == bpriv.sign) ? 1 : -1;
 	break;
 	default:{
-		List* tempList = null;
+		List* tempList = NULL;
 
 		ensureNumberCompatibility()
 
@@ -269,10 +254,8 @@ return OK;
 
 
 }
-std_numEquality methodimpl(std_Number, Compare, Number* other) {
-
-	nonull(other, return NUM_null);
-	nonull(self,  return NUM_null);
+std_numEquality moduleMethod(std_Number, Compare, Number* other) {
+	nonull(other, self){ return NUM_NULL; }
 	
 	// Handle zero cases first
 	if (isZero(self) && isZero(other)) return NUM_EQUALS; 			 // Both are zero
@@ -294,17 +277,26 @@ std_numEquality methodimpl(std_Number, Compare, Number* other) {
 	}
 }
 
-bool   methodimpl(std_Number, isFloat){nonull(self, return -1); return priv.floating;}
-errvt  methodimpl(std_Number, zeroOut){nonull(self, return err); std_Number_setZero(self); return OK;}
+bool   moduleMethod(std_Number, isFloat){
+	nonull(self){ return -1; } 
 
+return priv.floating;
+}
+errvt  moduleMethod(std_Number, zeroOut){
+	nonull(self){ return err; } 
 
-float methodimpl(std_Number, castToFloat){
+	std_Number_setZero(self); 
+
+return OK;
+}
+
+float moduleMethod(std_Number, castToFloat){
 	if(!priv.floating) std.Number.castToBigFloat(self);
 }
-double methodimpl(std_Number, castToLongFloat){
+double moduleMethod(std_Number, castToLongFloat){
 	if(!priv.floating) std.Number.castToBigFloat(self);
 }
-i32 methodimpl(std_Number, castToInt){
+i32 moduleMethod(std_Number, castToInt){
 	if(priv.floating) std.Number.castToBigInt(self);
 	
 	i64 result = 0;
@@ -317,7 +309,7 @@ return
 	result < minof(i32) ? minof(i32) : 
 	priv.sign == -1 ? -result : result;
 }
-i64 methodimpl(std_Number, castToLongInt){
+i64 moduleMethod(std_Number, castToLongInt){
 	if(priv.floating) std.Number.castToBigInt(self);
 
 	i64 result = 0;
@@ -368,12 +360,12 @@ return where;
 }
 
 SET(std_Number){
-	nonull(self || value, return err);
+	nonull(self, value){ return err; }
 	
 	Stream* temp_stream = push(Stream, 
 			std.Stream.Preset.staticBuffer(
 			    value, 
-			    strnlenbytes((strc8)value, 10280)
+			    strsize((strc8)value, 10280)
 			)
 		)
 	;

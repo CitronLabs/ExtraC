@@ -33,9 +33,9 @@ enum(netCall_Flags,
 	netCall_Async = 1
 )
 
-#define netField(name, access, type, data) (netobjFieldInfo){s(name),NETFIELD_##access,(DSN_data){DSN_##type, data}}
-#define netMethodImpl(name, implModule, ...) (netobjMethodInfo){s(name),(DSN_data){DSN_STRUCT, newStruct(__VA_ARGS__)}, &implModule, implModule##_Logic}
-#define netMethodDecl(name, ...) (netobjMethodInfo){s(name),(DSN_data){DSN_STRUCT, newStruct(__VA_ARGS__)}, null, NULL}
+#define netField(name, access, type, data) (netobjFieldInfo){s(name),NETFIELD_##access,(DSN_Data){DSN_##type, data}}
+#define netMethodImpl(name, implModule, ...) (netobjMethodInfo){s(name),(DSN_Data){DSN_STRUCT, newStruct(__VA_ARGS__)}, &implModule, implModule##_Logic}
+#define netMethodDecl(name, ...) (netobjMethodInfo){s(name),(DSN_Data){DSN_STRUCT, newStruct(__VA_ARGS__)}, null, NULL}
 
 Blueprint(NetObjMethod,
 __IO(in_DSN_data parameters; out_DSN_data returnvalue), 

@@ -17,38 +17,26 @@ FMT(std_Date_Format type),
 	errvt method(Time, Difference, std_Time* time2, std_Time* result);
 	bool  method(Time, Compare, std_Time* time2, std_Time* tolerance);
 	submodule(Convert,
-	    submodule(sec,
-	      submodule(to,
 		struct TimeConversion
-		fn(minutes)(len_t sec),
-		fn(hours)(len_t sec),
-		fn(days)(len_t sec),
-		fn(months)(len_t sec),
-		fn(years)(len_t sec);
-	      )
-	      submodule(from,
-		struct TimeConversion
-		fn(minutes)(len_t sec),
-		fn(hours)(len_t sec),
-		fn(days)(len_t sec),
-		fn(months)(len_t sec),
-		fn(years)(len_t sec);
-	      )
-	    )	
-	    submodule(nano,
-	      submodule(to,
-		struct TimeConversion
-		fn(micro)(len_t nanosec),
-		fn(milli)(len_t nanosec),
-		fn(second)(len_t nanosec);
-	      )
-	      submodule(from,
-		struct TimeConversion
-		fn(micro)(len_t nanosec),
-		fn(milli)(len_t nanosec),
-		fn(second)(len_t nanosec);
-	      )
-	    )	
+		fn(sec_to_minutes)(len_t sec),
+		fn(sec_to_hours)(len_t sec),
+		fn(sec_to_days)(len_t sec),
+		fn(sec_to_months)(len_t sec),
+		fn(sec_to_years)(len_t sec),
+
+		fn(sec_from_minutes)(len_t sec),
+		fn(sec_from_hours)(len_t sec),
+		fn(sec_from_days)(len_t sec),
+		fn(sec_from_months)(len_t sec),
+		fn(sec_from_years)(len_t sec),
+
+		fn(nano_to_micro)(len_t nanosec),
+		fn(nano_to_milli)(len_t nanosec),
+		fn(nano_to_second)(len_t nanosec),
+
+		fn(nano_from_micro)(len_t nanosec),
+		fn(nano_from_milli)(len_t nanosec),
+		fn(nano_from_second)(len_t nanosec);
 	)
 };
 

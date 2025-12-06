@@ -1,11 +1,12 @@
+#define module std, Number
 #include "../../../pkg.h"
 #include "../utils.h"
 
 import(std)
 
 
-errvt methodimpl(std_Number, SetPrecision, u64 new_precision) {
-	nonull(self, return err)
+errvt moduleMethod(std_Number, SetPrecision, u64 new_precision) {
+	nonull(self){ return err; }
 	
 	priv.precision = new_precision;
 	
@@ -26,8 +27,8 @@ return	(apriv.exponent > bpriv.exponent) ? std_Number_shiftDigitsRight(b, b, apr
 	(bpriv.exponent > apriv.exponent) ? std_Number_shiftDigitsRight(a, a, bpriv.exponent - apriv.exponent) :
 	OK;
 }
-errvt methodimpl(std_Number, FloatSubtract, std_Number* other, std_Number* result);
-errvt methodimpl(std_Number, FloatAdd, std_Number* other, std_Number* result) {
+errvt moduleMethod(std_Number, FloatSubtract, std_Number* other, std_Number* result);
+errvt moduleMethod(std_Number, FloatAdd, std_Number* other, std_Number* result) {
     
 	// 0 case is handled by the top level std_Number.Add call
 	if (priv.sign != opriv.sign) {
@@ -57,7 +58,7 @@ errvt methodimpl(std_Number, FloatAdd, std_Number* other, std_Number* result) {
 return OK;
 }
 
-errvt methodimpl(std_Number, FloatSubtract, std_Number* other, std_Number* result){
+errvt moduleMethod(std_Number, FloatSubtract, std_Number* other, std_Number* result){
 	
 	// 0 case is handled by the top level std_Number.Subtract call
 	if (priv.sign != opriv.sign) {
@@ -95,7 +96,7 @@ errvt methodimpl(std_Number, FloatSubtract, std_Number* other, std_Number* resul
 return OK;
 }
 
-errvt methodimpl(std_Number, FloatMultiply, std_Number* other, std_Number* result) {
+errvt moduleMethod(std_Number, FloatMultiply, std_Number* other, std_Number* result) {
     // Perform integer multiplication on the digits
     errvt status = std_Number_absoluteMultiply(result, self, other);
     rpriv.floating = 1;
@@ -105,7 +106,7 @@ errvt methodimpl(std_Number, FloatMultiply, std_Number* other, std_Number* resul
 
 }
 
-errvt methodimpl(std_Number, FloatDivide, std_Number* other, std_Number* remainder, std_Number* result){
+errvt moduleMethod(std_Number, FloatDivide, std_Number* other, std_Number* remainder, std_Number* result){
 
 	if (isZero(other)) {
 		return ERR(ERR_INVALID, "cannot divide by 0");
@@ -185,3 +186,5 @@ exit:
 	
 return reserr;
 }
+
+#undef module

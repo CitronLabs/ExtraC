@@ -10,17 +10,6 @@
 */
 #define List(type) std_List* 
 
-/**
-@def Queue(type)
-@brief readability macro for being explicit about what the queue is intended to store
-*/
-#define Queue(type) std_Queue*
-
-/**
-@def Stack(type)
-@brief readability macro for being explicit about what the stack is intended to store
-*/
-#define Stack(type) std_Stack* 
 
 #define Map(key,value) std_Map*
 
@@ -54,18 +43,14 @@ be of the same type
 */
 
 #define getDSN_Type(var) _Generic((var),\
-std_Number*	: DSN_NUMBER,		\
-std_String*	: DSN_STRING,		\
-std_List*	: DSN_LIST,		\
-std_Queue*	: DSN_QUEUE,		\
-std_Stack*	: DSN_STACK,		\
-std_Map*	: DSN_MAP,		\
-std_Struct*	: DSN_STRUCT,		\
-std_Number	: DSN_NUMBER,		\
-std_String	: DSN_STRING,		\
-std_List	: DSN_LIST,		\
-std_Queue	: DSN_QUEUE,		\
-std_Stack	: DSN_STACK,		\
-std_Map		: DSN_MAP,		\
-std_Struct	: DSN_STRUCT,		\
-default		: DSN_NULL)
+std_Number*	: std.DSN.Field.NUMBER,		\
+std_String*	: std.DSN.Field.STRING,		\
+std_List*	: std.DSN.Field.LIST,		\
+std_Map*	: std.DSN.Field.MAP,		\
+std_Struct*	: std.DSN.Field.STRUCT,		\
+std_Number	: std.DSN.Field.NUMBER,		\
+std_String	: std.DSN.Field.STRING,		\
+std_List	: std.DSN.Field.LIST,		\
+std_Map		: std.DSN.Field.MAP,		\
+std_Struct	: std.DSN.Field.STRUCT,		\
+default		: std.DSN.Field.NONE)

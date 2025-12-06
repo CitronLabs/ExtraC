@@ -30,7 +30,7 @@ elements from the orignal reference are appended to overide list
 
 
 Class(List,
-INIT(len_t init_size; Type type; void* literal),
+INIT(len_t init_size; Type_t type; void* literal),
 FMT(bool debug),
 private(
 	void* data;
@@ -52,7 +52,7 @@ private(
 	errvt 		method(List, Merge, std_List* merged_list, u64 index);
 	std_List*	method(List, SubList, u64 index, len_t len);
 	errvt 		method(List, Reserve, bool exact, len_t amount);
-	errvt   	method(List, Cast, Type type);
+	errvt   	method(List, Cast, Type_t type);
 	std_typeData	method(List, GetType);
 
 };

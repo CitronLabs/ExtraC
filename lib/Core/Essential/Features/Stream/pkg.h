@@ -22,23 +22,26 @@ INIT(std_Stream_Options ops),
 FMT(),
 private(
 	len_t 		frameSize;
-	submodule(flags,
+
+	struct {
    	  u16 
 	    readOnly   	: 1,
 	    writeOnly  	: 1,
 	    streamType  : 2;
-	)
+      	} flags;
+
 	union {
 	    streamHandle handle;
 
-	    submodule(mem,
+	    struct {
 	        std_Array_List* data;
 	        len_t pos;
-	    )
-	    submodule(buff,
+      	    } mem;
+
+	    struct {
 	        len_t pos, size;
 	        void* data;
-	    )
+	    } buff;
 	} stream;
 	pntr pointer;
 )

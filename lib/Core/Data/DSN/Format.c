@@ -2,19 +2,18 @@
 
 import(std)
 
-
 #include "Utils.c"
 
-len_t methodimpl(std_DSN, formatList, std_List* data, std_Stream* out){
+len_t moduleMethod(std_DSN, formatList, std_List* data, std_Stream* out){
 	
-	std_DSN_fieldType dsn_type = resolveDSNType(std.List.GetType(data));
+	std_DSN_FieldType dsn_type = resolveDSNType(std.List.GetType(data));
 
 	if(!dsn_type) return 0;
 
 	len_t formated_len = write(out, ">>[ ", fmt_end);
 	
 	foreach(data, void, elmnt){
-	    formated_len += std.DSN.format(self, &(std_DSN_data){dsn_type, elmnt}, out);
+	    formated_len += std.DSN.format(self, &(std_DSN_Data){dsn_type, elmnt}, out);
 
 	    if(elmnt_iterator + 1 < elements(data))
 		formated_len += write(out, ", ", fmt_end);
@@ -26,13 +25,13 @@ return formated_len;
 }
 
 errvt ListDSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.List.format(null, data, strm) == 0 ? 
+	return std.DSN.List.format(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to format list");
 }
 
-len_t methodimpl(std_DSN, formatMap, std_Map* data, std_Stream* out){
+len_t moduleMethod(std_DSN, formatMap, std_Map* data, std_Stream* out){
 	
-	std_DSN_fieldType 
+	std_DSN_FieldType 
 		key_dsn_type = resolveDSNType(std.Map.GetKeyType(data)),
 		val_dsn_type = resolveDSNType(std.Map.GetValType(data))
 	;
@@ -44,9 +43,9 @@ len_t methodimpl(std_DSN, formatMap, std_Map* data, std_Stream* out){
 	len_t formated_len = write(out, "@{ ", fmt_end);
 
 	foreach(entries, std_data_entry, bucket){
-		formated_len += std.DSN.format(self, &(std_DSN_data){key_dsn_type, bucket->key}, out);
+		formated_len += std.DSN.format(self, &(std_DSN_Data){key_dsn_type, bucket->key}, out);
 		formated_len += write(out, " -> ", fmt_end);
-		formated_len += std.DSN.format(self, &(std_DSN_data){val_dsn_type, bucket->data}, out);
+		formated_len += std.DSN.format(self, &(std_DSN_Data){val_dsn_type, bucket->data}, out);
 		formated_len += write(out, ", ", fmt_end);
   	}
 	formated_len += write(out, " }", fmt_end);
@@ -55,11 +54,11 @@ return formated_len;
 }
 
 errvt MapDSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.Map.format(null, data, strm) == 0 ? 
+	return std.DSN.Map.format(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to format map");
 }
 
-len_t methodimpl(std_DSN, formatStruct, std_Struct* data, std_Stream* out){
+len_t moduleMethod(std_DSN, formatStruct, std_Struct* data, std_Stream* out){
 	
 	len_t formated_len = write(out, "{ ");
 	
@@ -77,28 +76,28 @@ return formated_len;
 }
 
 errvt StructDSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.Struct.format(null, data, strm) == 0 ? 
+	return std.DSN.Struct.format(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to format struct");
 }
 
 
-len_t methodimpl(std_DSN, formatNumber, std_Number* data, std_Stream* out){
+len_t moduleMethod(std_DSN, formatNumber, std_Number* data, std_Stream* out){
 
 	return write(out, $(data));	
 }
 
 errvt NumberDSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.Number.format(null, data, strm) == 0 ? 
+	return std.DSN.Number.format(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to format struct");
 }
 
-len_t methodimpl(std_DSN, formatString, std_String* data, std_Stream* out){
+len_t moduleMethod(std_DSN, formatString, std_String* data, std_Stream* out){
 
 	return write(out, "\"", $(data), "\"");
 }
 
 errvt StringDSN_Encoder(std_Stream* strm, void* data){
-	return std.DSN.String.format(null, data, strm) == 0 ? 
+	return std.DSN.String.format(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to format struct");
 }
 

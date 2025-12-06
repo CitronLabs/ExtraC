@@ -1,10 +1,11 @@
 #include "../../../pkg.h"
 
 import(std)
-
 import(XC)
 
-void* methodimpl(std_Local, getData){
+#define module std, Local
+
+void* moduleMethod(std_Local, getData){
 	devHandle local_dev = XC.Dev.stdHandle(XC.Dev.ID.Local);
 
 return XC.Dev.Register.access(priv.local_register);
@@ -68,7 +69,7 @@ DEF(),
 			local_device, 
 		      	Attribs->DIRECT_ACCESS,
 		      	arg.len,
-			null
+			nil
 	);
 
 }

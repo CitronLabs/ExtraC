@@ -21,16 +21,23 @@
 #define FMT(...) __VA_ARGS__
 #define DEF(...) __VA_ARGS__
 
-#define __USE_IMPL(package, type) 					\
-    static const char* type##_TypeID = package##_##type##_TypeID;	\
-    static const package##_##type##_Type_t* type##_Type = 		\
+#define __FROM_IMPL(package, type, alias) 				\
+    static const char* alias##_TypeID = package##_##type##_TypeID;	\
+    static const package##_##type##_Type_t* alias##_Type = 		\
 	    &package##_##type##_TypeData;				\
-    typedef struct package##_##type##_Interface type##_Interface;	\
-    typedef package##_##type##_ConstructArgs type##_ConstructArgs;	\
-    typedef package##_##type##_FormatArgs type##_FormatArgs;		\
-    typedef package##_##type type;
+    typedef struct package##_##type##_Interface alias##_Interface;	\
+    typedef package##_##type##_ConstructArgs alias##_ConstructArgs;	\
+    typedef package##_##type##_FormatArgs alias##_FormatArgs;		\
+    typedef package##_##type alias;
 
-#define use(package, ...) __USE_FOR_EACH(__USE_IMPL, package, __VA_ARGS__);
+#define as ,
+#define use(type) type as type
+
+#define from(package, ...) \
+    __FROM_FOR_EACH_DISPATCH(__FROM_IMPL, package, __VA_ARGS__)
+
+#define enum(name, ...)							\
+	typedef enum {__VA_ARGS__} ___(package, name); 			\
 
 #define Decl(name) 										\
 	extern const char ___(package, name##_TypeID)[];					\
@@ -111,8 +118,6 @@
 	static const ___(package,name##_Type_t)* ___(package,name##_Type) = 		\
 		&___(package,name##_TypeData);  		
 
-#define enum(name, ...)							\
-	typedef enum {__VA_ARGS__} ___(package, name); 			\
 
 #define type(name, ...) 								\
 	typedef struct ___(package, name) ___(package, name); 				\
@@ -220,6 +225,11 @@
 #undef Interface
 
 #define Interface(name, ...) 				\
+	typedef const struct ___(package,name##_Interface)	\
+	{__VA_ARGS__} ___(package,name##_Interface);	\
+
+
+#define VTable(name, ...) 				\
 	typedef struct ___(package,name##_Interface)	\
 	{__VA_ARGS__} ___(package,name##_Interface);	\
 

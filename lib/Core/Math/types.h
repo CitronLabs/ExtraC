@@ -6,7 +6,7 @@
 #define package std
 
 enum(numEquality,
-     	NUM_null    = 0,
+     	NUM_NULL    = 0,
 	NUM_EQUALS  = 1,
 	NUM_GREATER = 2,
 	NUM_LESSER  = 4,

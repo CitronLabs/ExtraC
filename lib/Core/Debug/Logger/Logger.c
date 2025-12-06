@@ -1,3 +1,4 @@
+#define module std, Logger
 #include "../../pkg.h"
 
 import(std)
@@ -5,16 +6,16 @@ import(std)
 
 
 
-std_Logger* stdLogger = null;
+std_Logger* stdLogger = NULL;
 
 std_Logger*  Logger_getStdLogger(){ return stdLogger; }
-errvt 	     Logger_setStdLogger(std_Logger* logger){nonull(logger, return err); stdLogger = logger; return OK;}
+errvt 	     Logger_setStdLogger(std_Logger* logger){nonull(logger){ return err; } stdLogger = logger; return OK;}
 
 
-errvt methodimpl(std_Logger, log, std_logID log, strc8 message){
-	nonull(self, return err);
+errvt moduleMethod(std_Logger, log, std_logID log, strc8 message){
+	nonull(self){ return err; }
 
-	if(log > priv.logs.currSize)
+	if(log > priv.logs.items)
 		return ERR(ERR_INVALID, "invalid logID");
 
 	if(printTo((std_Stream*)index(&priv.logs, log), message) == 0)
@@ -23,14 +24,14 @@ errvt methodimpl(std_Logger, log, std_logID log, strc8 message){
 return OK;
 }
 
-errvt methodimpl(std_Logger, logTo, strc8 name, strc8 message){
-	nonull(self, return err);
-	nonull(name, return err);
-	nonull(this.nameLookup, return err);
+errvt moduleMethod(std_Logger, logTo, strc8 name, strc8 message){
+	nonull(self){ return err; }
+	nonull(name){ return err; }
+	nonull(this.nameLookup){ return err; }
 	
 	std_logID log = self->nameLookup(name);
 
-	if(log > priv.logs.currSize)
+	if(log > priv.logs.items)
 		return ERR(ERR_INVALID, "invalid logID");
 
 	if(printTo((std_Stream*)index(&priv.logs, log), message) == 0)
@@ -38,9 +39,9 @@ errvt methodimpl(std_Logger, logTo, strc8 name, strc8 message){
 return OK;
 }
 
-std_logID methodimpl(std_Logger, newLog, std_Stream* stream){
+std_logID moduleMethod(std_Logger, newLog, std_Stream* stream){
 	nonull(self,   return err);
-	nonull(stream, return err);
+	nonull(stream){ return err; }
 
 	std_logID id = LOGGER_null; 
 
@@ -52,16 +53,16 @@ std_logID methodimpl(std_Logger, newLog, std_Stream* stream){
 return id;
 }
 
-std_logID methodimpl(std_Logger, findLog,    strc8 name){
-	nonull(self, return err);
-	nonull(name, return err);
-	nonull(self->nameLookup, return err);
+std_logID moduleMethod(std_Logger, findLog,    strc8 name){
+	nonull(self){ return err; }
+	nonull(name){ return err; }
+	nonull(self->nameLookup){ return err; }
 
 return self->nameLookup(name);
 }
 
 DESTROY(std_Logger){
-	nonull(self, return err);
+	nonull(self){ return err; }
 
 	del(&priv.logs);
 return OK;
@@ -122,23 +123,23 @@ DEF(),
 
 ){
 
-	nonull(arg.name, return null);
+	nonull(arg.name){ return nil; }
 
 	priv.name = new(std_String, arg.name, 1048);
 
 	if(!priv.name){
 		ERR(ERR_FAIL, "failed to duplicate logger name");
-	  	return null;
+	  	return nil;
 	}
 	
-	if(create(std_Array_List, &priv.logs, sizeof(std_Stream*), 10) == null){
+	if(create(std_Array_List, &priv.logs, sizeof(std_Stream*), 10) == nil){
 	  	ERR(ERR_FAIL, "failed to initialize logs array");
-		return null;
+		return nil;
 	}
 	
 	 write(&priv.logs, 
-	 	arg.infoLog  ? args->infoLog  : null, 
-	 	arg.errorLog ? args->errorLog : null
+	 	arg.infoLog  ? args->infoLog  : nil, 
+	 	arg.errorLog ? args->errorLog : nil
 	 );
 	
 return self;

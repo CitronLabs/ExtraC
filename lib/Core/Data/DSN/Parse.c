@@ -2,15 +2,14 @@
 
 import(std)
 
-
 #include "Utils.c"
 
 len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 	
 	len_t prev_size = size(in);
 
-	std_DSN_fieldType first_type = DSN_NULL;
-	std_DSN_data sub_field = {0};
+	std_DSN_FieldType first_type = DSN_NONE;
+	std_DSN_Data sub_field = {0};
 	rune c = 0;
 
 	std.Stream.Process
@@ -30,13 +29,13 @@ len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 			return 0;
 		}
 
-		if(sub_field.type == DSN_NULL){
+		if(sub_field.type == DSN_NONE){
 			process->end();
 			ERR(DATAERR_DSN, "invalid entry");
 			return 0;
 		}
 
-		if(first_type == DSN_NULL){
+		if(first_type == DSN_NONE){
 			first_type = sub_field.type;
 
 		}else if(first_type != sub_field.type) { 
@@ -62,7 +61,7 @@ ERR(DATAERR_DSN, "unexpected end of string");
 return 0;
 }
 
-len_t methodimpl(std_DSN, parseList, std_List** data, std_Stream* in){
+len_t moduleMethod(std_DSN, parseList, std_List** data, std_Stream* in){
 	
 	len_t scanned_len = 0;
 
@@ -79,16 +78,16 @@ return scanned_len;
 }
 
 errvt ListDSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.List.parse(null, data, strm) == 0 ? 
+	return std.DSN.List.parse(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to parse list");
 }
 
-len_t methodimpl(std_DSN, parseMap, std_Map** data, std_Stream* in){
+len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 
 	rune c = 0;
 	len_t prev_pos = size(in);
-	std_DSN_fieldType first_types[2] = {0};
-	std_DSN_data key = {0}, value = {0};
+	std_DSN_FieldType first_types[2] = {0};
+	std_DSN_Data key = {0}, value = {0};
 	std_data_entry currbucket = {0};
 	ArrayList(data_entry) buckets = pushArrayList(std_data_entry, 10);
 
@@ -130,7 +129,7 @@ len_t methodimpl(std_DSN, parseMap, std_Map** data, std_Stream* in){
 		}
 		
 	//VALIDATING FORMAT
-		if(first_types[0] == DSN_NULL && first_types[1] == DSN_NULL)
+		if(first_types[0] == DSN_NONE && first_types[1] == DSN_NONE)
 			{first_types[0] = key.type; first_types[1] = value.type;}
 	
 		else if(first_types[0] != key.type || first_types[1] != value.type){
@@ -168,16 +167,16 @@ return prev_pos - size(in);
 }
 
 errvt MapDSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.Map.parse(null, data, strm) == 0 ? 
+	return std.DSN.Map.parse(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to parse map");
 }
 
-len_t methodimpl(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
+len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 
 	len_t prev_pos = size(in);
 	std_Struct* result = new(std_Struct);
 
-	std_DSN_data field = {0};
+	std_DSN_Data field = {0};
 	rune c = 0;
 
 	std.Stream.Process
@@ -241,11 +240,11 @@ return prev_pos - size(in);
 }
 
 errvt StructDSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.Struct.parse(null, data, strm) == 0 ? 
+	return std.DSN.Struct.parse(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to parse struct");
 }
 
-len_t methodimpl(std_DSN, parseNumber, std_Number** data, std_Stream* in){
+len_t moduleMethod(std_DSN, parseNumber, std_Number** data, std_Stream* in){
 	
 	len_t prev_pos = size(in);
 	std_Number* result = new(std_Number);
@@ -262,11 +261,11 @@ return prev_pos - size(in);
 }
 
 errvt NumberDSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.Number.parse(null, data, strm) == 0 ? 
+	return std.DSN.Number.parse(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to parse number");
 }
 
-len_t methodimpl(std_DSN, parseString, std_String** data, std_Stream* in){
+len_t moduleMethod(std_DSN, parseString, std_String** data, std_Stream* in){
 	
 
 	len_t prev_pos = size(in);
@@ -284,6 +283,6 @@ return prev_pos - size(in);
 }
 
 errvt StringDSN_Decoder(std_Stream* strm, void* data){
-	return std.DSN.Struct.parse(null, data, strm) == 0 ? 
+	return std.DSN.Struct.parse(nil, data, strm) == 0 ? 
 		OK : ERR(ERR_FAIL, "failed to parse string");
 }
