@@ -62,6 +62,7 @@ Module(std){
    	interface(std_Clock) 		Clock;
    	interface(std_Number) 		Number;
    	interface(std_Vector) 		Vector;
+   	interface(std_Math) 		Math;
 };
 
 /*--------------------------------------------------------------|

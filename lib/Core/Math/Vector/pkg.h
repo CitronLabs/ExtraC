@@ -12,7 +12,7 @@ FMT(),
 ){
 	bool 		method(Vector, isFloat);
 	u64 		method(Vector, DataSize);
-	std_Vector* 	method(Vector, DotProduct, 	 std_Vector* other);
+	std_Vector* 	method(Vector, DotProduct, 	std_Vector* other);
 	errvt 		method(Vector, DotProductInto,  std_Vector* a, std_Vector* b);
 };
 

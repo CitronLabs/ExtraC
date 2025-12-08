@@ -4,18 +4,29 @@
 
 //=======EXPORTS========
 #ifndef __XC_MATH__
-#define package std
 
 	#include "types.h"
 
 	#include "Number/pkg.h"
 	#include "Vector/pkg.h"
 
-	Interface(__XC_Math__,
-		interface(std_Number) Number;
-		interface(std_Vector) Vector;
+	#include "Algebra/pkg.h"
+	#include "Calculus/pkg.h"
+	#include "Complex/pkg.h"
+	#include "Geometry/pkg.h"
+	#include "Constants/pkg.h"
+	#include "Statistics/pkg.h"
 
-	)
+#define package std
+
+	Interface(Math,
+		interface(std_Math_Algebra)    Algebra;
+		interface(std_Math_Calculus)   Calculus;
+		interface(std_Math_Complex)    Complex;
+		interface(std_Math_Geometry)   Geometry;
+		interface(std_Math_Constants)  Constants;
+		interface(std_Math_Statistics) Statistics;
+	);
 
 #undef package
 #endif
