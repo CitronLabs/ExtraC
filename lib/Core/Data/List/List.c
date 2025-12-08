@@ -12,9 +12,8 @@ import(std)
 
 
 errvt moduleMethod(std_List, Limit, len_t limit_size){
-	
 	nonull(self){ return err; }
-	nonull(self){ return err; }
+
 	priv.limit = limit_size;
 	
 	if(priv.items > limit_size || priv.items_alloced > priv.limit){
@@ -63,8 +62,7 @@ return result;
 }
 
 errvt moduleMethod(std_List, Append, void* in, len_t len){
-	nonull(self, return err;)
-	nonull(in, return err;)
+	nonull(self, in){ return err; }
 
 
 	if(priv.items + len > priv.items_alloced){
@@ -80,7 +78,7 @@ return OK;
 }
 
 errvt moduleMethod(std_List, SetFree, u64 index){
-    	nonull(self, return err;)
+    	nonull(self){ return err; }
 
 
 	if(priv.free_slots_buff == nil){
@@ -97,8 +95,13 @@ errvt moduleMethod(std_List, SetFree, u64 index){
 return OK;	
 }
 u64 moduleMethod(std_List, FillSlot, void* in){
-	nonull(self, return err;)
+	nonull(self, in){ return err; }
 	
+	if(in == nil){
+		ERR(ERR_INVALID, "input cannot be nil");
+		return maxof(len_t);
+	}
+
 	u64 index = maxof(len_t);
 
 	if(priv.free_slots_buff == nil || priv.free_slots_buff_size == 0){
@@ -112,8 +115,11 @@ return index;
 }
 
 errvt moduleMethod(std_List, Insert, len_t len, u64 index, void* in){
+	nonull(self, in){ return err; }
 
-	nonull(self){ return err; }
+	if(in == nil || self == nil)
+		return ERR(ERR_INVALID, "input cannot be nil");
+	
 
 	
 	index = index == maxof(len_t) ? priv.items : index;	
@@ -158,10 +164,13 @@ return OK;
 }
 
 #define mergpriv merged_list->__private
-errvt moduleMethod(std_List, Merge, std_List* merged_list, u64 index){
 
-	nonull(self, return err;)
-	nonull(merged_list, return err;)
+errvt moduleMethod(std_List, Merge, std_List* merged_list, u64 index){
+	nonull(self, merged_list){ return err; }
+
+	if(merged_list == nil || self == nil)
+		return ERR(ERR_INVALID, "cannot merge nil lists");
+	
 
 	errvt result = ERR_NONE;
 
@@ -183,6 +192,10 @@ std_List* moduleMethod(std_List, SubList, u64 index, len_t len){
 
 	std_List* out_list = 0;
 
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot sublist nil list");
+		return nil;
+	}
 
 	if(index >= priv.items) {
 		ERR(DATAERR_OUTOFRANGE , "index out of range");
@@ -203,10 +216,11 @@ return out_list;
 }
 
 errvt moduleMethod(std_List, Index, bool write, u64 index, len_t len, void* data){
+	nonull(self, data){ return err; }
 	
-	nonull(self, return err;)
-	nonull(data, return err;)
-	
+	if(data == nil || self == nil)
+		return ERR(ERR_INVALID, "nil input detected");
+
 	if(index + len > priv.items_alloced) 
 		return ERR(DATAERR_OUTOFRANGE, "index out of range");
 
@@ -224,10 +238,14 @@ errvt moduleMethod(std_List, Index, bool write, u64 index, len_t len, void* data
 return OK;
 }
 void* moduleMethod(std_List, GetPointer, u64 index){
-	nonull(self, return nil)
+	nonull(self){ return nil; }
 
 	void* result = 0;
 
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot get pointer from nil list");
+		return nil;
+	}
 
 	if(index > priv.items_alloced) {
 		ERR(DATAERR_EMPTY, "index out of range");
@@ -240,7 +258,7 @@ return result;
 }
 
 errvt moduleMethod(std_List, Cast, Type_t new_type){
-	nonull(self, return err)
+	nonull(self){ return err; }
 
 	priv.items = (priv.items * priv.type.size) / new_type.size; 
 	priv.limit = (priv.limit * priv.type.size) / new_type.size; 
@@ -252,17 +270,32 @@ errvt moduleMethod(std_List, Cast, Type_t new_type){
 return OK;
 }
 len_t moduleMethod(std_List, Size){
-	nonull(self, return maxof(len_t);)
+	nonull(self){ return 0; }
+
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot get size from nil list");
+		return 0;
+	}
 	
 return priv.items;
 }
 void moduleMethod(std_List, Flush){
-	nonull(self, return)
+	nonull(self){ return; }
 	
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot flush nil list");
+		return;
+	}
+
 	priv.items = 0; 
 }
 u32 moduleMethod(std_List,Pop, u32 num){
-	nonull(self, return 0)
+	nonull(self){ return 0; }
+
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot pop end from nil list");
+		return 0;
+	}
 
 	if(num > priv.items) 
 		num = priv.items;
@@ -275,6 +308,11 @@ return num;
 void* moduleMethod(std_List, FreeToPointer){
 	nonull(self){ return nil; }
 
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot free nil list to a pointer");
+		return 0;
+	}
+
 	void* res = priv.data;
 	free(self);
 
@@ -282,18 +320,46 @@ return res;
 }
 
 std_typeData moduleMethod(std_List, GetType){
-	nonull(self, return T(std_Nil));
+	nonull(self){ return T(std_Nil); }
+
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot get type from nil list");
+		return T(std_Nil);
+	}
 
 return priv.type;
 }
 
 
-HASH(std_List){ return hash_bytes(priv.data, priv.items * priv.type.size); }
+HASH(std_List){ 
+	nonull(self){ return 0; }
 
-SIZE(std_List){ if(elements) return priv.items; else return sizeof(std_List); }
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot hash nil list");
+		return 0;
+	}
+
+return hash_bytes(priv.data, priv.items * priv.type.size); 
+}
+
+SIZE(std_List){ 
+	nonull(self){ return 0; }
+
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot get size of nil list");
+		return 0;
+	}
+
+return elements ? priv.items : priv.items * priv.type.size; 
+}
 
 SET(std_List){ 
 	nonull(self, value){ return err; }
+
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot set nil list");
+		return 0;
+	}
 
 	if(value != nil){
 	   std.List.Flush(self);
@@ -305,6 +371,13 @@ return OK;
 }
 
 WRITE(std_List){
+	nonull(self){ return err; }
+
+	if(self == nil || data == nil){
+		ERR(ERR_INVALID, "nil input is not allowed");
+		return 0;
+	}
+
 	loop(i, size)
 	    iferr(std.List.Append(self, data[i], 1))
 		return i;
@@ -312,6 +385,13 @@ return size;
 }
 
 READ(std_List){
+	nonull(self){ return err; }
+
+	if(self == nil || data == nil){
+		ERR(ERR_INVALID, "nil input is not allowed");
+		return 0;
+	}
+
 	loop(i, size)
 	    iferr(std.List.Index(self, LISTINDEX_READ, i, 1, data[i]))
 		return i;
@@ -319,7 +399,12 @@ return size;
 }
 
 COPY(std_List){
-	nonull(self){ return nil; }
+	nonull(self, where){ return nil; }
+
+	if(self == nil || where == nil){
+		ERR(ERR_INVALID, "nil input is not allowed");
+		return nil;
+	}
 
 	if(create(std_List, 
 	    where, 
@@ -334,40 +419,57 @@ return where;
 
 DESTROY(std_List){
 	nonull(self){ return err; }
+
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot destroy nil list");
+		return 0;
+	}
 	
 	if(priv.data) free(priv.data); 
 return OK;
 }
 
 PRINT(std_List){
-	nonull(self, return 0);
+	nonull(self, out){ return 0; }
+
+	if(self == nil || out == nil){
+		ERR(ERR_INVALID, "nil input is not allowed");
+		return 0;
+	}
+
 	len_t formated_len = 0;
 
 	if(format == nil || !format->debug)
-	formated_len += std.DSN.List.format(nil, self, out);
-			
-	formated_len += write(out, "(List){ ",
-		 	".items = ", $(priv.items), ", ",
-			".limit = ", $(priv.limit), ", ",
-		 	".type  = ", $use(std_typeData_Type, &priv.type), ", ", 
-		     	".data  = { ",
-	fmt_end);
+		formated_len += std.DSN.List.format(nil, self, out);
+	else {	
+		formated_len += printTo(out, 
+			  "(List){ ",
+			 	".items = ", $(priv.items), ", ",
+				".limit = ", $(priv.limit), ", ",
+			 	".type  = ", $use(std_typeData_Type, &priv.type), ", ", 
+			     	".data  = { "
+			  );
 	
-	loop(i, priv.items)
-		formated_len += write(out, 
-		  	$use(&priv.type, 
-			     pntr_shiftcpy(priv.data, i + priv.type.size)
-			), ", ",
-		fmt_end);
+		loop(i, priv.items)
+			formated_len += write(out, 
+			  	$use(&priv.type, 
+				     pntr_shiftcpy(priv.data, i + priv.type.size)
+				), i + 1 != priv.items ? ", " : fmt_skip,
+			fmt_end);
 
-	formated_len += write(out, " }\n}", fmt_end);
-
+		formated_len += printTo(out, " }\n}", fmt_end);
+	}
 
 return formated_len;
 }
 
 SCAN(std_List){
-	nonull(self, return 0);
+	nonull(self, in){ return 0; }
+
+	if(self == nil || in == nil){
+		ERR(ERR_INVALID, "nil input is not allowed");
+		return 0;
+	}
 	
 	std_List* result = 0;
 	len_t len = std.DSN.List.parse(nil, &result, in);
@@ -383,17 +485,22 @@ return len;
 }
 
 ITER(std_List){
-	return std.List.GetPointer(self, index);
+	nonull(self){ return 0; }
+
+	if(self == nil){
+		ERR(ERR_INVALID, "cannot index nil list");
+		return 0;
+	}
+
+return std.List.GetPointer(self, index);
 }
-
-
-
 
 construct(std_List,
 FMT(),
 DEF(),
 ){
-	
+	nonull(self){ return 0; }
+
 	priv.items_alloced = arg.init_size  == 0 ? 1 : args->init_size;
         priv.items = 0;
         priv.type = args->type;
