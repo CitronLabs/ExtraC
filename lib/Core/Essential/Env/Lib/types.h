@@ -63,6 +63,8 @@ typedef const void* constpntr;
 
 typedef struct __xc_stateData* stateData;
 
+typedef __XC_REGS_TYPE sysRegisters;
+
 
 #define streamSettings(...) &(streamSettings){__VA_ARGS__}
 typedef struct streamSettings {

@@ -121,9 +121,9 @@ Module(XC){
 	
 	void  fn(jmp)(void*);
 
-	void* fn(saveRegs)(void*);
+	void* fn(saveRegs)(sysRegisters*);
 
-	void  fn(loadRegs)(void*);
+	void  fn(loadRegs)(sysRegisters*);
 
         void* fn(getStackPtr)();
         void  fn(setStackPtr)(void* ptr);

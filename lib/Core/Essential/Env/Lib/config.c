@@ -30,3 +30,22 @@
 #define __XC_VARGS_GETARG __builtin_va_arg
 #define __XC_VARGS_END    __builtin_va_end
 
+#define XSAVE_AREA_SIZE_MAX 4096
+#define XSAVE_AREA_ALIGNMENT 64
+
+#define __XC_REGS_TYPE 					\
+struct {						\
+    u64 						\
+	r15, r14, r13, r12,                             \
+    	r11, r10, r9,  r8, 				\
+    	rbp, rdi, rsi, rdx,				\
+    	rcx, rbx, rax,					\
+    	                                              	\
+    	rsp, rip, rflags, 				\
+    	          					\
+    	cs, ss, ds,					\
+    	es, fs, gs;					\
+							\
+    _Alignas(XSAVE_AREA_ALIGNMENT)			\
+    u8 extended_state_area[XSAVE_AREA_SIZE_MAX]; 	\
+} 			
