@@ -24,7 +24,7 @@
 
 
 #define submodule(name, ...) const struct {__VA_ARGS__} name;
-#define alias(name, aliasName) typeof(name) const* aliasName = &name;
+#define alias(path, alias) typeof(path) alias = path;
 
 #define values(name, type, ...) struct { const type __VA_ARGS__; } name;
 
