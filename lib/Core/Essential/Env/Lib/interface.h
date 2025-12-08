@@ -16,7 +16,6 @@ Module(XC){
 	word fn(find)(devHandle dev, strc8 name);	
 
 	registerHandle fn(fetch)(devHandle dev, word id);
-	registerHandle fn(refer)(registerHandle reg, word attributes);	
 
 	errvt fn(drop)(registerHandle handle);
 	errvt fn(close)(devHandle dev, word id);
@@ -49,9 +48,6 @@ Module(XC){
 	// fetch can be used to check if a stream exists as well as grabbing the streamHandle
 	streamHandle fn(fetch)(devHandle dev, const char* key, word attributes, streamSettings* settings); 	
 	
-	// creates a reference handle which can be used to create varients of a streamHandle
-	streamHandle fn(refer)(streamHandle handle, word attributes);
-
 	errvt fn(watch)(streamHandle handle);
 	errvt fn(isModified)(streamHandle handle);
 	errvt fn(modify)(streamHandle handle, const char* key, word attributes);	
@@ -76,7 +72,9 @@ Module(XC){
     )
 	values(Attrib, word,
 		PUBLIC,
-		PRIVATE
+		PRIVATE,
+		REGISTER_CREATE,
+		STREAM_CREATE
 	)
 
 	devHandle fn(open)(const char* name, word attributes);
