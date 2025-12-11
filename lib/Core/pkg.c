@@ -1,11 +1,13 @@
+#pragma once
+#include "./pkg.h"
 #include "Essential/Features/Type/pkg.c"
-
-import(std)
-
 
 #define module std
 
-
-export(
-	Types
+exportModule(
+SUBMODULE(Types),
+VALUES(),
+	
 );
+
+#undef module

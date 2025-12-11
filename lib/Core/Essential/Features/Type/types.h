@@ -23,8 +23,9 @@ typedef struct std_Stream std_Stream;
 #undef OPERATOR
 #define OPERATOR(class, name, returnval, ...) returnval (*name)(class* __VA_OPT__(, __VA_ARGS__))
 
-type(typeOperators, OPERATOR_FUNCS(std_Object)) 
+typedef struct { OPERATOR_FUNCS(std_Object); } std_typeOperators;
 
+asXCType(std_typeOperators)
 
 typedef struct std_typeData {
      	std_typeOperators* ops;

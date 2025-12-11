@@ -25,6 +25,7 @@ SOFTWARE.
 #ifndef __XC_CORE__
 #define __EXTRAC_CORE__
 
+
 #include "Essential/pkg.h"
 #include "Debug/pkg.h"
 #include "Data/pkg.h"
@@ -64,6 +65,8 @@ Module(std){
    	interface(std_Vector) 		Vector;
    	interface(std_Math) 		Math;
 };
+
+#endif
 
 /*--------------------------------------------------------------|
  *								|
@@ -144,6 +147,5 @@ Module(std){
  *   - Timing via. TimeWatch class
  *   - Conversion Macros
 */
-#endif
 
 #undef package

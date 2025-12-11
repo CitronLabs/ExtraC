@@ -11,15 +11,8 @@ Data(Nil,
 INIT(),,
 )
 
-extern const void* __nil_obj;
-len_t nilmethod();
 
-#define nilmethod generic nilmethod
-
-#define nil (generic __nil_obj)
-#define nilobj(type) (type){0}
-
-#define isImpl(func)  (func && func != nilmethod)
+#define isImpl(func)  (func && func != nil)
 
 typefrom(pntr, typeID)
 

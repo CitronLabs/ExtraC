@@ -7,8 +7,6 @@
 Decl(Number)
 Decl(String)
 Decl(List)
-Decl(Stack)
-Decl(Queue)
 Decl(Map)
 Decl(Struct)
 

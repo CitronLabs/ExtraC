@@ -1,8 +1,6 @@
 #pragma once
 #include "../Essential/pkg.h"
 
-Decl(String)
-
 //=======EXPORTS========
 #ifndef __XC_DEBUG__
 #define package std
@@ -11,7 +9,7 @@ Decl(String)
 	
 	#include "Logger/pkg.h"
 
-	Interface(__XC_DEBUG__,
+	Interface(Debug,
 		interface(std_Logger) Logger;
 	)
 

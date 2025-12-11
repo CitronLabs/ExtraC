@@ -52,8 +52,7 @@ typedef struct { len_t size; __XC_VARGS_TYPE* data; } vargs;
 
 typedef uword errvt;
 
-#undef NULL
-#define NULL __XC_NULL
+#define nil __XC_NIL
 
 #undef bool
 typedef _Bool bool;

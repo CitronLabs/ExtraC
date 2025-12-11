@@ -7,7 +7,7 @@
 #define package std
 
 #include "utils.h"
-#include "macro_utils.h"
+#include "__macro_utils.h"
 
 
 /*======================|
@@ -15,8 +15,11 @@
 ======================*/
 
 #define __CONCATE_IMPL(name, othername) name##_##othername
-#define ___(a,b) __CONCATE_IMPL(a,b)
-
+#ifdef __PKG
+	#define ___(a,b) __CONCATE_IMPL(PKG_##a,b)
+#else
+	#define ___(a,b) __CONCATE_IMPL(a,b)
+#endif
 #define INIT(...) __VA_ARGS__;
 #define FMT(...) __VA_ARGS__
 #define DEF(...) __VA_ARGS__

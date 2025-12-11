@@ -1,11 +1,13 @@
+#pragma once
 #include <Core/pkg.h>
-import(std)
 
 #define module std, Types, alloc
 
 importFn(init);
 
 export(
+SUBMODULE(),
+VALUES(),
 	init
 );
 

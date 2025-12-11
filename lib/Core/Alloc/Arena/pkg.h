@@ -21,6 +21,7 @@ the buffer
 @param init_size 	the initial number of bytes in the arena
 @param isStatic 	if the buffer is able to grow 
 */
+
 Class(Arena,
 INIT(u64 init_size; bool isStatic),
 FMT(),

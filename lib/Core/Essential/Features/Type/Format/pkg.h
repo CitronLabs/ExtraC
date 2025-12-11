@@ -9,8 +9,8 @@
 #define __SKIP_VALUE 2 
 
 #define fmt_eval ((pntr)__EVAL_VALUE)
-#define fmt_skip ((pntr)__END_VALUE)
-#define fmt_end  ((pntr)__SKIP_VALUE)
+#define fmt_skip ((pntr)__SKIP_VALUE)
+#define fmt_end  ((pntr)__END_VALUE)
 
 #define f (*format)
 
@@ -33,22 +33,22 @@ void*:	  	&(std_Types_Format_Value){0},	\
 bool:		&(std_Types_Format_Value){0}, 	\
 default: 	var)	
 
-#define $(expr)   	  NULL, generic &asObject((expr))->__type->ops, generic asObject((expr)), NULL
-#define $use(typeData, data)   NULL, generic &((typeData)->ops), generic data, NULL
+#define $(expr)   	 fmt_eval, generic &asObject((expr))->__type->ops, generic asObject((expr)), nil
+#define $use(typeData, data)   fmt_eval, generic &((typeData)->ops), generic data, nil
 
 #define $F(expr, ...)    							\
-	NULL, generic &asObject((expr))->__type->ops, generic asObject((expr)), 	\
+	fmt_eval, generic &asObject((expr))->__type->ops, generic asObject((expr)), 	\
 	generic &(typeof(*((__AS_FMT_OBJ(expr))->__type->format))){__VA_ARGS__}
 
 #define $Fwith(expr, args)    									\
-	NULL, generic &asObject((expr))->__type->ops, generic asObject((expr)), generic &args	\
+	fmt_eval, generic &asObject((expr))->__type->ops, generic asObject((expr)), generic &args	\
 
 #define $useF(typeData, data, ...)   	 				\
-	NULL, generic &(typeData)->ops, generic data, 			\
+	fmt_eval, generic &(typeData)->ops, generic data, 			\
 	&(typeof(*(typeData)->format)){__VA_ARGS__}
 
 #define $useFwith(typeData, data, args)   	 			\
-	null, generic &(typeData)->ops, generic data, generic &args	\
+	fmt_eval, generic &(typeData)->ops, generic data, generic &args	\
 
 
 
@@ -78,11 +78,24 @@ FMT(len_t precision; double percentOf; byte base),
 	
 )
 
-Data(Text,
+Class(Text,
 INIT(),
-FMT(),
-	
+FMT(bool flags; len_t max_len, min_len),
+){
+	values(Flags, bool,
+		TO_LOWER,
+		TO_UPPER,
+		STRIP,
+     		NUM_VAL
+	);
+};
+
+
+#undef package
+#define package std
+
+Interface(Format,
+	interface(std_Types_Format_Text) Text;
 )
 
 #undef package
-

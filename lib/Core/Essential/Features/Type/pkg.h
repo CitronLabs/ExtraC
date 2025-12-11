@@ -19,6 +19,7 @@
 	Interface(Types,
 		interface(std_Data_Ops)  data;
 		interface(std_Alloc_Ops) alloc;
+		interface(std_Format)    fmt;
 	)
 
 #undef package

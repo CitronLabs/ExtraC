@@ -7,7 +7,7 @@
 
 //=======EXPORTS========
 #ifndef __XC_ALLOC__
-#define package std
+#define package std_Alloc
 	#include "types.h"
 	#include "utils.h"
 	
@@ -16,6 +16,7 @@
 	#include "Buffer/pkg.h"
 	#include "Arena/pkg.h"
 	#include "Pool/pkg.h"
+
 
 #undef package
 #endif

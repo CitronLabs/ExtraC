@@ -21,7 +21,7 @@
 
 #define __XC_VAR_TYPE  __auto_type
 
-#define __XC_NULL	((void*)0)
+#define __XC_NIL	((void*)0)
 
 
 
