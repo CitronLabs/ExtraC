@@ -1,20 +1,23 @@
 #pragma once
-#define module std, FS
 #include <Core/pkg.h>
+#define module std, FS
 
-import(std)
 
-importFn(open, chdir)
 
 moduleValues(Flags,
 	CREATE, 1, 
 	APPEND, 2, 
 	WRITE , 3,
-	READ  , 4
+	READ  , 4,
+	DIR   , 5,
+	LINK  , 6,
+	RDWR  , std_FS_Flags_READ | std_FS_Flags_WRITE,
+	
 );
 
 export(
-	Flags,
+SUBMODULE(),
+VALUES(Flags),
 	open,
 	chdir
 );

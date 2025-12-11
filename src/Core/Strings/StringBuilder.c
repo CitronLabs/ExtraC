@@ -1,6 +1,4 @@
-#include "../../pkg.h"
-
-import(std)
+#include <Core/pkg.c>
 
 
 errvt moduleMethod(std_StringBuilder,   Max,     u64 max_len);

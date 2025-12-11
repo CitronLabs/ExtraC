@@ -1,8 +1,5 @@
+#include <Core/pkg.c>
 #define module std, Clock
-#include "../../pkg.h"
-
-import(std)
-import(XC)
 
 
 std_Time* moduleFn(System_UTC_getTime)(std_Time* time_buff){
@@ -93,7 +90,7 @@ std_Time*  moduleMethod(std_Clock, getTime, std_Time* time_buff){
 	return this.system->getTime(time_buff);
 }
 
-static std_Clock* Primary_Clock = NULL;
+static std_Clock* Primary_Clock = nil;
 
 errvt      moduleMethod(std_Clock, setPrimary){ Primary_Clock = self; return OK; }
 std_Clock* moduleFn(getPrimary)(){ return Primary_Clock; }

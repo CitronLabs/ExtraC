@@ -23,8 +23,6 @@
 
 #define __XC_NIL	((void*)0)
 
-
-
 #define __XC_VARGS_TYPE   __builtin_va_list
 #define __XC_VARGS_START  __builtin_va_start
 #define __XC_VARGS_GETARG __builtin_va_arg

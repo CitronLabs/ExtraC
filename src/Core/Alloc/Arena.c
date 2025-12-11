@@ -1,8 +1,5 @@
+#include <Core/pkg.c>
 #define module std, Arena
-#include "../../pkg.h"
-#include "../Buffer/pkg.h"
-
-import(std)
 
 
 errvt moduleMethod(std_Arena, Reserve, u64 num_bytes){
@@ -20,10 +17,10 @@ errvt moduleMethod(std_Arena, Reserve, u64 num_bytes){
 errvt moduleMethod(std_Arena, Grow, u64 num_bytes){
 
 	if(priv.isStatic){
-		return ERR(MEMERR_OVERFLOW, "cannot grow a static arena");
+		return ERR(ERR.MEM.OVERFLOW, "cannot grow a static arena");
 	}
 	if(priv.current_size + num_bytes > priv.max_size){
-		return ERR(MEMERR_OVERFLOW, "size goes beyond the specified maximum");
+		return ERR(ERR.MEM.OVERFLOW, "size goes beyond the specified maximum");
 	}
 	u64 new_alloc_size = 
 		((priv.alloc_size / 2) + num_bytes) > priv.max_size ?
@@ -38,7 +35,7 @@ errvt moduleMethod(std_Arena, Grow, u64 num_bytes){
 }
 void* moduleMethod(std_Arena, Alloc, u64 num_bytes){
 
-	std_Buffer* alloc_buff = NULL;
+	std_Buffer* alloc_buff = nil;
 
 	if(priv.current_size + num_bytes > priv.alloc_size){
 		std.Arena.Grow(self, num_bytes);
@@ -87,7 +84,7 @@ COPY(std_Arena){
 		.isStatic = priv.isStatic,
 		.init_size = priv.current_size
 	) == nil)
-		{ERR(ERR_FAIL, "failed to create copy"); return nil; }
+		{ERR(ERR.FAIL, "failed to create copy"); return nil; }
 
 	foreach(priv.arena_buffers, std_Buffer*, buff){
 		pntr copy_loc = std.Arena.Alloc(where, size(*buff));
@@ -133,11 +130,11 @@ PRINT(std_Arena){
 construct(std_Arena,
 FMT(),
 DEF(),
-	.Write   = nilmethod,
-	.Read    = nilmethod,
-	.Hash	 = nilmethod,
-	.Iter	 = nilmethod,
-	.Scan 	 = nilmethod,
+	.Write   = nil,
+	.Read    = nil,
+	.Hash	 = nil,
+	.Iter	 = nil,
+	.Scan 	 = nil,
 	.Create  = std_Arena_Op_Create,
 	.Destroy = std_Arena_Op_Destroy,
 	.Set	 = std_Arena_Op_Set,
@@ -146,7 +143,7 @@ DEF(),
 	.Print 	 = std_Arena_Op_Print
 ){
 	if(arg.init_size == 0) {
-	    ERR(MEMERR_INVALIDSIZE, "initial size cannot be 0 for priv");
+	    ERR(ERR.INVALID, "initial size cannot be 0 for priv");
 	    return nil;
 	}
 

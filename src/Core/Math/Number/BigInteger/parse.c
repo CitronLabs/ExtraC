@@ -1,9 +1,5 @@
 #pragma once
-#include <Core/pkg.c>
 #include "../utils.h"
-
-import(std)
-
 
 #ifndef HIDE_USE
 from(std,
@@ -35,7 +31,7 @@ u64 moduleMethod(std_Number, IntScan, Number_FormatArgs* format, std_Stream* in)
 	    case 'a' ... 'f' :{ digit_val = c - '0'; break; }
 	    case 'A' ... 'F' :{ digit_val = c - '0'; break; }
 	    default: {
-	    	ERR(ERR_INVALID, "Invalid character");
+	    	ERR(ERR.INVALID, "Invalid character");
 	    	std_Number_setZero(self); // Reset to zero on error
 	    	process->fail();
 	    	return 0;
@@ -44,7 +40,7 @@ u64 moduleMethod(std_Number, IntScan, Number_FormatArgs* format, std_Stream* in)
 	    
 	    // Validate digit against the base
 	    if (digit_val >= base_val) {
-	    	ERR(DATAERR_OUTOFRANGE, "Digit out of range");
+	    	ERR(ERR.DATA.OUTOFRANGE, "Digit out of range");
 	    	std_Number_setZero(self); // Reset to zero on error
 	    	process->fail();
 	    	return 0;
@@ -68,3 +64,5 @@ u64 moduleMethod(std_Number, IntScan, Number_FormatArgs* format, std_Stream* in)
 
 return prev_pos - size(in);
 }
+
+#undef module

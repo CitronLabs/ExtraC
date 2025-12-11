@@ -1,8 +1,5 @@
-#define module std, Number
-#include "../../../pkg.h"
+#pragma once
 #include "../utils.h"
-
-import(std)
 
 
 errvt moduleMethod(std_Number, SetPrecision, u64 new_precision) {
@@ -84,7 +81,7 @@ errvt moduleMethod(std_Number, FloatSubtract, std_Number* other, std_Number* res
 		iferr(std_Number_absoluteSub(self, temp_other, temp_self)){return err;}
 		rpriv.sign 	= temp_self->__private.sign * -1;
 	break;}
-	default:{return ERR(ERR_INVALID, "invalid comparision");}
+	default:{return ERR(ERR.INVALID, "invalid comparision");}
 	}
 
 	rpriv.floating = 1;
@@ -109,7 +106,7 @@ errvt moduleMethod(std_Number, FloatMultiply, std_Number* other, std_Number* res
 errvt moduleMethod(std_Number, FloatDivide, std_Number* other, std_Number* remainder, std_Number* result){
 
 	if (isZero(other)) {
-		return ERR(ERR_INVALID, "cannot divide by 0");
+		return ERR(ERR.INVALID, "cannot divide by 0");
 	}else if (isZero(self)) {
 		return OK;
 	}

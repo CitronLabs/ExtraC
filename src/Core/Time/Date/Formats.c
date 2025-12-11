@@ -1,8 +1,6 @@
-#include "../../pkg.h"
+#include <Core/pkg.c>
 
-import(std)
-
-alias(std.Time.Convert, convert);
+alias(std.Time.Convert, Convert);
 
 enum(Date_Format,
 	std_Date_Format_Null,
@@ -21,7 +19,7 @@ PRINT(std_Date){
     nonull(self){ return 0; }
 
     if(!std.Date.isValid(self)){
-	ERR(ERR_INVALID, "invalid date");
+	ERR(ERR.INVALID, "invalid date");
 	return 0;
     }
 
@@ -69,7 +67,7 @@ PRINT(std_Date){
        		$F((u8)this.hour,   .precision = 2), ":", 
 	 	$F((u8)this.minute, .precision = 2), ":",
 	 	$F((u8)this.second, .precision = 2), ".",
-	 	$F(convert->nano_to_milli(this.nanosec).result, .precision = 3), "Z"
+	 	$F(Convert.nano_to_milli(this.nanosec).result, .precision = 3), "Z"
        	);
     break;}
     case std_Date_Format_FullName:{
@@ -92,7 +90,7 @@ PRINT(std_Date){
 	);
     break;}
     default:{ 
-	ERR(ERR_INVALID, "invalid date format type");
+	ERR(ERR.INVALID, "invalid date format type");
 	return 0;
     }
     }
@@ -104,7 +102,7 @@ SCAN(std_Date){
     nonull(self){ return 0; }
 
     if(!std.Date.isValid(self)){
-	ERR(ERR_INVALID, "invalid date");
+	ERR(ERR.INVALID, "invalid date");
 	return 0;
     }
 
@@ -152,7 +150,7 @@ SCAN(std_Date){
        		$F((u8)this.hour,   .precision = 2), ":", 
 	 	$F((u8)this.minute, .precision = 2), ":",
 	 	$F((u8)this.second, .precision = 2), ".",
-	 	$F(convert->nano_to_milli(this.nanosec).result, .precision = 3), "Z"
+	 	$F(Convert.nano_to_milli(this.nanosec).result, .precision = 3), "Z"
        	);
     break;}
     case std_Date_Format_FullName:{
@@ -175,7 +173,7 @@ SCAN(std_Date){
 	);
     break;}
     default:{ 
-	ERR(ERR_INVALID, "invalid date format type");
+	ERR(ERR.INVALID, "invalid date format type");
 	return 0;
     }
     }

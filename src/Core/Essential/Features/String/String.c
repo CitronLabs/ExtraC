@@ -1,9 +1,6 @@
-#include "../../../pkg.h"
+#include <Core/pkg.c>
 
-#include "Encodings/utils.h"
-
-import(std)
-
+#define module std, String
 
 bool moduleMethod(std_String, Compare, std_String* cmp_string){
 	
@@ -18,7 +15,7 @@ return false;
 }
 
 errvt moduleMethod(std_String, Copy, std_String* to){
-	return to == copy(self, to) ? OK : ERR(ERR_FAIL, "failed to copy");
+	return to == copy(self, to) ? OK : ERR(ERR.FAIL, "failed to copy");
 }
 
 errvt moduleMethod(std_String, Cat,  Array(std_String*) strings){
@@ -34,13 +31,13 @@ errvt moduleMethod(std_String, Cat,  Array(std_String*) strings){
 
 	    if(!printTo(temp_stream, $(*string))){
 	    	pop(temp_stream);
-	    	return ERR(ERR_FAIL, "failed to concatinate an input string");
+	    	return ERR(ERR.FAIL, "failed to concatinate an input string");
 	    }
 	}
 
 	if(!scanFrom(temp_stream, $(self))){
 	    pop(temp_stream);
-	    return ERR(ERR_FAIL, "failed to scan concatinated string");
+	    return ERR(ERR.FAIL, "failed to scan concatinated string");
 	}
 
 	pop(temp_stream);
@@ -52,7 +49,7 @@ return OK;
 std_String* moduleMethod(std_String, View, len_t from, len_t to){
 	
 	if(to < from){
-		ERR(ERR_INVALID, "to cannot be less than when making a string view");
+		ERR(ERR.INVALID, "to cannot be less than when making a string view");
 		return nil;
 	}
 		
@@ -75,10 +72,10 @@ return create(std_String, index(priv.views, index),
 errvt moduleMethod(std_String, ViewShift, len_t up, len_t down){
 	
 	if(!priv.IsView)
-		return ERR(ERR_INVALID, "only string views are able to be shifted");
+		return ERR(ERR.INVALID, "only string views are able to be shifted");
 	
 	if(down + up > this.len) 
-		return ERR(ERR_INVALID, "string view shift down and up collision detected");
+		return ERR(ERR.INVALID, "string view shift down and up collision detected");
 
 	
 
@@ -188,11 +185,11 @@ COPY(std_String){
 	
 	memcpy(dest, self, sizeof(std_String));
 
-	priv.views = NULL;
+	priv.views = nil;
 	dest->data = malloc(priv.len_bytes); 
 
 	if(!dest->data){
-		ERR(ERR_FAIL, "failed to allocate new string");
+		ERR(ERR.FAIL, "failed to allocate new string");
 		return nil;
 	}
 
@@ -209,7 +206,7 @@ FMT(),
 DEF(),
 		  
 ){
-	void* end = NULL;
+	void* end = nil;
 
 	this.len = std.String.Utils.Str.len(arg.data, arg.max_len, &end);
 

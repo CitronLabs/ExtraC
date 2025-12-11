@@ -1,9 +1,5 @@
 #pragma once
-#include "../../../pkg.h"
 #include "../utils.h"
-
-import(std)
-
 
 static u32 std_Number_divide_smallInt(std_Number* self, u32 divisor) {
 	if (priv.sign == 0 || divisor == 0) {
@@ -128,3 +124,5 @@ u64 moduleMethod(std_Number, IntPrintBin, std_Stream* out) {
 
 return formatted_len;
 }
+
+#undef module

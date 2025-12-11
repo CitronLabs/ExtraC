@@ -1,10 +1,7 @@
 #pragma once
-#include "../../pkg.h"
-#include "../../Data/pkg.h"
+#include <Core/pkg.c>
 
-import(std)
-
-
+#define module std, Number
 
 
 #define BIGINT_BASE (1ULL << 32)
@@ -87,7 +84,7 @@ static errvt std_Number_absoluteAdd(std_Number* result, std_Number* a, std_Numbe
 	for (int i = 0; i < max_size || carry; i++) {
 	    if (i >= apriv.precision) {
 	        std_Number_setZero(result); // Reset result on overflow
-	        return ERR(DATAERR_OUTOFRANGE, "number overflows");
+	        return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	    }
 	
 	    u64 sum = (u64)carry;
@@ -106,7 +103,7 @@ static errvt std_Number_absoluteSub(std_Number* result, std_Number* a, std_Numbe
 	// ensure abs(a) is greater than or equal to abs(b)
 	if (std_Number_absoluteCompare(a, b) < 0) {
 	    std_Number_setZero(result); 
-	    return ERR(ERR_INVALID, "Cannot subtract larger absolute value from smaller absolute value");
+	    return ERR(ERR.INVALID, "Cannot subtract larger absolute value from smaller absolute value");
 	}
 	
 	std_Number_setZero(result); 
@@ -146,7 +143,7 @@ static errvt std_Number_multiplyByDigit(std_Number* result, std_Number* self, u3
 	loop(i, size || carry) {
 	    if (i >= priv.precision) {
 	        std_Number_setZero(result); // Reset result on overflow
-	        return ERR(DATAERR_OUTOFRANGE, "number overflows");
+	        return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	    }
 	    u64 product = carry;
 	    if (i < size) {
@@ -190,7 +187,7 @@ static errvt std_Number_absoluteMultiply(std_Number* result, std_Number* a, std_
 	    // If there's a final carry from this row, add it to the next position
 	    if (carry > 0) {
 	        if (i + b_size >= rpriv.precision) {
-			return ERR(DATAERR_OUTOFRANGE, "number overflows");
+			return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	        }
 	        r_digits[i + b_size] += carry;
 	        if (i + b_size + 1 > r_size) {
@@ -211,7 +208,7 @@ static errvt std_Number_shiftDigitsRight(std_Number* result, std_Number* self, i
 	
 	if (size + shift_blocks > priv.precision) {
 	    std_Number_setZero(result);
-	    return ERR(DATAERR_OUTOFRANGE, "number overflows");
+	    return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	}
 	
 	rpriv.sign = priv.sign;

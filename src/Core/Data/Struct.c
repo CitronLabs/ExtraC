@@ -1,8 +1,6 @@
-#include "../../pkg.h"
+#include <Core/pkg.c>
 
-import(std)
-
-
+#define module std, Struct
 
 errvt moduleMethod(std_Struct, Define, Array(std_data_entry) entries){
 	nonull(self){ return err; }
@@ -28,11 +26,11 @@ errvt moduleMethod(std_Struct, Merge, std_Struct* merge_struct){
 	foreach(entries, std_data_entry, ent){
 		std_DSN_Data* res = std.Struct.SearchField(self, ent->key);
 		if(res == nil){
-		    if(std.Struct.AddField(self, ent->key, ent->data) != ERR_NONE){
-			return ERR(DATAERR_MEMALLOC, "failed to merge field to struct");
+		    if(std.Struct.AddField(self, ent->key, ent->data) != ERR.NONE){
+			return ERR(ERR.DATA.MEMALLOC, "failed to merge field to struct");
 		    }
 		}else{
-			return ERR(DATAERR_OUTOFRANGE, "struct merge conflict");
+			return ERR(ERR.DATA.OUTOFRANGE, "struct merge conflict");
 		}
 	}
 
@@ -42,8 +40,8 @@ return OK;
 errvt moduleMethod(std_Struct, AddField, strc8 name, std_DSN_Data* field){
 	nonull(self, field->data){ return err; }
 
-	if(ERR_NONE != std.Map.Insert(self->fields, asString(name, 1024), field)){
-		return ERR(DATAERR_MEMALLOC, "could not add field to datastructs");
+	if(ERR.NONE != std.Map.Insert(self->fields, asString(name, 1024), field)){
+		return ERR(ERR.DATA.MEMALLOC, "could not add field to datastructs");
 	}
 
 return OK;
@@ -71,7 +69,7 @@ COPY(std_Struct){
 			    0
 			)
 	) == nil)
-		{ ERR(ERR_FAIL, "failed to copy struct"); return nil; }
+		{ ERR(ERR.FAIL, "failed to copy struct"); return nil; }
 
 return where;
 }
@@ -117,7 +115,7 @@ SCAN(std_Struct){
 	u64 len = std.DSN.Struct.parse(nil, &result, in);
 
 	if(len == 0){
-		ERR(DATAERR_DSN, "failed to scan for struct");
+		ERR(ERR.DATA.DSN, "failed to scan for struct");
 		return 0;
 	}
 	*self = *result;

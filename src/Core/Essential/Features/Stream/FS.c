@@ -1,7 +1,4 @@
-#include "../../../../pkg.h"
-
-import(std)
-import(XC)
+#include <Core/pkg.c>
 
 #define module std, FS
 
@@ -12,6 +9,8 @@ std_Stream* moduleFn(open)(std_FSPath path, int flags){
 
 return new(std_Stream, std.Stream.Preset.fromHandle(strm));
 }
+
+
 errvt moduleFn(delete)(std_FSPath path){
 	devHandle io_dev = XC.Dev.stdHandle(XC.Dev.ID.IO);
 	
@@ -20,12 +19,14 @@ errvt moduleFn(delete)(std_FSPath path){
 	XC.Dev.Stream.close(strm);
 return OK;
 }
+
+
 errvt moduleFn(chdir)(std_FSPath path){
 	devHandle io_dev = XC.Dev.stdHandle(XC.Dev.ID.IO);
 	
 	registerHandle curr_dir = XC.Dev.Register.fetch(io_dev, 0);
 
-	XC.Dev.Register.writeTo(curr_dir, path, strnlen(path, sizeof(std_FSPath)));
+	XC.Dev.Register.writeTo(curr_dir, path, strnlen((char*)path, sizeof(std_FSPath)));
 return OK;
 }
 std_Stream* moduleFn(search)(std_FSPath path, std_FSEntry* ent){
@@ -115,7 +116,7 @@ DEF(),
 	
 ){ 
 	if(std.FS.open(arg.path, args->flags, self) == nil){
-		ERR(ERR_FAIL, "failed to open FS entry");
+		ERR(ERR.FAIL, "failed to open FS entry");
 	  	return nil;
 	}
 

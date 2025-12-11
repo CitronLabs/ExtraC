@@ -1,13 +1,11 @@
-#include "../../../pkg.h"
-
-import(std)
+#include <Core/pkg.c>
 
 #define module std, Nil
 
 #undef nil
 
 len_t nil(){
-	ERR(ERR_NULLPTR, "nil method called"); return 0;} 
+	ERR(ERR.NIL, "nil method called"); return 0;} 
 
 construct(std_Nil,,,
 
@@ -23,8 +21,5 @@ construct(std_Nil,,,
 	.Hash 	 = generic nil,
 	.Set 	 = generic nil
 );
-
-const void* __nil_obj = 
-	&(std_Nil){.__type = &std_Nil_TypeData};
 
 

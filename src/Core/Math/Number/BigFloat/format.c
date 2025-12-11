@@ -1,11 +1,7 @@
-#define module std, Number
-#include "../../../pkg.h"
+#pragma once
 #include "../utils.h"
 
-import(std)
-
-
-u64 moduleMethod(std_Number, IntPrintDeci, std_Stream* out);
+u64 std_Number_IntPrintDeci(std_Number *self, std_Stream *out);
 u64 moduleMethod(std_Number, FloatPrint, std_Stream* out) {
 
     	u64 formatted_len = 0;
@@ -20,13 +16,13 @@ u64 moduleMethod(std_Number, FloatPrint, std_Stream* out) {
     	// 2. Get mantissa string
 	var mantissa_strm = push(std_Stream);
 	if(mantissa_strm == nil){
-		ERR(ERR_INITFAIL, "could not initialize stream for mantissa");
+		ERR(ERR.INIT, "could not initialize stream for mantissa");
 		return 0;
 	}
 
 	if((mantissa_len = std_Number_IntPrintDeci(self, mantissa_strm)) == 0){
 		pop(mantissa_strm);
-		ERR(ERR_FAIL, "failed to parse mantissa");
+		ERR(ERR.FAIL, "failed to parse mantissa");
 		return 0;
 	}
 
@@ -59,13 +55,13 @@ u64 moduleMethod(std_Number, FloatPrint, std_Stream* out) {
 		std_String* mantissa_string = push(std_String);
 
 		if(mantissa_string == nil){
-			ERR(ERR_INITFAIL, "failed to initialize string for mantissa stream");
+			ERR(ERR.INIT, "failed to initialize string for mantissa stream");
 			pop(mantissa_strm);
 			return 0;
 		}
 
 		if(!scanFrom(mantissa_strm, $(mantissa_string))){
-			ERR(ERR_FAIL, "failed to decode string from mantissa stream");
+			ERR(ERR.FAIL, "failed to decode string from mantissa stream");
 			pop(mantissa_string, mantissa_strm);
 			return 0;
 		}

@@ -1,6 +1,6 @@
-#include "../../pkg.h"
+#include <Core/pkg.c>
+#define module std, DSN
 
-import(std)
 
 #include "Utils.c"
 
@@ -26,7 +26,7 @@ return formated_len;
 
 errvt ListDSN_Encoder(std_Stream* strm, void* data){
 	return std.DSN.List.format(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to format list");
+		OK : ERR(ERR.FAIL, "failed to format list");
 }
 
 len_t moduleMethod(std_DSN, formatMap, std_Map* data, std_Stream* out){
@@ -55,7 +55,7 @@ return formated_len;
 
 errvt MapDSN_Encoder(std_Stream* strm, void* data){
 	return std.DSN.Map.format(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to format map");
+		OK : ERR(ERR.FAIL, "failed to format map");
 }
 
 len_t moduleMethod(std_DSN, formatStruct, std_Struct* data, std_Stream* out){
@@ -77,7 +77,7 @@ return formated_len;
 
 errvt StructDSN_Encoder(std_Stream* strm, void* data){
 	return std.DSN.Struct.format(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to format struct");
+		OK : ERR(ERR.FAIL, "failed to format struct");
 }
 
 
@@ -88,7 +88,7 @@ len_t moduleMethod(std_DSN, formatNumber, std_Number* data, std_Stream* out){
 
 errvt NumberDSN_Encoder(std_Stream* strm, void* data){
 	return std.DSN.Number.format(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to format struct");
+		OK : ERR(ERR.FAIL, "failed to format struct");
 }
 
 len_t moduleMethod(std_DSN, formatString, std_String* data, std_Stream* out){
@@ -98,6 +98,6 @@ len_t moduleMethod(std_DSN, formatString, std_String* data, std_Stream* out){
 
 errvt StringDSN_Encoder(std_Stream* strm, void* data){
 	return std.DSN.String.format(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to format struct");
+		OK : ERR(ERR.FAIL, "failed to format struct");
 }
 

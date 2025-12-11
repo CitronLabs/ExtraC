@@ -1,9 +1,5 @@
 #pragma once
-#include <Core/pkg.c>
 #include "../utils.h"
-
-import(std)
-
 
 errvt moduleMethod(std_Number, IntAdd, std_Number* other, std_Number* result) {
 
@@ -24,7 +20,7 @@ errvt moduleMethod(std_Number, IntAdd, std_Number* other, std_Number* result) {
 	    	case NUM_EQUALS:{
 	    		std_Number_setZero(result);
 	    	break;}
-	    	default:{ ERR(ERR_NULLPTR, "invalid input"); }
+	    	default:{ ERR(ERR.INVALID, "invalid input"); }
 	    	}
 	    }
 	} catch {
@@ -57,7 +53,7 @@ return OK;
 	    	case NUM_EQUALS:{
 	    		std_Number_setZero(result);
 	    	break;}
-	    	default:{ERR(ERR_NULLPTR, "invalid input");}
+	    	default:{ERR(ERR.INVALID, "invalid input");}
 	    	}
 	    }
 	} catch {
@@ -102,6 +98,7 @@ errvt moduleMethod(std_Number, IntDivide, std_Number* other, std_Number* remaind
 	iferr(std.List.Reserve(rpriv.digits, RESERVE_EXACT, precision)){
 		reserr = err; goto exit;
 	}
+
 	u32* resbuff = std.List.GetPointer(rpriv.digits, 0);
 	
 	std_Number 
@@ -123,21 +120,20 @@ errvt moduleMethod(std_Number, IntDivide, std_Number* other, std_Number* remaind
 
 			std_Number_clearLeadingZeros(tempRemainder);
 
-
-
 			iferr(std_Number_multiplyByDigit(tempProduct, other, q_hat)){
-			reserr = err; goto exit;
-		}
+				reserr = err; goto exit;
+			}
+
 			while (std_Number_absoluteCompare(tempProduct, tempRemainder) == NUM_GREATER) {
 				q_hat--;
 				iferr(std_Number_multiplyByDigit(tempProduct, other, q_hat)){
-				reserr = err; goto exit;
-			}
+					reserr = err; goto exit;
+				}
 			}
 	
 			iferr(std_Number_absoluteSub(tempRemainder, tempRemainder, tempProduct)){
-			reserr = err; goto exit;
-		}
+				reserr = err; goto exit;
+			}
 
 			resbuff[i] = q_hat;
 		std.List.Flush(tempRemainder->__private.digits);
@@ -167,3 +163,5 @@ exit:
 	
 return reserr;
 }
+
+#undef module

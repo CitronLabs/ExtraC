@@ -1,7 +1,4 @@
-#include "../../../pkg.h"
-#include "../utils.h"
-
-import(std)
+#include <Core/pkg.c>
 
 #define module c8
 

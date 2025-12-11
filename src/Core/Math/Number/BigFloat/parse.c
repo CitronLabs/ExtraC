@@ -1,20 +1,15 @@
-#define module std, Number
-#include "../../../pkg.h"
+#pragma once
 #include "../utils.h"
 
-import(std)
-
-
 #ifndef HIDE_USE
-
-
 from(std,
     use(Number),
     use(Stream)
 )
 #endif
 
-u64 moduleMethod(std_Number, IntScan, Number_FormatArgs* format, Stream* in);
+u64 std_Number_IntScan(std_Number *self, Number_FormatArgs *format, Stream *in);
+
 u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 	
 	std_Number_setZero(self); // Initialize to 0.0
@@ -35,7 +30,7 @@ u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 		Stream* mantissa = push(Stream, .ops.frameSize = sizeof(u8));
 
 		if(mantissa == nil){
-			ERR(ERR_INITFAIL, "could not initialize mantissa buff");
+			ERR(ERR.INIT, "could not initialize mantissa buff");
 			return 0;
 		}
 		

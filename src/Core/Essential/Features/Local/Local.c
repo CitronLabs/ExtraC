@@ -1,7 +1,4 @@
-#include "../../../pkg.h"
-
-import(std)
-import(XC)
+#include <Core/pkg.c>
 
 #define module std, Local
 
@@ -59,7 +56,7 @@ DEF(),
 	.Set	 = std_Local_Op_Set
 ){
 	if(!arg.len){
-		ERR(ERR_INVALID, "cannot allocate 0 local bytes");
+		ERR(ERR.INVALID, "cannot allocate 0 local bytes");
 		return nil;
 	}
 
@@ -67,7 +64,7 @@ DEF(),
 
 	XC.Dev.Register.open(
 			local_device, 
-		      	Attribs->DIRECT_ACCESS,
+		      	Attribs.DIRECT_ACCESS,
 		      	arg.len,
 			nil
 	);

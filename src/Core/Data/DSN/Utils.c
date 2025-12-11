@@ -1,14 +1,5 @@
 #pragma once
-#include "../../pkg.h"
-
-import(std)
-
-#define DSN_NONE   0
-#define DSN_LIST   1
-#define DSN_STRUCT 2
-#define DSN_MAP    3
-#define DSN_STRING 4
-#define DSN_NUMBER 5
+#include <Core/pkg.c>
 
 static inline std_DSN_FieldType resolveDSNType(std_typeData type){
 

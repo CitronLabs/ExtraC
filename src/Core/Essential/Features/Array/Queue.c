@@ -162,7 +162,7 @@ COPY(std_Array_Queue){
 	    List* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -177,7 +177,7 @@ COPY(std_Array_Queue){
 	    Buffer* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -193,7 +193,7 @@ COPY(std_Array_Queue){
 	    Stack* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -207,7 +207,7 @@ COPY(std_Array_Queue){
 	    Queue* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -221,7 +221,7 @@ COPY(std_Array_Queue){
 	    
 	break;}
 	defaultT{
-		ERR(ERR_INVALID, "invalid copy destination type detected");
+		ERR(ERR.INVALID, "invalid copy destination type detected");
 		return nil;
 	}
 	}
@@ -291,7 +291,7 @@ ITER(std_Array_Queue){
 	nonull(self){ return nil; }
 
 	if(this.items <= index) {
-		ERR(DATAERR_OUTOFRANGE, "index exceeds queue");
+		ERR(ERR.DATA.OUTOFRANGE, "index exceeds queue");
 		return nil;
 	}
 

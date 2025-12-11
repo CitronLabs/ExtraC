@@ -1,6 +1,4 @@
-#include "../../../pkg.h"
-
-import(std)
+#include <Core/pkg.c>
 
 #define module std, typeData
 

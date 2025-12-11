@@ -23,7 +23,7 @@ errvt std_Array_Stack_Grow(Stack* self, u64 add_amount){
 	priv.data = realloc(priv.data, priv.allocSize * this.typeSize);
 	
 	if(!priv.data) 
-		return ERR(ERR_FAIL , "failed to grow this stack");
+		return ERR(ERR.FAIL , "failed to grow this stack");
 
 return OK;
 }
@@ -64,7 +64,7 @@ return OK;
 READ(std_Array_Stack){
 	nonull(self){ return err; }
 
-	if(0 == this.items) return ERR(DATAERR_EMPTY, "stack is empty");
+	if(0 == this.items) return ERR(ERR.DATA.EMPTY, "stack is empty");
 	
 	size = this.items < size ? this.items : size;
 
@@ -89,7 +89,7 @@ COPY(std_Array_Stack){
 	    List* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -107,7 +107,7 @@ COPY(std_Array_Stack){
 	    Buffer* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -116,7 +116,7 @@ COPY(std_Array_Stack){
 	    Stack* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -134,7 +134,7 @@ COPY(std_Array_Stack){
 	    Queue* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -149,7 +149,7 @@ COPY(std_Array_Stack){
 	    
 	break;}
 	defaultT{
-		ERR(ERR_INVALID, "invalid copy destination type detected");
+		ERR(ERR.INVALID, "invalid copy destination type detected");
 		return nil;
 	}
 	}

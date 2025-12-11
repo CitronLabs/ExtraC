@@ -93,5 +93,4 @@ FMT(),
 	len_t typeSize, items; void* data;
 );
 
-
 #undef package

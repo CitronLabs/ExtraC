@@ -20,7 +20,7 @@ errvt std_Array_List_Grow(List* self, u64 add_amount){
 	priv.data = realloc(priv.data, realloc_len);
 
 	if(!priv.data){
-	    return ERR(ERR_FAIL, "failed to reallocate array");
+	    return ERR(ERR.FAIL, "failed to reallocate array");
 	}
 
 	priv.allocSize += (priv.allocSize / 2) + add_amount;
@@ -94,7 +94,7 @@ COPY(std_Array_List){
 	    List* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -112,7 +112,7 @@ COPY(std_Array_List){
 	    Buffer* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -121,7 +121,7 @@ COPY(std_Array_List){
 	    Stack* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -139,7 +139,7 @@ COPY(std_Array_List){
 	    Queue* dest = where;
 
 	    if(dest->typeSize != this.typeSize){
-		ERR(ERR_INVALID, "type sizes dont match between copying arrays");
+		ERR(ERR.INVALID, "type sizes dont match between copying arrays");
 		return nil;
 	    }
 
@@ -154,7 +154,7 @@ COPY(std_Array_List){
 	    
 	break;}
 	defaultT{
-		ERR(ERR_INVALID, "invalid copy destination type detected");
+		ERR(ERR.INVALID, "invalid copy destination type detected");
 		return nil;
 	}
 	}

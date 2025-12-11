@@ -1,10 +1,7 @@
-#include "../../../pkg.h"
+#include <Core/pkg.c>
 #include <float.h>
 #include <stdio.h>
 #include <wchar.h>
-
-import(std)
-
 
 /*----------------------------------------------
  *						|
@@ -50,13 +47,13 @@ SCAN(double){
 			{ buff[scannedLen++] = c; process->next(); }
 
 		if(scannedLen == 0){ 
-			ERR(ERR_INVALID, "invalid float syntax");
+			ERR(ERR.INVALID, "invalid float syntax");
 			process->fail();
 			return 0; 
 		}
 		
 		if(!swscanf(buff, L"%lf", self)){
-			ERR(ERR_INVALID, "failed to parse double");
+			ERR(ERR.INVALID, "failed to parse double");
 			process->fail();
 			return 0;
 		}
@@ -128,13 +125,13 @@ SCAN(float){
 			{ buff[scannedLen++] = c; process->next(); }
 
 		if(scannedLen == 0){ 
-			ERR(ERR_INVALID, "invalid float syntax");
+			ERR(ERR.INVALID, "invalid float syntax");
 			process->fail();
 			return 0; 
 		}
 		
 		if(!swscanf(buff, L"%f", self)){
-			ERR(ERR_INVALID, "failed to parse float");
+			ERR(ERR.INVALID, "failed to parse float");
 			process->fail();
 			return 0;
 		}
@@ -229,7 +226,7 @@ static inline len_t __xctype_impl_fill_buff_from_stream(std_Stream* in, rune* bu
 	    	while(iswblank(c)) process->next();
 
 	    	if(!iswdigit(c)) {
-	    		ERR(ERR_FAIL, "failed to scan for integer");
+	    		ERR(ERR.FAIL, "failed to scan for integer");
 	    		process->fail();
 	    		return 0;
 	    	}
@@ -239,7 +236,7 @@ static inline len_t __xctype_impl_fill_buff_from_stream(std_Stream* in, rune* bu
 		}
 	    	
 		if(!iswblank(c)){
-			ERR(ERR_FAIL, "invalid charaters at end of interger scan");
+			ERR(ERR.FAIL, "invalid charaters at end of interger scan");
 			process->fail();
 			return 0;
 
@@ -265,7 +262,7 @@ return where;					\
 SET(type) {					\
 	if(!memcpy(self, value, sizeof(type)));	\
 		return ERR(			\
-	ERR_FAIL, "failed to set " #type);	\
+	ERR.FAIL, "failed to set " #type);	\
 return OK;					\
 }
 

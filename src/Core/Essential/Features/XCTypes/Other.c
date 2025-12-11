@@ -1,7 +1,4 @@
-#include "../../../pkg.h"
-
-import(std)
-
+#include <Core/pkg.c>
 
 /*----------------------------------------------
  *						|
@@ -31,7 +28,7 @@ SCAN(bool){
 		    !(len_bool_txt = scanFrom(in, "true"))  ||
 		    !(len_bool_txt = scanFrom(in, "false")) 
 		){
-			ERR(ERR_INVALID, "invalid boolean, must be either true or false");
+			ERR(ERR.INVALID, "invalid boolean, must be either true or false");
 			process->fail();
 			return 0;
 		}
@@ -111,12 +108,12 @@ SCAN(pntr){
 	len_t scannedLen = 0;
 
 	if(!(scannedLen = scanFrom(in, "0x", $use(len_t_Type, &result)))){
-	    ERR(ERR_INVALID, "failed to scan for pointer value");
+	    ERR(ERR.INVALID, "failed to scan for pointer value");
 	    return 0;
 	}
 
 	if(create(pntr, self, result) == nil){
-	    ERR(ERR_FAIL, "failed to create pointer object");
+	    ERR(ERR.FAIL, "failed to create pointer object");
 	    return 0;
 	}
 

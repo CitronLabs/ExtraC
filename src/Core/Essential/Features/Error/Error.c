@@ -1,7 +1,4 @@
-#include "../../../pkg.h"
-
-import(std)
-import(XC)
+#include <Core/pkg.c>
 
 #define module std, Error
 

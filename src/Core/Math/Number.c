@@ -1,5 +1,5 @@
 #include <Core/pkg.c>
-#define module std, Number
+
 
 from(std,
 	use(Number),
@@ -9,12 +9,14 @@ from(std,
 
 
 #define HIDE_USE
-#include "BigInteger/operations.c"
-#include "BigInteger/format.c"
-#include "BigInteger/parse.c"
-#include "BigFloat/operations.c"
-#include "BigFloat/format.c"
-#include "BigFloat/parse.c"
+#include "Number/BigInteger/operations.c"
+#include "Number/BigInteger/format.c"
+#include "Number/BigInteger/parse.c"
+#include "Number/BigFloat/operations.c"
+#include "Number/BigFloat/format.c"
+#include "Number/BigFloat/parse.c"
+
+#define module std, Number
 
 
 #define apriv (a->__private)

@@ -1,14 +1,11 @@
-#include "../../pkg.h"
+#include <Core/pkg.c>
 #include "conversion_macros.h"
-
-
-import(std) 
+#define module std, Time, Convert
 
 from(std,
     use(Time)
 )
 
-#define module std, Time, Convert
 
 static double simple_fmod(double dividend, double divisor) {
     long long quotient_integer = (long long)(dividend / divisor);

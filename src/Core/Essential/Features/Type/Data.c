@@ -1,7 +1,6 @@
-#include "pkg.h"
+#include <Core/pkg.c>
 
-
-u32 __XC_Default_Hash(void* data_ptr, u64 size){
+u32 hash_bytes(void* data_ptr, u64 size){
 
 	char* data = data_ptr;
 	len_t nblocks = size / 8;

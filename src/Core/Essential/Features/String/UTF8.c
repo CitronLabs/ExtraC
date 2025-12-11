@@ -1,8 +1,5 @@
-#pragma once
-#include "utils.h"
-#include "../../../../pkg.h"
-
-import(std)
+#include <Core/pkg.c>
+#include <Core/Essential/Features/String/Encodings/utils.h>
 
 
 #undef rewind
@@ -51,7 +48,7 @@ static inline errvt UTF8_decode(char** start, rune* codepoint){
 
 	if(*codepoint == maxof(u32)){
 	    encoding++;
-	    return ERR(ERR_INVALID, "string is an invalid utf8 string");
+	    return ERR(ERR.INVALID, "string is an invalid utf8 string");
 	}
 
 	*start = encoding;
@@ -82,7 +79,7 @@ static inline errvt UTF8_encode(char *dest, rune codepoint) {
         return OK;
     }
 
-return ERR(ERR_INVALID, "invalid codepoint"); 
+return ERR(ERR.INVALID, "invalid codepoint"); 
 }
 
 errvt UTF8_streamEncoder(std_Stream* stream, void* data){
@@ -99,7 +96,7 @@ errvt UTF8_streamDecoder(std_Stream* stream, void* data){
 				[std.Stream.GetCursorPos(stream)];
 
 	iferr(std.String.UTF8.decode(&str_data, data))
-		return ERR(ERR_FAIL, "failed to decode stream");
+		return ERR(ERR.FAIL, "failed to decode stream");
 
 return OK;
 }
@@ -113,12 +110,12 @@ errvt UTF8_toUtf16(c8* in, len_t in_max, c16* dest, len_t dest_max) {
 
 	while (*in || new_len >= dest_max) {
 		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
-			return ERR(STRINGERR_ENCODING, "Invalid UTF8 sequence");
+			return ERR(ERR.STRING.ENCODING, "Invalid UTF8 sequence");
 		
 		u64 encoded_len = encode_utf16(&dest[new_len], codepoint);
 
 		if (encoded_len == 0) 
-			return ERR(STRINGERR_ENCODING, "Failed to encode UTF16 codepoint");
+			return ERR(ERR.STRING.ENCODING, "Failed to encode UTF16 codepoint");
 		
 		
 		new_len += encoded_len;
@@ -137,7 +134,7 @@ errvt UTF8_toUtf32(c8* in, len_t in_max, c32* dest, len_t dest_max) {
 
 	while (*in || new_len >= dest_max) {
 		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
-			return ERR(STRINGERR_ENCODING, "Invalid UTF8 sequence");
+			return ERR(ERR.STRING.ENCODING, "Invalid UTF8 sequence");
 		
 		dest[new_len++] = codepoint;
 	}
@@ -156,7 +153,7 @@ errvt UTF8_toAscii(c8* in, len_t in_max, char* dest, len_t dest_max) {
 
 	while (*in || new_len >= dest_max) {
 		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
-			return ERR(STRINGERR_ENCODING, "Invalid UTF8 sequence");
+			return ERR(ERR.STRING.ENCODING, "Invalid UTF8 sequence");
 		
 		if (codepoint <= ASCII_MAX) {
 			dest[new_len++] = (char)codepoint;

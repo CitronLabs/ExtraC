@@ -69,11 +69,11 @@ errvt moduleIMethod(std_Array, Write, void* data, len_t len){
 		
 	break;}
 	defaultT {
-		return ERR(ERR_INVALID, "invalid array type");
+		return ERR(ERR.INVALID, "invalid array type");
 	}
 	}
 
-return ERR(ERR_NULLPTR, "empty type data");
+return ERR(ERR.NIL, "empty type data");
 }
 
 
@@ -132,9 +132,9 @@ errvt moduleIMethod(std_Array, Read, void* data, len_t len){
 		
 	break;}
 	defaultT {
-		return ERR(ERR_INVALID, "invalid array type");
+		return ERR(ERR.INVALID, "invalid array type");
 	}
 	}
 
-return ERR(ERR_NULLPTR, "empty type data");
+return ERR(ERR.NIL, "empty type data");
 }

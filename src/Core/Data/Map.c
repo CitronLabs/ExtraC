@@ -1,25 +1,19 @@
-#include "../../pkg.h"
-#include "../List/pkg.h"
-
-
-import(std)
+#include <Core/pkg.c>
 
 #define module std, Map
 
 
 errvt moduleMethod(std_Map, SetDefault, void* data){
-	
-	nonull(self);
-	nonull(data);
+	nonull(self, data) { return err; }
 	
 	std_data_entry def_bucket = {
 		.hash = 0,
-		.key = NULL,
+		.key = nil,
 		.data = calloc(1, priv.value.size),
 	};
 
-	if(NULL == def_bucket.data) return ERR(
-		DATAERR_MEMALLOC, "could not initialize default data bucket");
+	if(!def_bucket.data) return ERR(
+		ERR.DATA.MEMALLOC, "could not initialize default data bucket");
 
 
 	memcpy(def_bucket.data, data, priv.value.size);
@@ -30,10 +24,7 @@ return OK;
 }
 
 u32 moduleMethod(std_Map, Insert, void* key_data, void* itemptr){
-	
-	nonull(self,     return INVALID_MAPINDEX);
-	nonull(key_data, return INVALID_MAPINDEX);
-	nonull(itemptr,  return INVALID_MAPINDEX);
+	nonull(self, key_data, itemptr){ return INVALID_MAPINDEX; }
 
 	u32 index = INVALID_MAPINDEX;
 
@@ -87,9 +78,7 @@ return index;
 }
 
 u32 moduleMethod(std_Map, SearchIndex, void* key){
-
-	nonull(key, return INVALID_MAPINDEX);
-	nonull(self, return INVALID_MAPINDEX);
+	nonull(self, key){ return INVALID_MAPINDEX; }
 	
 	u64 place = 10;
 	u8 placenum = 10;
@@ -124,45 +113,46 @@ return priv.default_index;
 
 
 void* moduleMethod(std_Map, Search, void* key){
+	nonull(self, key){ return nil; }
 
 return std.Map.Index(self, std.Map.SearchIndex(self, key));
 }
 
 void* moduleMethod(std_Map,Index, u32 key){
-	nonull(self, return NULL)
+	nonull(self){ return nil; }
 
-	void* result = NULL;
+	void* result = nil;
 
 	if(key > std.List.Size(priv.buckets)){
-		ERR(DATAERR_OUTOFRANGE, "invalid key");
-		return NULL;
+		ERR(ERR.DATA.OUTOFRANGE, "invalid key");
+		return nil;
 	}
 	
 	std_data_entry* buckets = std.List.GetPointer(priv.buckets, 0);
 	
 	if(buckets[key].hash == 0){
-		ERR(DATAERR_OUTOFRANGE, "invalid key");
-		return NULL;
+		ERR(ERR.DATA.OUTOFRANGE, "invalid key");
+		return nil;
 	}
 	result = buckets[key].data;
 
 return result;
 }
 errvt moduleMethod(std_Map, Remove, void* key){
-	nonull(self, return err)
+	nonull(self) { return err; }
 
 	u32 mindex = std.Map.SearchIndex(self, key);
 
 	if(INVALID_MAPINDEX == mindex) 
-		return ERR(DATAERR_EMPTY, "key index not found");
+		return ERR(ERR.DATA.EMPTY, "key index not found");
 	
 	std_data_entry* bucket = 
 		std.List.GetPointer(
 			priv.buckets, 
 			mindex
 		);
-	if(bucket == NULL) 
-		ERR(DATAERR_OUTOFRANGE, "invalid key");
+	if(bucket == nil) 
+		ERR(ERR.DATA.OUTOFRANGE, "invalid key");
 	free(bucket->data); 
 	free(bucket->key);
 	*bucket = (std_data_entry){0}; 
@@ -171,20 +161,22 @@ errvt moduleMethod(std_Map, Remove, void* key){
 return OK;
 }
 List(data_entry) moduleMethod(std_Map, GetEntries){
-
+	nonull(self){ return nil; }
 return priv.buckets;
 }
 
 u64 moduleMethod(std_Map, Count){
+	nonull(self){ return 0; }
 return std.List.Size(priv.buckets);
 }
 
 errvt moduleMethod(std_Map, Limit, u64 limit){
+	nonull(self){ return err; }
 return std.List.Limit(priv.buckets, limit);
 }
 
-std_typeData	moduleMethod(std_Map, GetValType){nonull(self, return T(std_Nil)) return priv.value; }
-std_typeData	moduleMethod(std_Map, GetKeyType){nonull(self, return T(std_Nil)) return priv.key; }
+std_typeData	moduleMethod(std_Map, GetValType){nonull(self){ return T(std_Nil); } return priv.value; }
+std_typeData	moduleMethod(std_Map, GetKeyType){nonull(self){ return T(std_Nil); } return priv.key; }
 
 DESTROY(std_Map){
 	nonull(self){ return err; }
@@ -204,6 +196,7 @@ return OK;
 
 
 WRITE(std_Map){
+	nonull(self, data){ return 0; }
 
 	len_t len_added = size;
 
@@ -225,6 +218,7 @@ return len_added;
 }
 
 READ(std_Map){
+	nonull(self, data){ return 0; }
 
 	len_t len_gotten = size;
 
@@ -246,7 +240,7 @@ return size;
 }
 
 COPY(std_Map){
-	nonull(self){ return nil; }
+	nonull(self, where){ return nil; }
 	
 	std_Map* dest = where;
 
@@ -276,6 +270,7 @@ return index(priv.buckets, index);
 }
 
 SIZE(std_Map){
+	nonull(self){ return 0; }
 
 	if(elements){
 		return std.Map.Count(self);
@@ -285,12 +280,13 @@ SIZE(std_Map){
 }
 
 SCAN(std_Map){
+	nonull(self, in){ return 0; }
 	
-	std_Map* result = NULL;
+	std_Map* result = nil;
 	u64 len = std.DSN.Map.parse(nil, &result, in);
 
 	if(len == 0){
-		ERR(DATAERR_DSN, "failed to scan for map");
+		ERR(ERR.DATA.DSN, "failed to scan for map");
 		return 0;
 	}
 	*self = *result;
@@ -299,6 +295,7 @@ return len;
 }
 
 PRINT(std_Map){
+	nonull(self, out){ return 0; }
 
 	u64 formated_len = 0;
 	if(format == nil || !format->debug)
@@ -321,8 +318,9 @@ construct(std_Map,
 FMT(),
 DEF(),
 ){
-	u64 init_size = args->init_size == 0 ? 10 : args->init_size;
+	nonull(self, args){ return nil; }
 
+	u64 init_size = args->init_size == 0 ? 10 : args->init_size;
 	
 	priv.bucket_indexes 	= calloc(init_size + (init_size / 2), sizeof(u32));
 	priv.buckets		= newList(std_data_entry, 10);
@@ -330,7 +328,6 @@ DEF(),
 	priv.value 		= arg.data;
 	priv.allocednum 	= init_size + (init_size / 2);
 	priv.default_index  	= INVALID_MAPINDEX;
-	
 
 	if(args->literal){
 	    loop(i, args->init_size){

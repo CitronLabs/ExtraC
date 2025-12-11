@@ -2677,11 +2677,14 @@
  * Arguments: (ModuleNameConcatenated, Member1, Member2, ...)
  */
 
+#define __GET_MEMBER_PATH_UTIL(...) __VA_OPT__(__VA_ARGS__ ,)
 
+#define __GET_MEMBER_PATH(MEMBER)						\
+	__PATH_CAT_NAME(((PP_PASTE(__GET_FIRST(module), _Interface)){0}),	\
+		__GET_MEMBER_PATH_UTIL(__GET_REST(module)) MEMBER)
 
  #define __MODULE_DEFINE_DECLARE_ONE(NAME, MEMBER) \
-    typeof(*(__PATH_CAT_NAME(((PP_PASTE(__GET_FIRST(module), _Interface)){0}),		\
-			    __GET_REST(module), MEMBER))) PP_PASTE(NAME, PP_PASTE(_, MEMBER));
+    typeof(*(__GET_MEMBER_PATH(MEMBER))) PP_PASTE(NAME, PP_PASTE(_, MEMBER));
 
  #define __MODULE_DEFINE_INIT_ONE(NAME, MEMBER) \
     .MEMBER = PP_PASTE(NAME, PP_PASTE(_, MEMBER)) 

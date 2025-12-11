@@ -1,10 +1,6 @@
+#include <Core/pkg.c>
+
 #define module std, Stream
-#include "../../../pkg.h"
-
-import(std)
-
-import(XC)
-
 
 from(std,
 	Array_Stack    as Stack,
@@ -13,8 +9,6 @@ from(std,
     	use(Local),
     	use(Stream)
 );
-
-
 
 typedef struct {
 	Stream* 		activeStream;
@@ -40,7 +34,7 @@ localStreamContext* fetchLocalStreamCtx(){
 		);
 
 		if(localStreamCtx == nil){
-		    ERR(ERR_INITFAIL, 
+		    ERR(ERR.INIT, 
        			"failed to initalize local Stream context");
 		
 		    XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);	
@@ -49,7 +43,7 @@ localStreamContext* fetchLocalStreamCtx(){
 	 	result = std.Local.getData(localStreamCtx);
 
 		if(result == nil){
-		    ERR(ERR_INITFAIL, 
+		    ERR(ERR.INIT, 
        			"failed to get local Stream context");
 		
 		    XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);	
@@ -60,7 +54,7 @@ localStreamContext* fetchLocalStreamCtx(){
 	 	result = std.Local.getData(localStreamCtx);
 
 		if(result == nil){
-		    ERR(ERR_INITFAIL, 
+		    ERR(ERR.INIT, 
        			"failed to get local Stream context");
 		
 		    XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);	
@@ -79,7 +73,7 @@ Stream* fetchStdStream(int id, Stream** stream){
 	    );
 
 	    if(*stream == nil){
-		ERR(ERR_INITFAIL, "failed to initalize stream");
+		ERR(ERR.INIT, "failed to initalize stream");
 		return nil;
 	    }
 	}
@@ -124,19 +118,19 @@ void* moduleMethod(std_Stream, ToPointer){
 		streamInfo info = XC.Dev.Stream.info(priv.stream.handle);
 
 		iferr(!info.valid){
-			ERR(ERR_FAIL, "failed to get stream size");
+			ERR(ERR.FAIL, "failed to get stream size");
 			return nil;
 		}
 
 		priv.pointer = malloc(info.size);
 		
 		if(!priv.pointer){
-			ERR(ERR_FAIL, "failed to allocate stream pointer buff");
+			ERR(ERR.FAIL, "failed to allocate stream pointer buff");
 			return nil;
 		}
 
 		if(!XC.Dev.Stream.readFrom(priv.stream.handle, priv.pointer, info.size)){
-			ERR(ERR_FAIL, "failed to read data into stream pointer buff");
+			ERR(ERR.FAIL, "failed to read data into stream pointer buff");
 			free(priv.pointer);
 			return nil;
 	  	}
@@ -146,7 +140,7 @@ void* moduleMethod(std_Stream, ToPointer){
 		priv.pointer = malloc(size(priv.stream.mem.data) - priv.stream.mem.pos);
 
 		if(!priv.pointer){
-			ERR(ERR_FAIL, "failed to allocate stream pointer buff");
+			ERR(ERR.FAIL, "failed to allocate stream pointer buff");
 			return nil;
 		}
 	break;}
@@ -154,7 +148,7 @@ void* moduleMethod(std_Stream, ToPointer){
 		priv.pointer = priv.stream.buff.data;
 	break;}
 	default:{
-		ERR(ERR_INVALID, "invalid stream type");
+		ERR(ERR.INVALID, "invalid stream type");
 	  	return nil;
 	}
 	}
@@ -208,7 +202,7 @@ SP_Result std_Stream_Process_doEncode(std_StreamEncoder encoder, void* data){
 	nonull(encoder, data){ return setProc(ctx, &Stream_Proc_Fail); }
 
 	iferr(encoder(ctx->activeStream, data)){
-		ERR(ERR_FAIL, "failed to encode data into stream");
+		ERR(ERR.FAIL, "failed to encode data into stream");
 		return Stream_Proc_Fail;
 	}
 return setProc(ctx, &Stream_Proc_OK);
@@ -230,7 +224,7 @@ SP_Result std_Stream_Process_each(len_t frameSize){
 	Stream* self = ctx->activeStream;
 	
 	if(!write(ctx->frameSizeStack, &priv.frameSize)){
-		ERR(ERR_FAIL, "could not save previous frame size for each stream iteration");
+		ERR(ERR.FAIL, "could not save previous frame size for each stream iteration");
 		return setProc(ctx,&Stream_Proc_Fail);
 	}
 
@@ -249,12 +243,12 @@ SP_Result std_Stream_Process_advance(len_t num){
 		streamInfo info = XC.Dev.Stream.info(priv.stream.handle);
 		
 		if(!info.valid){
-			ERR(ERR_FAIL, "failed to get stream cursor position to advance");
+			ERR(ERR.FAIL, "failed to get stream cursor position to advance");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 
 		iferr(XC.Dev.Stream.shift(priv.stream.handle, num, info.currentPos)){
-			ERR(ERR_FAIL, "failed to shift stream cursor position to advance");
+			ERR(ERR.FAIL, "failed to shift stream cursor position to advance");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 	break;}
@@ -269,7 +263,7 @@ SP_Result std_Stream_Process_advance(len_t num){
 			priv.stream.buff.pos += num;
 	break;}
 	default:{
-		ERR(ERR_INVALID, "invalid stream type");
+		ERR(ERR.INVALID, "invalid stream type");
 	  	return setProc(ctx, &Stream_Proc_Fail);
 	}
 	}
@@ -286,12 +280,12 @@ SP_Result std_Stream_Process_rewind(len_t num){
 		streamInfo info = XC.Dev.Stream.info(priv.stream.handle);
 		
 		if(!info.valid){
-			ERR(ERR_FAIL, "failed to get stream cursor position to advance");
+			ERR(ERR.FAIL, "failed to get stream cursor position to advance");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 
 		iferr(XC.Dev.Stream.shift(priv.stream.handle, -num, info.currentPos)){
-			ERR(ERR_FAIL, "failed to shift stream cursor position to advance");
+			ERR(ERR.FAIL, "failed to shift stream cursor position to advance");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 	break;}
@@ -306,7 +300,7 @@ SP_Result std_Stream_Process_rewind(len_t num){
 			priv.stream.buff.pos -= num;
 	break;}
 	default:{
-		ERR(ERR_INVALID, "invalid stream type");
+		ERR(ERR.INVALID, "invalid stream type");
 	  	return setProc(ctx, &Stream_Proc_Fail);
 	}
 	}
@@ -324,7 +318,7 @@ SP_Result std_Stream_Process_readData(void* buff, len_t len){
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
 		if(!XC.Dev.Stream.readFrom(priv.stream.handle, buff, len * priv.frameSize)){
-			ERR(ERR_FAIL, "failed to read from stream");
+			ERR(ERR.FAIL, "failed to read from stream");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 	break;}
@@ -334,7 +328,7 @@ SP_Result std_Stream_Process_readData(void* buff, len_t len){
 		    pntr_shiftcpy(priv.stream.mem.data, len * priv.frameSize),
 	  	    len * priv.frameSize
 		)){
-			ERR(ERR_FAIL, "failed to read from stream");
+			ERR(ERR.FAIL, "failed to read from stream");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 	break;}
@@ -347,7 +341,7 @@ SP_Result std_Stream_Process_readData(void* buff, len_t len){
 		priv.stream.buff.pos += len;
 	break;}
 	default:{
-		ERR(ERR_INVALID, "invalid stream type");
+		ERR(ERR.INVALID, "invalid stream type");
 	  	return setProc(ctx, &Stream_Proc_Fail);
 	}
 	}
@@ -363,7 +357,7 @@ SP_Result std_Stream_Process_writeData(void* buff, len_t len){
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
 		if(!XC.Dev.Stream.writeTo(priv.stream.handle, buff, len * priv.frameSize)){
-			ERR(ERR_FAIL, "failed to write from stream");
+			ERR(ERR.FAIL, "failed to write from stream");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 	break;}
@@ -373,7 +367,7 @@ SP_Result std_Stream_Process_writeData(void* buff, len_t len){
 		    pntr_shiftcpy(priv.stream.mem.data, len * priv.frameSize),
 	  	    len * priv.frameSize
 		)){
-			ERR(ERR_FAIL, "failed to write from stream");
+			ERR(ERR.FAIL, "failed to write from stream");
 			return setProc(ctx,&Stream_Proc_Fail);
 		}
 	break;}
@@ -386,7 +380,7 @@ SP_Result std_Stream_Process_writeData(void* buff, len_t len){
 		priv.stream.buff.pos += len;
 	break;}
 	default:{
-		ERR(ERR_INVALID, "invalid stream type");
+		ERR(ERR.INVALID, "invalid stream type");
 	  	return setProc(ctx, &Stream_Proc_Fail);
 	}
 	}
@@ -418,7 +412,7 @@ noFail std_Stream_Process_end(){
 }
 noFail std_Stream_Process_fail(){
 	std.Stream.Process.end();
-	ERR(ERR_FAIL, "stream process failed");
+	ERR(ERR.FAIL, "stream process failed");
 }
 noFail std_Stream_Process_doRun(){}
 noFail std_Stream_Process_pause(){}
@@ -430,7 +424,7 @@ pntr std_Stream_Process_next(pntr* buff){
 
 	if(std.Stream.Process.readData(buff, 1)
 	   .readData == generic std_Stream_Process_SkipAll){
-		ERR(ERR_FAIL, "failed to get next item in stream");
+		ERR(ERR.FAIL, "failed to get next item in stream");
 		return nil;
 	}
 
@@ -578,7 +572,7 @@ SET(std_Stream){
 	if(create(std_Stream, self,  
 		.ops = *(Options*)value
 	) == nil){
-		return ERR(ERR_FAIL, "failed to set stream");	
+		return ERR(ERR.FAIL, "failed to set stream");	
 	}
 
 	switch(store_temp.__private.flags.streamType){
@@ -606,12 +600,12 @@ return where;
 
 ITER(std_Stream){
 	if(priv.flags.writeOnly){ 
-		ERR(ERR_FAIL, "cannot iterate through a write only stream");
+		ERR(ERR.FAIL, "cannot iterate through a write only stream");
 	  	return nil;
 	}
 
 	if(priv.frameSize * index > size(self)){
-		ERR(ERR_FAIL, "index out of range");
+		ERR(ERR.FAIL, "index out of range");
 	  	return nil;
 	}
 
@@ -656,7 +650,7 @@ SIZE(std_Stream){
 		;
 	break;}
 	default: {
-		ERR(ERR_INVALID, "invalid stream type");
+		ERR(ERR.INVALID, "invalid stream type");
 		return 0;
 	}
 	}
@@ -680,7 +674,7 @@ DEF(),
 	    (arg.ops.flags.invalid) ||
 	    (arg.ops.flags.readOnly && args->ops.flags.writeOnly)
 	) {
-		ERR(ERR_INITFAIL, "invalid stream options");
+		ERR(ERR.INIT, "invalid stream options");
 		return nil;
 	}
 
@@ -690,7 +684,7 @@ DEF(),
 	} elif(arg.ops.setMemoryAddr) {
 
 		if(!arg.ops.setMemorySize){
-		    ERR(ERR_INITFAIL, "setMemorySize cannot be 0, if setMemoryAddr is set");
+		    ERR(ERR.INIT, "setMemorySize cannot be 0, if setMemoryAddr is set");
 		    return nil;
 		}
 
@@ -706,7 +700,7 @@ DEF(),
 					 arg.ops.init.len : 50);
 
 	    if(priv.stream.mem.data == nil){
-		ERR(ERR_INITFAIL, "failed to initalize internal mem stream");
+		ERR(ERR.INIT, "failed to initalize internal mem stream");
 		return nil;
 	    }
 	}
@@ -720,7 +714,7 @@ return self;
 
 COPY(Options){ 
 	if(!memcpy(where, self, sizeof(Options))){
-		ERR(ERR_FAIL, "failed to copy stream options");
+		ERR(ERR.FAIL, "failed to copy stream options");
 		return nil;
 	}
 
@@ -728,7 +722,7 @@ return where;}
 
 SET(Options){  
 	if(!memcpy(self, value, sizeof(Options))) 
-		return ERR(ERR_FAIL, "failed to set stream options");
+		return ERR(ERR.FAIL, "failed to set stream options");
 return OK;}
 
 SIZE(Options){ return sizeof(Options); }

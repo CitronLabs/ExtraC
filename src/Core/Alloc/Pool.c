@@ -1,9 +1,5 @@
+#include <Core/pkg.c>
 #define module std, Pool
-#include "../../pkg.h"
-#include "../Buffer/pkg.h"
-
-import(std)
-
 
 
 void* moduleMethod(std_Pool, Alloc, u64 num){
@@ -47,10 +43,10 @@ return OK;
 errvt moduleMethod(std_Pool, Grow, u64 num){
 
 	if(priv.isStatic){
-		return ERR(MEMERR_OVERFLOW, "cannot grow a static pool");
+		return ERR(ERR.MEM.OVERFLOW, "cannot grow a static pool");
 	}
 	if(priv.current_size + num > priv.max_size){
-		return ERR(MEMERR_OVERFLOW, "size goes beyond the specified maximum");
+		return ERR(ERR.MEM.OVERFLOW, "size goes beyond the specified maximum");
 	}
 	u64 new_alloc_size = 
 		((priv.alloc_size / 2) + num) > priv.max_size ?
@@ -120,7 +116,7 @@ COPY(std_Pool){
 		.isStatic = priv.isStatic,
 		.init_size = priv.current_size
 	) == nil)
-		{ ERR(ERR_FAIL, "failed to create copy"); return nil; }
+		{ ERR(ERR.FAIL, "failed to create copy"); return nil; }
 
 	foreach(priv.pool_buffers, std_Buffer*, buff){
 		pntr copy_loc = std.Pool.Alloc(where, size(*buff));
@@ -135,7 +131,7 @@ DESTROY(std_Pool){
 	nonull(self){ return err; }
 
 	if(priv.num_in_use != 0) 
-		return ERR(ERR_FAIL, "not all object have been returned to the pool yet");
+		return ERR(ERR.FAIL, "not all object have been returned to the pool yet");
 
 	foreach(priv.pool_buffers, std_Buffer*, buff){
 	    del(buff);
@@ -148,7 +144,7 @@ return OK;
 
 ITER(std_Pool){
 	if(index > priv.current_size){
-		ERR(ERR_INVALID, "index out of range");
+		ERR(ERR.FAIL, "index out of range");
 		return nil; 
 	}
 
@@ -158,7 +154,7 @@ ITER(std_Pool){
 	    }
 	}
 
-	ERR(ERR_FAIL, "failed to index");
+	ERR(ERR.FAIL, "failed to index");
 
 return nil;
 }
@@ -216,19 +212,19 @@ DEF(),
 ){
 
 	if(0 == arg.type.size){
-		ERR(MEMERR_INVALIDSIZE, "required type size cannot be 0");
+		ERR(ERR.INVALID, "required type size cannot be 0");
 	  	return nil;
 	}
 	
 	if(0 == arg.init_size){ 
-	      	ERR(MEMERR_INVALIDSIZE, "required init size cannot be 0");
+	      	ERR(ERR.INVALID, "required init size cannot be 0");
 	  	return nil;
 	}
 
 	arg.limit = args->limit == 0 ? maxof(u64) : args->limit;
 	
 	if(arg.init_size > args->limit) {
-	  	ERR(MEMERR_INVALIDSIZE, "init size cannot be larger than the limit");
+	  	ERR(ERR.INVALID, "init size cannot be larger than the limit");
 	  	return nil;
 	}
 	

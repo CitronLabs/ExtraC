@@ -1,8 +1,6 @@
 #include <Core/pkg.c>
 #define module std, Buffer
 
-import(std)
-
 
 u64  		moduleMethod (std_Buffer, getMaxItems)	{ return priv.alloced_size; }
 std_typeData	moduleMethod (std_Buffer, getType)	{ return priv.type; }
@@ -20,7 +18,7 @@ pntr moduleIMethod(std_Buffer, New, u64 size){
 	self(std_Buffer);
 	if(priv.alloced_size + size > priv.size){
 		if(priv.isStatic){
-			ERR(MEMERR_OVERFLOW, "size exceeds buffer and cannot grow static buffer");
+			ERR(ERR.MEM.OVERFLOW, "size exceeds buffer and cannot grow static buffer");
 			return nil;
 		}else{
 			iferr(std.Buffer.resize(self, (priv.size / 2) + size))
@@ -43,7 +41,7 @@ return priv.data;
 }
 
 errvt moduleMethod(std_Buffer, Cast, Type_t type){
-	if(type.size == 0) return ERR(MEMERR_INVALIDSIZE, "cannot cast buffer to type size 0");
+	if(type.size == 0) return ERR(ERR.MEM.OVERFLOW, "cannot cast buffer to type size 0");
 	
 	priv.size = (priv.size * priv.type.size) / type.size;
 	priv.alloced_size = (priv.alloced_size * priv.type.size) / type.size;
@@ -53,7 +51,7 @@ return OK;
 }
 errvt moduleMethod(std_Buffer, Resize, u64 new_size){
 	if(priv.isStatic) 
-		return ERR(MEMERR_INITFAIL, "unable to resize a static buffer");
+		return ERR(ERR.FAIL, "unable to resize a static buffer");
 	priv.data = realloc(priv.data, new_size);
 	priv.size = new_size;
 	if(priv.alloced_size > priv.size) priv.alloced_size = priv.size;
@@ -107,7 +105,7 @@ ITER(std_Buffer){
 	nonull(self){ return nil; }
 
 	if(index >= priv.size){ 
-		ERR(ERR_INVALID, "index out of range");
+		ERR(ERR.INVALID, "index out of range");
 		return nil; 
 	}
 
@@ -115,7 +113,7 @@ return pntr_shiftcpy(priv.data, priv.type.size * index);
 }
 
 COPY(std_Buffer){
-	nonull(self, where){ return nil };
+	nonull(self, where){ return nil; };
 
 	if(create(std_Buffer, where, 
 		.type 	  = priv.type,
@@ -123,7 +121,7 @@ COPY(std_Buffer){
 		.isStatic = false,
 		.initData = priv.data
 	) == nil)
-		{ERR(ERR_FAIL, "failed to create copy"); return nil;}
+		{ERR(ERR.FAIL, "failed to create copy"); return nil;}
 
 	void* copy_loc = std.Buffer.Allocator.New(where, priv.size);
 
@@ -201,24 +199,24 @@ DEF(),
 	.Print	 = std_Buffer_Op_Print,
 	.Set	 = std_Buffer_Op_Set
 ){
-	if(args->size == 0){
-	  	ERR(MEMERR_INVALIDSIZE, "buffer size cannot be 0"); 
+	if(arg.size == 0){
+	  	ERR(ERR.INVALID, "buffer size cannot be 0"); 
 	  	return nil;
 	}
 
-	args->type.size = args->type.size == 0 ? 1 : args->type.size;
-	arg.type.ops = args->type.ops;
+	arg.type.size = arg.type.size == 0 ? 1 : arg.type.size;
+	arg.type.ops = arg.type.ops;
 
-	if(args->isStatic){
+	if(arg.isStatic){
 		priv.data = pntr_shiftcpy(self, sizeof(std_Buffer));
 	}else{
-	  	priv.data = calloc(args->size, args->type.size);
+	  	priv.data = calloc(arg.size, arg.type.size);
 
 		if(!priv.data)
 			return nil;
 	}
 
-	priv.size = args->size;
+	priv.size = arg.size;
 	priv.type = arg.type;
 	priv.isStatic = arg.isStatic;
 	priv.alloced_size = 0;

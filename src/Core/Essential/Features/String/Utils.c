@@ -1,10 +1,7 @@
-#include "../../../pkg.h"
-#include "Encodings/utils.h"
+#include <Core/pkg.c>
+#include <Core/Essential/Features/String/Encodings/utils.h>
 
 #define module std, String, Utils, Str
-
-import(std)
-
 
 len_t moduleFn(len)(void* in, len_t len, void** end) {
 	const char* str = in;
@@ -19,7 +16,7 @@ len_t moduleFn(len)(void* in, len_t len, void** end) {
 		} else if ((*str & UTF8_4BYTE_MASK) == UTF8_4BYTE_HEADER) {
 			str += 4;
 		} else {
-			ERR(ERR_INVALID, "invalid utf8 string");
+			ERR(ERR.INVALID, "invalid utf8 string");
 			return 0;
 		}
 		length++;
@@ -28,7 +25,7 @@ return length;
 }
 
 len_t moduleFn(siz)(void* in, len_t len) {
-	void* end = null;
+	void* end = nil;
 
 	std.String.Utils.Str.len(in, len, &end);
 

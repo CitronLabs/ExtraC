@@ -1,6 +1,6 @@
-#include "../../pkg.h"
+#include <Core/pkg.c>
 
-import(std)
+#define module std, DSN
 
 #include "Utils.c"
 
@@ -8,7 +8,7 @@ len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 	
 	len_t prev_size = size(in);
 
-	std_DSN_FieldType first_type = DSN_NONE;
+	std_DSN_FieldType first_type = std_DSN_Field_NONE;
 	std_DSN_Data sub_field = {0};
 	rune c = 0;
 
@@ -25,22 +25,22 @@ len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 
 		if(!std.DSN.parse(self, &sub_field, in)){
 			process->end();
-			ERR(DATAERR_DSN, "failed to parse item");
+			ERR(ERR.DATA.DSN, "failed to parse item");
 			return 0;
 		}
 
-		if(sub_field.type == DSN_NONE){
+		if(sub_field.type == std_DSN_Field_NONE){
 			process->end();
-			ERR(DATAERR_DSN, "invalid entry");
+			ERR(ERR.DATA.DSN, "invalid entry");
 			return 0;
 		}
 
-		if(first_type == DSN_NONE){
+		if(first_type == std_DSN_Field_NONE){
 			first_type = sub_field.type;
 
 		}else if(first_type != sub_field.type) { 
 			process->end();
-			ERR(DATAERR_DSN, "multiple types not allowed in privs");
+			ERR(ERR.DATA.DSN, "multiple types not allowed in privs");
 			return 0;
 		}
 
@@ -50,14 +50,14 @@ len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 
 		if(c != ','){
 			process->end();
-			ERR(DATAERR_DSN, "expected a ,");
+			ERR(ERR.DATA.DSN, "expected a ,");
 			return 0;
 		}
 		}
 	    then.end()
 	;
 
-ERR(DATAERR_DSN, "unexpected end of string");
+ERR(ERR.DATA.DSN, "unexpected end of string");
 return 0;
 }
 
@@ -66,7 +66,7 @@ len_t moduleMethod(std_DSN, parseList, std_List** data, std_Stream* in){
 	len_t scanned_len = 0;
 
 	if(!scanFrom(in, "[")){ 
-		ERR(DATAERR_DSN, "invalid list format");
+		ERR(ERR.DATA.DSN, "invalid list format");
 		return 0;
 	}
 	
@@ -79,7 +79,7 @@ return scanned_len;
 
 errvt ListDSN_Decoder(std_Stream* strm, void* data){
 	return std.DSN.List.parse(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to parse list");
+		OK : ERR(ERR.FAIL, "failed to parse list");
 }
 
 len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
@@ -95,7 +95,7 @@ len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 	    .start(in)
 	    .doRun(1){
 		if(!scanFrom(in, "@{")){
-			ERR(DATAERR_DSN, "invalid map format");
+			ERR(ERR.DATA.DSN, "invalid map format");
 			pop(buckets);
 	       		return 0;
 		}
@@ -106,13 +106,13 @@ len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 	//SCANNING FOR KEY	
 		
 		if(!std.DSN.parse(self, &key, in)){
-	       		ERR(DATAERR_DSN, "invalid DSN format");
+	       		ERR(ERR.DATA.DSN, "invalid DSN format");
 			pop(buckets);
 	       		return 0;
 		}
 		
 		if(!scanFrom(in, "->")){
-	       		ERR(DATAERR_DSN, "invalid DSN format");
+	       		ERR(ERR.DATA.DSN, "invalid DSN format");
 			pop(buckets);
 	       		return 0;
 
@@ -123,17 +123,17 @@ len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 	//SCANNING FOR DATA	
 		
 		if(!std.DSN.parse(self, &value, in)){
-	       		ERR(DATAERR_DSN, "invalid DSN format");
+	       		ERR(ERR.DATA.DSN, "invalid DSN format");
 			pop(buckets);
 	       		return 0;
 		}
 		
 	//VALIDATING FORMAT
-		if(first_types[0] == DSN_NONE && first_types[1] == DSN_NONE)
+		if(first_types[0] == std_DSN_Field_NONE && first_types[1] == std_DSN_Field_NONE)
 			{first_types[0] = key.type; first_types[1] = value.type;}
 	
 		else if(first_types[0] != key.type || first_types[1] != value.type){
-	       		ERR(DATAERR_DSN, "multiple types are not allowed in dsn maps");
+	       		ERR(ERR.DATA.DSN, "multiple types are not allowed in dsn maps");
 			del(buckets);
 	       		return 0;
 		}
@@ -168,7 +168,7 @@ return prev_pos - size(in);
 
 errvt MapDSN_Decoder(std_Stream* strm, void* data){
 	return std.DSN.Map.parse(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to parse map");
+		OK : ERR(ERR.FAIL, "failed to parse map");
 }
 
 len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
@@ -183,7 +183,7 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 	    .start(in)
 	    .doRun(1){
 		if(!scanFrom(in, "{")){
-			ERR(DATAERR_DSN, "invalid map format");
+			ERR(ERR.DATA.DSN, "invalid map format");
 			del(result);
 	       		return 0;
 		}
@@ -193,7 +193,7 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 		while(iswblank(c)) process->next();
 
 		if(!isalpha(c)){
-			ERR(DATAERR_DSN, "invalid field name");
+			ERR(ERR.DATA.DSN, "invalid field name");
 			del(result);
 			return 0;
 		}
@@ -204,7 +204,7 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 		std_String* fieldName = new(std_String);
 
 		if(!scanFrom(in, $(fieldName))){
-			ERR(DATAERR_DSN, "invalid field name");
+			ERR(ERR.DATA.DSN, "invalid field name");
 			del(result, fieldName); 
 			return 0;
 		}
@@ -212,7 +212,7 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 		while(iswblank(c)) process->next();
 
 		if(!scanFrom(in, "=")){
-			ERR(DATAERR_DSN, "invalid struct format");
+			ERR(ERR.DATA.DSN, "invalid struct format");
 			del(result, fieldName);
 			return 0;
 		}
@@ -220,13 +220,13 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 		while(iswblank(c)) process->next();
 
 		if(!std.DSN.parse(self, &field, in)){
-			ERR(DATAERR_DSN, "failed to parse DSN structure");
+			ERR(ERR.DATA.DSN, "failed to parse DSN structure");
 			del(result, fieldName); 
 			return 0;
 		}
 
 		iferr(std.Map.Insert(result->fields, fieldName, &field)){
-			ERR(DATAERR_DSN, "failed to add field");
+			ERR(ERR.DATA.DSN, "failed to add field");
 			del(result, fieldName);
 			return 0;
 		}
@@ -241,7 +241,7 @@ return prev_pos - size(in);
 
 errvt StructDSN_Decoder(std_Stream* strm, void* data){
 	return std.DSN.Struct.parse(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to parse struct");
+		OK : ERR(ERR.FAIL, "failed to parse struct");
 }
 
 len_t moduleMethod(std_DSN, parseNumber, std_Number** data, std_Stream* in){
@@ -250,7 +250,7 @@ len_t moduleMethod(std_DSN, parseNumber, std_Number** data, std_Stream* in){
 	std_Number* result = new(std_Number);
 
 	if(!scanFrom(in, $(result))){
-		ERR(DATAERR_DSN, "failed to parse number");
+		ERR(ERR.DATA.DSN, "failed to parse number");
 		del(result);
 		return 0;
 	}
@@ -262,7 +262,7 @@ return prev_pos - size(in);
 
 errvt NumberDSN_Decoder(std_Stream* strm, void* data){
 	return std.DSN.Number.parse(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to parse number");
+		OK : ERR(ERR.FAIL, "failed to parse number");
 }
 
 len_t moduleMethod(std_DSN, parseString, std_String** data, std_Stream* in){
@@ -272,7 +272,7 @@ len_t moduleMethod(std_DSN, parseString, std_String** data, std_Stream* in){
 	std_String* result = new(std_String);
 
 	if(!scanFrom(in, "\"", $(result), "\"")){
-		ERR(DATAERR_DSN, "failed to parse string");
+		ERR(ERR.DATA.DSN, "failed to parse string");
 		del(result);
 		return 0;
 	};
@@ -284,5 +284,5 @@ return prev_pos - size(in);
 
 errvt StringDSN_Decoder(std_Stream* strm, void* data){
 	return std.DSN.Struct.parse(nil, data, strm) == 0 ? 
-		OK : ERR(ERR_FAIL, "failed to parse string");
+		OK : ERR(ERR.FAIL, "failed to parse string");
 }

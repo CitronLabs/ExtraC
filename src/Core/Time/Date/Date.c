@@ -1,12 +1,7 @@
-#include "../../pkg.h"
-
+#include <Core/pkg.c>
 #define module std, Date
 
 #include "./Formats.c"
-
-
-import(std)
-import(XC)
 
 bool moduleMethod(std_Date, isValid){
 	return 
@@ -59,7 +54,7 @@ const char* moduleMethod(std_Date, getMonthName){
 		 );
 
 	if(this.month > 12) { 
-		ERR(ERR_INVALID, "invalid date input");
+		ERR(ERR.INVALID, "invalid date input");
 		return nil;
 	}
 
@@ -68,7 +63,7 @@ return locale->Time.month_names[this.month];
 
 SET(std_Date){
 	if(create(std_Date, self, value) == nil){
-	    return ERR(ERR_FAIL, "failed to set date using time");
+	    return ERR(ERR.FAIL, "failed to set date using time");
 	}
 return OK;
 }
@@ -77,7 +72,7 @@ COPY(std_Date){
 	nonull(self, where){ return nil; }
 
 	if(!memcpy(where, self, sizeof(std_Date))){
-		ERR(ERR_FAIL, "failed to copy date");
+		ERR(ERR.FAIL, "failed to copy date");
 		return nil;
 	}
 
@@ -91,7 +86,7 @@ DESTROY(std_Date){ return OK; }
 
 construct(std_Date,
 FMT(.type = std_Date_Format_RFC),
-DEF(.time = &nilobj(std_Time)),
+DEF(.time = nil),
 	.Create  = std_Date_Op_Create,
 	.Destroy = std_Date_Op_Destroy,
 	.Print   = std_Date_Op_Print,
@@ -117,7 +112,7 @@ DEF(.time = &nilobj(std_Time)),
 	this.second = conv.remainder;
 
 	if(!std.Date.isValid(self)){
-		ERR(ERR_INITFAIL, "failed to properly set up date");
+		ERR(ERR.INIT, "failed to properly set up date");
 		return nil;
 	}
 

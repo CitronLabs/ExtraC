@@ -1,7 +1,6 @@
-#define module std, Types, alloc
-#include <Core/pkg.h>
+#include <Core/pkg.c>
 
-import(std);
+#define module std, Types, alloc
 
 from(std, 
     use(typeData), 
@@ -18,7 +17,7 @@ void* moduleFn(init)(typeData* type, bool freeOnFail, Object* self, void* args){
 	memcpy(restore_buff, self, obj_size);
 
 	if(isImpl(ops(type).Create(self, type->size ,args))){ 		
-	    ERR(ERR_INITFAIL, "failed to initialize object");	
+	    ERR(ERR.INIT, "failed to initialize object");	
 
 	    if(freeOnFail) 
 		free(self);
@@ -44,11 +43,3 @@ errvt moduleFn(destruct)(bool doFree, void* delObjs[], len_t delObjsNum){
 
 return OK;
 }
-
-
-
-export(
-	destruct,
-       	init
-);
-

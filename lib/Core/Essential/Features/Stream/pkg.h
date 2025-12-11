@@ -66,7 +66,7 @@ private(
 	void* method(Stream, GetPointer);
 	len_t method(Stream, GetCursorPos);
 
-      	struct Stream_Proc{
+      	const struct Stream_Proc {
 		struct Stream_Proc 
 	        fn(start)(std_Stream*),
 		fn(cont)(),

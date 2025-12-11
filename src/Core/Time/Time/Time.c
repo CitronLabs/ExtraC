@@ -1,17 +1,10 @@
-#include "../../pkg.h"
+#include <Core/pkg.c>
 #include "conversion_macros.h"
-
-
-import(std) 
-
+#define module std, Time
 
 from(std,
 	use(Time)
 )
-
-#define module std, Time
-
-
 
 errvt moduleMethod(std_Time, Difference, std_Time* time_cmp, std_Time* result){
 	nonull(self, time_cmp, result){ return err; }
@@ -34,7 +27,7 @@ bool moduleMethod(std_Time, Compare, std_Time* time_cmp, std_Time* tolerence){
 	std_Time* differ = push(std_Time);
 
 	iferr(std.Time.Difference(self, time_cmp, differ)){
-		ERR(ERR_FAIL, "failed to compare times");
+		ERR(ERR.FAIL, "failed to compare times");
 		return false;
 	}
 
@@ -81,7 +74,7 @@ SCAN(std_Time){
 		    $F(push(std_Date, self), .type = f.type)
 	    );
 
-	ERR(ERR_INVALID, "cannot scan time with unspecified time format");
+	ERR(ERR.INVALID, "cannot scan time with unspecified time format");
 return 0;
 }
 
