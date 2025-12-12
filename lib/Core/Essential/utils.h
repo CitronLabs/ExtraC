@@ -73,5 +73,12 @@ static const PP_PASTE(__MODULE_CAT_NAME(module), _Interface) __MODULE_CAT_NAME(m
    typeof(__GET_MEMBER_PATH(name)) __MODULE_CAT_NAME(module, name) = {	\
 	__VALUES_DEFINE_FOR_EACH_DISPATCH(__VALUES_DEFINE_IMPL, __MODULE_CAT_NAME(module, name), __VA_ARGS__)};	
 
+
+#define moduleValuesDef(name, ...) 	\
+	typeof(__GET_MEMBER_PATH(name))	\
+	__MODULE_CAT_NAME(module, name) \
+		= { __VA_ARGS__ };
+
+
 #define interface(name) const name##_Interface 
 
