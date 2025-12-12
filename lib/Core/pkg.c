@@ -3,11 +3,12 @@
 #include "Essential/Features/Type/pkg.c"
 #include "Essential/Env/pkg.c"
 #include "Data/pkg.c"
+#include "Math/pkg.c"
 
 #define module std
 
 exportModule(
-SUBMODULE(Types, DSN),
+SUBMODULE(Types, DSN, Math, Number),
 VALUES(),
 	
 );

@@ -5,13 +5,7 @@
 
 #define package std
 
-enum(numEquality,
-     	NUM_NULL    = 0,
-	NUM_EQUALS  = 1,
-	NUM_GREATER = 2,
-	NUM_LESSER  = 4,
-	NUM_NOT     = 8
-)
+typefrom(u32, Equality)
 
 #define VECDATA_REG  0
 #define VECDATA_LONG 1

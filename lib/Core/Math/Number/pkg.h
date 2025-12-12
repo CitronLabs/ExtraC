@@ -21,16 +21,37 @@ private(
 	u32 precision;
 	u8 floating : 1;
 )){
-    	
-	//Number Float Casts
-      	errvt  method(Number, castToBigFloat);
-      	double method(Number, castToLongFloat);
-      	float  method(Number, castToFloat);
+	values(Equality, std_Equality,
+     		INVALID,    
+		EQUALS,  
+		GREATER, 
+		LESSER,  
+		NOT     
+	)
 
-	//Number Int Casts
-      	errvt  method(Number, castToBigInt);
-      	u64    method(Number, castToLongInt);
-      	u32    method(Number, castToInt);
+	submodule(BigFloat,
+ 	    errvt method(Number, Add,      std_Number* other, std_Number* result);
+	    errvt method(Number, Subtract, std_Number* other, std_Number* result);
+	    errvt method(Number, Multiply, std_Number* other, std_Number* result);
+    	    errvt method(Number, Divide,   std_Number* other, std_Number* remainder, std_Number* result);
+	)
+
+	submodule(BigInt,
+ 	    errvt method(Number, Add,      std_Number* other, std_Number* result);
+	    errvt method(Number, Subtract, std_Number* other, std_Number* result);
+	    errvt method(Number, Multiply, std_Number* other, std_Number* result);
+    	    errvt method(Number, Divide,   std_Number* other, std_Number* remainder, std_Number* result);
+	)
+    	
+	submodule(Cast,
+      	    errvt  method(Number, toBigFloat);
+      	    double method(Number, toLongFloat);
+      	    float  method(Number, toFloat);
+
+      	    errvt  method(Number, toBigInt);
+      	    u64    method(Number, toLongInt);
+      	    u32    method(Number, toInt);
+	)
 
 	//Number Utils
 	errvt  method(Number, setPrecision,   u64 precision);
@@ -48,7 +69,7 @@ private(
 	std_Number* method(Number, Multiply, std_Number* other);
     	std_Number* method(Number, Divide,   std_Number* other, std_Number* remainder);
     	
-      	std_numEquality  method(Number, Compare,  std_Number* other);
+      	std_Equality method(Number, Compare,  std_Number* other);
 };
 
 #undef package
