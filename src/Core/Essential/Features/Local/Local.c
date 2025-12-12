@@ -1,4 +1,5 @@
 #include <Core/pkg.c>
+#include <XC/pkg.c>
 
 #define module std, Local
 
