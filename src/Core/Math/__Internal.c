@@ -1,34 +1,20 @@
 #pragma once
 #include <Core/pkg.c>
-
-#define module std, Number
-
-
-#define BIGINT_BASE (1ULL << 32)
-#define isZero(num) (num->__private.sign == 0)
+#include "__Internal/pkg.c"
 
 
-#define makeTempNum(list, _precision) (&(std_Number){		\
-	.__type = generic &std_Number_Type,			\
-	.__private = { 						\
-	.sign = 1, .floating = false, .precision = _precision,	\
-	.exponent = -1, .digits = list }			\
-})
-#define opriv (other->__private)
-#define rpriv (result->__private)
-
-#define apriv (a->__private)
-#define bpriv (b->__private)
-
-static noFail std_Number_setZero(std_Number* self) {
+errvt moduleMethod(std_Number,setZero) {
+	nonull(self) { return err; }
 
 	std.List.Flush(priv.digits);
 	std.List.Append(priv.digits, &(u64){0}, 1);
 	priv.sign = 0;
 	if(priv.floating) priv.exponent = 0;
+
+return OK;
 }
 
-static noFail std_Number_clearLeadingZeros(std_Number* self) {
+noFail moduleFn(clearLeadingZeros)(std_Number* self) {
 	
 	u64* digits = std.List.GetPointer(priv.digits, 0);
 	u64 size    = std.List.Size(priv.digits);
@@ -45,7 +31,7 @@ static noFail std_Number_clearLeadingZeros(std_Number* self) {
     	}
 }
 
-static std_numEquality std_Number_absoluteCompare(std_Number* a, std_Number* b) {
+std_Equality moduleFn(absoluteCompare)(std_Number* a, std_Number* b) {
 	
 	u64 
 	    * a_digits = std.List.GetPointer(apriv.digits, 0),
@@ -54,20 +40,20 @@ static std_numEquality std_Number_absoluteCompare(std_Number* a, std_Number* b) 
 		b_size = std.List.Size(bpriv.digits);
 
     // Compare based on the number of active digits first
-    	if (a_size > b_size) return NUM_GREATER;
-    	if (a_size < b_size) return NUM_LESSER;
+    	if (a_size > b_size) return std.Number.Equality.GREATER;
+    	if (a_size < b_size) return std.Number.Equality.LESSER;
 
     // If sizes are equal, compare digit by digit from the most significant (highest index)
 	for (int i = a_size - 1; i >= 0; i--) {
-    		if (a_digits[i] > b_digits[i]) return NUM_GREATER;
-    		if (a_digits[i] < b_digits[i]) return NUM_LESSER;
+    		if (a_digits[i] > b_digits[i]) return std.Number.Equality.GREATER;
+    		if (a_digits[i] < b_digits[i]) return std.Number.Equality.LESSER;
     	}
-    	return NUM_EQUALS; 
+    	return std.Number.Equality.EQUALS; 
 }
 
-static errvt std_Number_absoluteAdd(std_Number* result, std_Number* a, std_Number* b) {
+errvt moduleFn(absoluteAdd)(std_Number* result, std_Number* a, std_Number* b) {
     	
-	std_Number_setZero(result); 
+	std.Number.setZero(result); 
 
 	rpriv.sign = 1;   
 
@@ -83,7 +69,7 @@ static errvt std_Number_absoluteAdd(std_Number* result, std_Number* a, std_Numbe
 	
 	for (int i = 0; i < max_size || carry; i++) {
 	    if (i >= apriv.precision) {
-	        std_Number_setZero(result); // Reset result on overflow
+	        std.Number.setZero(result); // Reset result on overflow
 	        return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	    }
 	
@@ -95,18 +81,18 @@ static errvt std_Number_absoluteAdd(std_Number* result, std_Number* a, std_Numbe
 	    carry = sum / BIGINT_BASE;                     			// Calculate the carry for the next digit
 	}
 	
-	std_Number_clearLeadingZeros(result); 
+	Internal.clearLeadingZeros(result); 
 return OK;
 }
 
-static errvt std_Number_absoluteSub(std_Number* result, std_Number* a, std_Number* b) {
+errvt moduleFn(absoluteSub)(std_Number* result, std_Number* a, std_Number* b) {
 	// ensure abs(a) is greater than or equal to abs(b)
-	if (std_Number_absoluteCompare(a, b) < 0) {
-	    std_Number_setZero(result); 
+	if (Internal.absoluteCompare(a, b) < 0) {
+	    std.Number.setZero(result); 
 	    return ERR(ERR.INVALID, "Cannot subtract larger absolute value from smaller absolute value");
 	}
 	
-	std_Number_setZero(result); 
+	std.Number.setZero(result); 
 	rpriv.sign = 1;    
 	    u32 * b_digits = std.List.GetPointer(bpriv.digits, 0),
 	    	b_size = std.List.Size(bpriv.digits);
@@ -128,11 +114,11 @@ static errvt std_Number_absoluteSub(std_Number* result, std_Number* a, std_Numbe
 	    std.List.Append(rpriv.digits, &diff, 1);
 	}
 	
-	std_Number_clearLeadingZeros(result); 
+	Internal.clearLeadingZeros(result); 
 return OK;
 }
-static errvt std_Number_multiplyByDigit(std_Number* result, std_Number* self, u32 digit) {
-	std_Number_setZero(result);
+errvt moduleFn(multiplyByDigit)(std_Number* result, std_Number* self, u32 digit) {
+	std.Number.setZero(result);
 	if (digit == 0 || priv.sign == 0) return OK; // Result is zero
 	
 	
@@ -142,7 +128,7 @@ static errvt std_Number_multiplyByDigit(std_Number* result, std_Number* self, u3
 
 	loop(i, size || carry) {
 	    if (i >= priv.precision) {
-	        std_Number_setZero(result); // Reset result on overflow
+	        std.Number.setZero(result); // Reset result on overflow
 	        return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	    }
 	    u64 product = carry;
@@ -152,11 +138,11 @@ static errvt std_Number_multiplyByDigit(std_Number* result, std_Number* self, u3
 	    std.List.Append(rpriv.digits, &(u32){product % BIGINT_BASE}, 1);
 	    carry = product / BIGINT_BASE;
 	}
-	std_Number_clearLeadingZeros(result);
+	Internal.clearLeadingZeros(result);
 return OK;
 }
 
-static errvt std_Number_absoluteMultiply(std_Number* result, std_Number* a, std_Number* b){
+errvt moduleFn(absoluteMultiply)(std_Number* result, std_Number* a, std_Number* b){
 	u32 
 	    * a_digits = std.List.GetPointer(apriv.digits, 0),
 	    * b_digits = std.List.GetPointer(bpriv.digits, 0),
@@ -198,8 +184,8 @@ static errvt std_Number_absoluteMultiply(std_Number* result, std_Number* a, std_
 return OK;
 }
 
-static errvt std_Number_shiftDigitsRight(std_Number* result, std_Number* self, int shift_blocks) {
-	std_Number_setZero(result);
+errvt moduleFn(shiftDigitsRight)(std_Number* result, std_Number* self, int shift_blocks) {
+	std.Number.setZero(result);
 	if (priv.sign == 0) return OK;
 	
 	u64 
@@ -207,7 +193,7 @@ static errvt std_Number_shiftDigitsRight(std_Number* result, std_Number* self, i
 		size = std.List.Size(priv.digits);
 	
 	if (size + shift_blocks > priv.precision) {
-	    std_Number_setZero(result);
+	    std.Number.setZero(result);
 	    return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	}
 	
@@ -220,12 +206,12 @@ static errvt std_Number_shiftDigitsRight(std_Number* result, std_Number* self, i
 	loop(i, shift_blocks)
 	    res_digitsptr[i] = 0;
 	
-	std_Number_clearLeadingZeros(result);
+	Internal.clearLeadingZeros(result);
 return OK;
 }
 
 
-static errvt std_Number_Copy(std_Number* dest, std_Number* src) {
+errvt moduleFn(Copy)(std_Number* dest, std_Number* src) {
 
 	nonull(dest, src){ return err; }
 
@@ -234,4 +220,3 @@ static errvt std_Number_Copy(std_Number* dest, std_Number* src) {
 
 return OK;
 }
-

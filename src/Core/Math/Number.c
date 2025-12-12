@@ -7,14 +7,13 @@ from(std,
     	use(List)
 );
 
-
 #define HIDE_USE
-#include "Number/BigInteger/operations.c"
-#include "Number/BigInteger/format.c"
-#include "Number/BigInteger/parse.c"
-#include "Number/BigFloat/operations.c"
-#include "Number/BigFloat/format.c"
-#include "Number/BigFloat/parse.c"
+#include "BigInteger/operations.c"
+#include "BigInteger/format.c"
+#include "BigInteger/parse.c"
+#include "BigFloat/operations.c"
+#include "BigFloat/format.c"
+#include "BigFloat/parse.c"
 
 #define module std, Number
 
@@ -29,11 +28,11 @@ from(std,
 	  if(!apriv.floating){						\
 	    tempList = copy(apriv.digits, push_alloc(List));		\
 	    a = makeTempNum(tempList, apriv.precision);			\
-	    std.Number.castToFloat(a);					\
+	    std.Number.Cast.toFloat(a);					\
 	  } else {							\
 	    tempList = copy(bpriv.digits, push_alloc(List));		\
 	    b = makeTempNum(tempList, bpriv.precision);			\
-	    std.Number.castToFloat(b);					\
+	    std.Number.Cast.toFloat(b);					\
 	  }								\
 	}
 
@@ -69,7 +68,7 @@ errvt moduleMethod(std_Number, AddInto, Number* a, Number* b){
 		return OK;
 	}
 
-	List* tempList = NULL;
+	List* tempList = nil;
 
 	ensureNumberCompatibility()
 
@@ -121,7 +120,7 @@ errvt moduleMethod(std_Number, SubtractInto, Number* a, Number* b){
 		return OK;
 	}
 
-	List* tempList = NULL;
+	List* tempList = nil;
 	
 	ensureNumberCompatibility()
 
@@ -165,13 +164,13 @@ errvt moduleMethod(std_Number, MultiplyInto, Number* a, Number* b){
 	// The maximum size of the product can be the sum of sizes of operands.
 	// Ensure result array has enough space.
 	if (std.List.Size(apriv.digits) + std.List.Size(bpriv.digits) > apriv.precision) {
-		return ERR(DATAERR_OUTOFRANGE, "number overflows");
+		return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	}
 	std.List.Reserve(priv.digits, RESERVE_EXACT,
 		elements(priv.digits) + elements(bpriv.digits));
 
 
-	List* tempList = NULL;
+	List* tempList = nil;
 
 	ensureNumberCompatibility()
 
@@ -211,7 +210,7 @@ errvt moduleMethod(std_Number, DivideInto,   Number* a, Number* b, Number* remai
 	nonull(a, b, remainder){ return err; }
 
 	if (isZero(b)) {
-		return ERR(ERR_INVALID, "cannot divide by 0");
+		return ERR(ERR.INVALID, "cannot divide by 0");
 	}else if (isZero(a)) {
 		return OK;
 	}
@@ -221,7 +220,7 @@ errvt moduleMethod(std_Number, DivideInto,   Number* a, Number* b, Number* remai
 	
 	switch(std.Number.Compare(a, b)) {
 	// If abs(dividend) < abs(divisor), result is 0, remainder is dividend.
-	case NUM_LESSER:
+	case std_Number_Equality_LESSER:
 		std.List.Append(
 			rmpriv.digits, 
 			std.List.GetPointer(apriv.digits, 0), 
@@ -229,12 +228,12 @@ errvt moduleMethod(std_Number, DivideInto,   Number* a, Number* b, Number* remai
 		);
 	break;
 	// If abs(dividend) == abs(divisor), result is 1 (with appropriate sign), remainder is 0.
-	case NUM_EQUALS:
+	case std_Number_Equality_EQUALS:
 		*(u32*)index(priv.digits, 0) = 1;
 		priv.sign = (apriv.sign == bpriv.sign) ? 1 : -1;
 	break;
 	default:{
-		List* tempList = NULL;
+		List* tempList = nil;
 
 		ensureNumberCompatibility()
 
@@ -257,20 +256,25 @@ return OK;
 
 }
 std_numEquality moduleMethod(std_Number, Compare, Number* other) {
-	nonull(other, self){ return NUM_NULL; }
+	nonull(other, self){ return std.Number.Equality.INVALID; }
 	
 	// Handle zero cases first
-	if (isZero(self) && isZero(other)) return NUM_EQUALS; 			 // Both are zero
-	if (isZero(self))  return (opriv.sign == 1) ? NUM_LESSER : NUM_GREATER; // 0 < positive, 0 > negative
-	if (isZero(other)) return (priv.sign == 1) ? NUM_GREATER : NUM_LESSER;  // positive > 0, negative < 0
+	if (isZero(self) && isZero(other)) 
+		return  std.Number.Equality.EQUALS; 			 // Both are zero
+	if (isZero(self))  
+		return (opriv.sign == 1) ?
+			std.Number.Equality.LESSER : std.Number.Equality.GREATER; // 0 < positive, 0 > negative
+	if (isZero(other)) 
+		return (priv.sign == 1) ? 
+			std.Number.Equality.GREATER : std.Number.Equality.LESSER;  // positive > 0, negative < 0
 	
 	
 	// Different signs: positive is always greater than negative
-	if (priv.sign == 1 && opriv.sign == -1) return NUM_GREATER;
-	if (priv.sign == -1 && opriv.sign == 1) return -NUM_LESSER;
+	if (priv.sign == 1 && opriv.sign == -1) return std.Number.Equality.GREATER;
+	if (priv.sign == -1 && opriv.sign == 1) return -std.Number.Equality.LESSER;
 	
 	// Same signs: compare absolute values
-	std_numEquality cmp_abs = std_Number_absoluteCompare(self, other);
+	std_Equality cmp_abs = std_Number_absoluteCompare(self, other);
 	if (priv.sign == 1) {
 	    return cmp_abs; // Both positive: direct comparison of absolute values
 	} else {
@@ -291,43 +295,6 @@ errvt  moduleMethod(std_Number, zeroOut){
 
 return OK;
 }
-
-float moduleMethod(std_Number, castToFloat){
-	if(!priv.floating) std.Number.castToBigFloat(self);
-}
-double moduleMethod(std_Number, castToLongFloat){
-	if(!priv.floating) std.Number.castToBigFloat(self);
-}
-i32 moduleMethod(std_Number, castToInt){
-	if(priv.floating) std.Number.castToBigInt(self);
-	
-	i64 result = 0;
-	
-	iferr(std.List.Index(priv.digits, LISTINDEX_READ, 0, sizeof(u64) / sizeof(u32),&result)){
-		return 0;
-	}
-return 
-	result > maxof(i32) ? maxof(i32) :
-	result < minof(i32) ? minof(i32) : 
-	priv.sign == -1 ? -result : result;
-}
-i64 moduleMethod(std_Number, castToLongInt){
-	if(priv.floating) std.Number.castToBigInt(self);
-
-	i64 result = 0;
-	
-	iferr(std.List.Index(priv.digits, LISTINDEX_READ, 0, sizeof(u64) / sizeof(u32),&result)){
-		return 0;
-	}
-
-return elements(priv.digits) > sizeof(u64) / sizeof(u32) ?
-	priv.sign == -1 ? minof(u64) : maxof(u64) :
-	priv.sign == -1 ? -result : result;
-}
-
-
-
-
 
 PRINT(std_Number){
 	if(priv.floating)

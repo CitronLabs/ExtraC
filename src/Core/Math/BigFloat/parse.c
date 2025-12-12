@@ -1,5 +1,6 @@
 #pragma once
-#include "../utils.h"
+#include <Core/pkg.c>
+#include "../__Internal/pkg.c"
 
 #ifndef HIDE_USE
 from(std,
@@ -8,11 +9,9 @@ from(std,
 )
 #endif
 
-u64 std_Number_IntScan(std_Number *self, Number_FormatArgs *format, Stream *in);
-
 u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 	
-	std_Number_setZero(self); // Initialize to 0.0
+	std.Number.setZero(self); // Initialize to 0.0
 	
 	rune c = 0;
 	len_t prev_pos = size(in);
@@ -70,12 +69,12 @@ u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 		// If no digits were found at all (e.g., just ".", "+.", "-."), treat as zero
 		if (size(mantissa) == 0) {
 			pop(mantissa);
-			std_Number_setZero(self);
+			std.Number.setZero(self);
 			process->end();
 			return prev_pos - size(in);
 		}
 		
-		std_Number_IntScan(self, nil, mantissa);
+		Internal.IntScan(self, nil, mantissa);
 		
 		// Calculate initial exponent based on decimal point
 		if (decimal_point_pos != -1) {
@@ -111,7 +110,7 @@ u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 			priv.exponent += (i64)parsed_exp_val * exp_sign;
 		}
 		
-		std_Number_clearLeadingZeros(self); 
+		Internal.clearLeadingZeros(self); 
 
 		pop(mantissa);
 

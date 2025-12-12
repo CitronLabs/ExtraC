@@ -1,5 +1,6 @@
 #pragma once
-#include "../utils.h"
+#include <Core/pkg.c>
+#include "../__Internal/pkg.c"
 
 
 errvt moduleMethod(std_Number, SetPrecision, u64 new_precision) {
@@ -8,20 +9,20 @@ errvt moduleMethod(std_Number, SetPrecision, u64 new_precision) {
 	priv.precision = new_precision;
 	
 	if (isZero(self)) {
-		std_Number_clearLeadingZeros(self); // Ensure it's truly 0.0
+		Internal.clearLeadingZeros(self); // Ensure it's truly 0.0
 		return OK;
 	}
 
 	u32 digits_count = std.List.Size(priv.digits);
 	if (digits_count > new_precision) std.List.Pop(priv.digits, digits_count);
 	
-	std_Number_clearLeadingZeros(self);
+	Internal.clearLeadingZeros(self);
 return OK;
 }
-errvt std_Number_AlignExponents(std_Number* a, std_Number* b) {
-    
-return	(apriv.exponent > bpriv.exponent) ? std_Number_shiftDigitsRight(b, b, apriv.exponent - bpriv.exponent) :
-	(bpriv.exponent > apriv.exponent) ? std_Number_shiftDigitsRight(a, a, bpriv.exponent - apriv.exponent) :
+
+static errvt alignExponents(std_Number* a, std_Number* b) {
+return	(apriv.exponent > bpriv.exponent) ? Internal.shiftDigitsRight(b, b, apriv.exponent - bpriv.exponent) :
+	(bpriv.exponent > apriv.exponent) ? Internal.shiftDigitsRight(a, a, bpriv.exponent - apriv.exponent) :
 	OK;
 }
 errvt moduleMethod(std_Number, FloatSubtract, std_Number* other, std_Number* result);
@@ -31,17 +32,17 @@ errvt moduleMethod(std_Number, FloatAdd, std_Number* other, std_Number* result) 
 	if (priv.sign != opriv.sign) {
 		std_Number* temp_other = makeTempNum(opriv.digits, opriv.precision);
 		temp_other->__private.sign *= -1;
-		return std_Number_FloatSubtract(self, temp_other, result);
+		return std.Number.BigFloat.Add(self, temp_other, result);
 	}
 
 	std_Number
 	* temp_other = makeTempNum(copy(opriv.digits, new_alloc(std_List)), opriv.precision),
 	* temp_self  = makeTempNum(copy(opriv.digits, new_alloc(std_List)), priv.precision);
 	
-	iferr(std_Number_AlignExponents(temp_self, temp_other)){
+	iferr(alignExponents(temp_self, temp_other)){
 		return err;
 	}
-	iferr(std_Number_absoluteAdd(result, temp_self, temp_other)){
+	iferr(Internal.absoluteAdd(result, temp_self, temp_other)){
 		return err;
 	}
 
@@ -61,24 +62,24 @@ errvt moduleMethod(std_Number, FloatSubtract, std_Number* other, std_Number* res
 	if (priv.sign != opriv.sign) {
 		std_Number* temp_other = makeTempNum(opriv.digits, opriv.precision);
 		temp_other->__private.sign *= -1;
-		return std_Number_FloatAdd(self, temp_other, result);
+		return std.Number.BigFloat.Add(self, temp_other, result);
 	}
 
 	std_Number
 	* temp_other = makeTempNum(copy(opriv.digits, new_alloc(std_List)), opriv.precision),
 	* temp_self  = makeTempNum(copy(opriv.digits, new_alloc(std_List)), priv.precision);
 	
-	iferr(std_Number_AlignExponents(temp_self, temp_other)){
+	iferr(alignExponents(temp_self, temp_other)){
 		return err;
 	}
-	switch(std_Number_absoluteCompare(temp_self, temp_other)){
-	case NUM_GREATER:{
-		iferr(std_Number_absoluteSub(self, temp_self, temp_other)){return err;}
+	switch(Internal.absoluteCompare(temp_self, temp_other)){
+	case std_Number_Equality_GREATER:{
+		iferr(Internal.absoluteSub(self, temp_self, temp_other)){return err;}
 		rpriv.sign 	= temp_self->__private.sign;
 	break;}
-	case NUM_EQUALS:
-	case NUM_LESSER:{
-		iferr(std_Number_absoluteSub(self, temp_other, temp_self)){return err;}
+	case std_Number_Equality_EQUALS:
+	case std_Number_Equality_LESSER:{
+		iferr(Internal.absoluteSub(self, temp_other, temp_self)){return err;}
 		rpriv.sign 	= temp_self->__private.sign * -1;
 	break;}
 	default:{return ERR(ERR.INVALID, "invalid comparision");}
@@ -95,7 +96,7 @@ return OK;
 
 errvt moduleMethod(std_Number, FloatMultiply, std_Number* other, std_Number* result) {
     // Perform integer multiplication on the digits
-    errvt status = std_Number_absoluteMultiply(result, self, other);
+    errvt status = Internal.absoluteMultiply(result, self, other);
     rpriv.floating = 1;
     rpriv.exponent = priv.exponent + opriv.exponent;
     rpriv.sign = (priv.sign == opriv.sign) ? 1 : -1;
@@ -141,21 +142,22 @@ errvt moduleMethod(std_Number, FloatDivide, std_Number* other, std_Number* remai
 			reserr = err; goto exit;
 		}
 
-			std_Number_clearLeadingZeros(tempRemainder);
+			Internal.clearLeadingZeros(tempRemainder);
 
 
 
-			iferr(std_Number_multiplyByDigit(tempProduct, other, q_hat)){
+			iferr(Internal.multiplyByDigit(tempProduct, other, q_hat)){
 			reserr = err; goto exit;
 		}
-			while (std_Number_absoluteCompare(tempProduct, tempRemainder) == NUM_GREATER) {
+			while (Internal.absoluteCompare(tempProduct, tempRemainder) 
+					== std.Number.Equality.GREATER) {
 				q_hat--;
-				iferr(std_Number_multiplyByDigit(tempProduct, other, q_hat)){
+				iferr(Internal.multiplyByDigit(tempProduct, other, q_hat)){
 				reserr = err; goto exit;
 			}
 			}
 	
-			iferr(std_Number_absoluteSub(tempRemainder, tempRemainder, tempProduct)){
+			iferr(Internal.absoluteSub(tempRemainder, tempRemainder, tempProduct)){
 			reserr = err; goto exit;
 		}
 
@@ -167,12 +169,12 @@ errvt moduleMethod(std_Number, FloatDivide, std_Number* other, std_Number* remai
 	std_Number* productQuotientB = tempRemainder; // reusing temp remainders list to avoid extra allocations
 	
 	// Remainder = a - (quotient_temp * b)
-	std_Number_FloatMultiply(result, other, productQuotientB);	
-	std_Number_FloatSubtract(self, productQuotientB, remainder);
+	std.Number.BigFloat.Multiply(result, other, productQuotientB);	
+	std.Number.BigFloat.Multiply(self, productQuotientB, remainder);
 	
 	// The sign of the remainder should be the same as the sign of the dividend (a).
 	rpriv.sign = priv.sign;
-	std_Number_clearLeadingZeros(remainder);
+	Internal.clearLeadingZeros(remainder);
 	
 	// Determine sign of the result
 	rpriv.sign = (priv.sign == opriv.sign) ? 1 : -1;

@@ -1,7 +1,7 @@
 #pragma once
-#include "../utils.h"
+#include <Core/pkg.c>
+#include "../__Internal/pkg.c"
 
-u64 std_Number_IntPrintDeci(std_Number *self, std_Stream *out);
 u64 moduleMethod(std_Number, FloatPrint, std_Stream* out) {
 
     	u64 formatted_len = 0;
@@ -20,7 +20,7 @@ u64 moduleMethod(std_Number, FloatPrint, std_Stream* out) {
 		return 0;
 	}
 
-	if((mantissa_len = std_Number_IntPrintDeci(self, mantissa_strm)) == 0){
+	if((mantissa_len = Internal.IntPrintDeci(self, mantissa_strm)) == 0){
 		pop(mantissa_strm);
 		ERR(ERR.FAIL, "failed to parse mantissa");
 		return 0;

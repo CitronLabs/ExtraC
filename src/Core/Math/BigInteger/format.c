@@ -1,5 +1,6 @@
 #pragma once
-#include "../utils.h"
+#include <Core/pkg.c>
+#include "../__Internal/pkg.c"
 
 static u32 std_Number_divide_smallInt(std_Number* self, u32 divisor) {
 	if (priv.sign == 0 || divisor == 0) {
@@ -12,10 +13,9 @@ static u32 std_Number_divide_smallInt(std_Number* self, u32 divisor) {
 	u32* digits = std.List.GetPointer(priv.digits, 0);
 
 	for (int i = digits_count - 1; i >= 0; i--) {
-		u64 current_digit_val;
-		std.List.Index(priv.digits, LISTINDEX_READ, i, 1, &current_digit_val);
+		u32* current_digit_val = index(priv.digits, i);
 		
-		u64 combined_val = (remainder << 32) + current_digit_val;
+		u64 combined_val = (remainder << 32) + *current_digit_val;
 		
 		u32 quotient_digit = (u32)(combined_val / divisor);
 		remainder = combined_val % divisor;
@@ -23,7 +23,7 @@ static u32 std_Number_divide_smallInt(std_Number* self, u32 divisor) {
 		digits[i] = quotient_digit;
 	}
 	
-	std_Number_clearLeadingZeros(self);
+	Internal.clearLeadingZeros(self);
 	return (u32)remainder;
 }
 
@@ -35,12 +35,12 @@ u64 moduleMethod(std_Number, IntPrintDeci, std_Stream* out) {
 
 	std_List* temp_list = pushList(u32, 10);
 	std_Number* temp_num = makeTempNum(temp_list, priv.precision);
-	std_Number_Copy(temp_num, self);
+	Internal.Copy(temp_num, self);
 	
 	List(u32) digit_chunks = pushList(u32, 10);
 	
 	while(temp_num->__private.sign != 0) {
-		u32 remainder = std_Number_divide_smallInt(temp_num, POWER_OF_10);
+		u32 remainder = Internal.divide_smallInt(temp_num, POWER_OF_10);
 		std.List.Append(digit_chunks, &remainder, 1);
 	}
 	
