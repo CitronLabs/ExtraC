@@ -54,9 +54,6 @@ typedef uword errvt;
 
 #define nil __XC_NIL
 
-#undef bool
-typedef _Bool bool;
-
 typedef void* pntr;
 typedef const void* constpntr;
 

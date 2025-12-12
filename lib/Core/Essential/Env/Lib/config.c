@@ -19,7 +19,7 @@
 #define __XC_LEN_TYPE	unsigned long long
 #define __XC_RUNE_TYPE  int
 
-#define __XC_VAR_TYPE  __auto_type
+#define __XC_VAR_TYPE  auto
 
 #define __XC_NIL	((void*)0)
 
