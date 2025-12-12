@@ -1,7 +1,10 @@
 #include <Core/pkg.c>
+#include <XC/pkg.c>
 #define module std, Date
 
 #include "./Formats.c"
+
+alias(XC.Dev.Register, Reg);
 
 bool moduleMethod(std_Date, isValid){
 	return 
@@ -27,12 +30,10 @@ std_Time* moduleMethod(std_Date, toTime){
 
 return new(std_Time, .seconds = seconds, .nanosec = this.nanosec);
 }
+
 const char* moduleMethod(std_Date, getDayName){
 	XC_Locale_Data* locale = 
-		XC.Dev.Register.access( 
-		     XC.Dev.Register.stdHandle
-			(XC.Dev.Register.ID.Locale)
-		 );
+	    Reg.access(Reg.stdHandle(Reg.ID.Locale));
 
  	static int monthCode[] = {6, 2, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
 
@@ -48,10 +49,7 @@ return locale->Time.day_names[(this.day + monthCode[this.month - 1] + yearCode) 
 
 const char* moduleMethod(std_Date, getMonthName){
 	XC_Locale_Data* locale = 
-		XC.Dev.Register.access( 
-		     XC.Dev.Register.stdHandle
-			(XC.Dev.Register.ID.Locale)
-		 );
+	    Reg.access(Reg.stdHandle(Reg.ID.Locale));
 
 	if(this.month > 12) { 
 		ERR(ERR.INVALID, "invalid date input");

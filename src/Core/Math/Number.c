@@ -52,7 +52,7 @@ return result;
 errvt moduleMethod(std_Number, AddInto, Number* a, Number* b){
 	nonull(a, b){ return err; }
 
-	std_Number_setZero(self);
+	std.Number.setZero(self);
 
 	// Handle cases where one of the operands is zero
 	if (isZero(a) || isZero(b)) {
@@ -64,7 +64,7 @@ errvt moduleMethod(std_Number, AddInto, Number* a, Number* b){
 		if(apriv.floating || bpriv.floating)
 			priv.exponent = apriv.floating ? apriv.exponent : bpriv.exponent;
 		
-		std_Number_clearLeadingZeros(self);
+		Internal.clearLeadingZeros(self);
 		return OK;
 	}
 
@@ -74,9 +74,9 @@ errvt moduleMethod(std_Number, AddInto, Number* a, Number* b){
 
 
 	if(apriv.floating)
-		std_Number_FloatAdd(a, b, self);
+		std.Number.BigFloat.Add(a, b, self);
 	else
-		std_Number_IntAdd(a, b, self);
+		std.Number.BigInt.Add(a, b, self);
 
 	if(tempList) 
 	    { del(tempList); }
@@ -103,7 +103,7 @@ return result;
 errvt moduleMethod(std_Number, SubtractInto, Number* a, Number* b){
 	nonull(a, b){ return err; }
 	
-	std_Number_setZero(self);
+	std.Number.setZero(self);
 
 	// Handle cases where one of the operands is zero
 	if (isZero(b) || isZero(a)) {
@@ -116,7 +116,7 @@ errvt moduleMethod(std_Number, SubtractInto, Number* a, Number* b){
 		std.List.Pop(priv.digits, 1);
 		std.List.Insert(priv.digits, 0, elements(zero_operand), std.List.GetPointer(zero_operand, 0));
 		
-		std_Number_clearLeadingZeros(self);
+		Internal.clearLeadingZeros(self);
 		return OK;
 	}
 
@@ -125,9 +125,9 @@ errvt moduleMethod(std_Number, SubtractInto, Number* a, Number* b){
 	ensureNumberCompatibility()
 
 	    if(apriv.floating)
-	    	std_Number_FloatSubtract(a, b, self);
+	    	std.Number.BigFloat.Subtract(a, b, self);
 	    else
-	    	std_Number_IntSubtract(a, b, self);
+	    	std.Number.BigInt.Subtract(a, b, self);
 
 	    if(tempList) 
 		{ del(tempList); }
@@ -155,7 +155,7 @@ return result;
 errvt moduleMethod(std_Number, MultiplyInto, Number* a, Number* b){
 	nonull(a, b){ return err; }
 	
-	std_Number_setZero(self);
+	std.Number.setZero(self);
 	
 	if (isZero(a) || isZero(b)) {
 		return OK;
@@ -175,9 +175,9 @@ errvt moduleMethod(std_Number, MultiplyInto, Number* a, Number* b){
 	ensureNumberCompatibility()
 
 	    if(apriv.floating)
-	    	std_Number_FloatMultiply(a, b, self);
+	    	std.Number.BigFloat.Multiply(a, b, self);
 	    else
-	    	std_Number_IntMultiply(a, b, self);
+	    	std.Number.BigInt.Multiply(a, b, self);
 
 	    if(tempList) 
 		{ del(tempList); }
@@ -215,8 +215,8 @@ errvt moduleMethod(std_Number, DivideInto,   Number* a, Number* b, Number* remai
 		return OK;
 	}
 	
-	std_Number_setZero(remainder); // Remainder is zero
-	std_Number_setZero(self);
+	std.Number.setZero(remainder); // Remainder is zero
+	std.Number.setZero(self);
 	
 	switch(std.Number.Compare(a, b)) {
 	// If abs(dividend) < abs(divisor), result is 0, remainder is dividend.
@@ -238,9 +238,9 @@ errvt moduleMethod(std_Number, DivideInto,   Number* a, Number* b, Number* remai
 		ensureNumberCompatibility()
 
 		    if(apriv.floating)
-		    	std_Number_FloatDivide(a, b, remainder, self);
+		    	std.Number.BigFloat.Divide(a, b, remainder, self);
 		    else
-		    	std_Number_IntDivide(a, b, remainder, self);
+		    	std.Number.BigInt.Divide(a, b, remainder, self);
 
 		    if(tempList) 
 			{ del(tempList); }
@@ -255,7 +255,7 @@ return OK;
 
 
 }
-std_numEquality moduleMethod(std_Number, Compare, Number* other) {
+std_Equality moduleMethod(std_Number, Compare, Number* other) {
 	nonull(other, self){ return std.Number.Equality.INVALID; }
 	
 	// Handle zero cases first
@@ -274,7 +274,7 @@ std_numEquality moduleMethod(std_Number, Compare, Number* other) {
 	if (priv.sign == -1 && opriv.sign == 1) return -std.Number.Equality.LESSER;
 	
 	// Same signs: compare absolute values
-	std_Equality cmp_abs = std_Number_absoluteCompare(self, other);
+	std_Equality cmp_abs = Internal.absoluteCompare(self, other);
 	if (priv.sign == 1) {
 	    return cmp_abs; // Both positive: direct comparison of absolute values
 	} else {
@@ -291,29 +291,29 @@ return priv.floating;
 errvt  moduleMethod(std_Number, zeroOut){
 	nonull(self){ return err; } 
 
-	std_Number_setZero(self); 
+	std.Number.setZero(self); 
 
 return OK;
 }
 
 PRINT(std_Number){
 	if(priv.floating)
-		return std_Number_FloatPrint(self, out);
+		return Internal.FloatPrint(self, out);
 	else
 	    switch(format->base){
 	    case 1:
-		return std_Number_IntPrintBin(self, out); break;
+		return Internal.IntPrintBin(self, out); break;
 	    case 6:
-		return std_Number_IntPrintHex(self, out); break;
+		return Internal.IntPrintHex(self, out); break;
 	    case 10:
 	    default:
-		return std_Number_IntPrintDeci(self, out); break;
+		return Internal.IntPrintDeci(self, out); break;
 	    }
 }
 SCAN(std_Number){
 	return format->floating ? 
-		std_Number_FloatScan(self, format, in) : 
-		std_Number_IntScan(self, format, in)
+		Internal.FloatScan(self, format, in) : 
+		Internal.IntScan(self, format, in)
 	;
 }
 

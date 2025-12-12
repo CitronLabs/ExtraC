@@ -15,7 +15,7 @@ std_String* moduleMethod(std_StringBuilder, GetStr){
 
 	std.List.Append(priv.data, &(u8){0}, 1);
 
-	String_Instance result = {
+	std_String result = {
 		.__methods = &String, .__init = true, .__private = &priv.interalStrPriv,
 		.len = priv.len,	
 		.txt.data.utf8 = std.List.GetPointer(priv.data, 0)

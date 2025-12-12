@@ -30,5 +30,7 @@ Module(Internal){
 	u64 fn(IntPrintBin)(std_Number* self, std_Stream* out);
 
 	u64 fn(IntScan)(std_Number* self, std_Number_FormatArgs* format, std_Stream* out);
-	
+
+	u64 fn(FloatScan)(std_Number* self, std_Number_FormatArgs* format, std_Stream* out);
+	u64 fn(FloatPrint)(std_Number* self, std_Stream* out);
 };
