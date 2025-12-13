@@ -1,4 +1,3 @@
-#include "../../os.h"
 
 Interface(Server,
 	errvt imethod(handlePacket, inst(Connection) client, inst(Packet) packet);
