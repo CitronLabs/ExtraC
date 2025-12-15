@@ -7,7 +7,7 @@
 
 #define pntr_shift(ptr, shift_amt) ptr = ((pntr)(&(((u8*)ptr)[shift_amt])))
 #define pntr_shiftcpy(ptr, shift_amt) ((pntr)(&(((u8*)ptr)[shift_amt])))
-#define pntr_asVal(addr) (*(u64*)&addr)
+#define pntr_asVal(addr) (*(pntrval*)&addr)
 #define pntr_dist(a, b) (pntr_asVal(b) - pntr_asVal(a))
 
 #define usign_max(type) (~(type){0})   

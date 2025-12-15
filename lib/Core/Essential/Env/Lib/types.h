@@ -45,7 +45,6 @@ typedef unsigned __XC_BYTE_TYPE ubyte;
 
 typedef __XC_RUNE_TYPE rune;
 
-typedef void* var;
 #define var __XC_VAR_TYPE
 
 typedef struct { len_t size; __XC_VARGS_TYPE* data; } vargs;
@@ -54,8 +53,9 @@ typedef uword errvt;
 
 #define nil __XC_NIL
 
-typedef void* pntr;
-typedef const void* constpntr;
+typedef void* 			pntr;
+typedef const void* 	  	constpntr;
+typedef __XC_PNTRVAL_TYPE 	pntrval;
 
 typedef struct __xc_stateData* stateData;
 

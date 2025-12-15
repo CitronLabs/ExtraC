@@ -43,6 +43,7 @@ asXCType(strc32)
 //pointer types
 asXCType(pntr)
 asXCType(constpntr)
+asXCType(pntrval)
 
 //boolean types
 asXCType(bool)

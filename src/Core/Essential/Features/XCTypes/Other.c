@@ -155,3 +155,22 @@ DEF(),
 	.Write   = nil,
 	.Read 	 = nil,
 ){ passover }
+
+#undef module
+#define module constpntr
+
+construct(constpntr,
+FMT(),
+DEF(),
+	.Scan    = generic pntr_Op_Scan,
+	.Print   = generic pntr_Op_Print,
+	.Hash    = generic pntr_Op_Hash,
+	.Size    = generic pntr_Op_Size,
+	.Copy    = generic pntr_Op_Copy,
+	.Create  = generic pntr_Op_Create,
+	.Destroy = generic pntr_Op_Destroy,
+	.Set	 = generic pntr_Op_Set,
+	.Iter 	 = nil,
+	.Write   = nil,
+	.Read 	 = nil,
+);

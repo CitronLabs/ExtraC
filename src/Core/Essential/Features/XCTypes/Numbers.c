@@ -177,16 +177,17 @@ DEF(),
 -----------------------------------------------*/
 
 
-#define u32_TXT_BUFF_SIZE 11
-#define i32_TXT_BUFF_SIZE 12
-#define u64_TXT_BUFF_SIZE 21
-#define i64_TXT_BUFF_SIZE 21
-#define i16_TXT_BUFF_SIZE 7
-#define u16_TXT_BUFF_SIZE 6
-#define i8_TXT_BUFF_SIZE  5
-#define u8_TXT_BUFF_SIZE  4
+#define u32_TXT_BUFF_SIZE 	11
+#define i32_TXT_BUFF_SIZE 	12
+#define u64_TXT_BUFF_SIZE 	21
+#define i64_TXT_BUFF_SIZE 	21
+#define i16_TXT_BUFF_SIZE 	7
+#define u16_TXT_BUFF_SIZE 	6
+#define i8_TXT_BUFF_SIZE  	5
+#define u8_TXT_BUFF_SIZE  	4
 
-#define len_t_TXT_BUFF_SIZE 21
+#define len_t_TXT_BUFF_SIZE 	21
+#define pntrval_TXT_BUFF_SIZE 	21
 
 #define __PRINT_INT(type, formatter) 		\
 PRINT(type) {					\
@@ -300,10 +301,22 @@ DEF(),						\
 ){ passover }
 
 #undef module
+#define module pntrval
+
+__PRINT_INT(pntrval, "%llu");
+__SCAN_INT(pntrval, L"%u");
+__COPY_INT(pntrval);
+__SET_INT(pntrval);
+__HASH_INT(pntrval);
+__SIZE_INT(pntrval);
+__DESTROY_INT(pntrval);
+__CONSTRUCT_INT(pntrval);
+
+#undef module
 #define module len_t
 
-__PRINT_INT(len_t,"%llu");
-__SCAN_INT(len_t,L"%u");
+__PRINT_INT(len_t, "%llu");
+__SCAN_INT(len_t, L"%u");
 __COPY_INT(len_t);
 __SET_INT(len_t);
 __HASH_INT(len_t);
