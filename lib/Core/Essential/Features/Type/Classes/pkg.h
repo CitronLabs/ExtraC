@@ -227,14 +227,46 @@
 
 #undef Interface
 
-#define Interface(name, ...) 				\
-	typedef const struct ___(package,name##_Interface)	\
-	{__VA_ARGS__} ___(package,name##_Interface);	\
+#define Interface(name, ...) 											\
+	typedef const struct ___(package,name##_Interface)							\
+	{__VA_ARGS__} ___(package,name##_Interface);								\
+	typedef struct ___(package, name##_Interface) ___(package, name##_Interface##_ConstructArgs);		\
+	typedef struct ___(package, name##_Interface) ___(package, name##_Interface##_FormatArgs);		\
+	static const char ___(package, name##_Interface##_TypeID)[] = #name;					\
+	typedef struct ___(package,name##_Interface##_Ops_t) {OPERATOR_FUNCS(___(package, name##_Interface))}	\
+	___(package,name##_Interface##_Ops_t);									\
+	static const ___(package,name##_Interface##_Ops_t) ___(package,name##_Interface##_OpsImpl) = {0};	\
+	typedef struct ___(package,name##_Interface##_Type_t){							\
+		___(package,name##_Interface##_Ops_t)* ops;							\
+		const len_t size;										\
+		const char* id;											\
+		const ___(package, name##_Interface##_FormatArgs)* format;					\
+		const ___(package, name##_Interface##_ConstructArgs)* construct;				\
+	}___(package,name##_Interface##_Type_t);  								\
+	static const ___(package,name##_Interface##_Type_t) ___(package,name##_Interface##_TypeData) = {0};	\
+	static const ___(package,name##_Interface##_Type_t)* ___(package,name##_Interface##_Type) = 		\
+		&___(package,name##_Interface##_TypeData);
 
 
-#define VTable(name, ...) 				\
-	typedef struct ___(package,name##_Interface)	\
-	{__VA_ARGS__} ___(package,name##_Interface);	\
+#define VTable(name, ...) 											\
+	typedef struct ___(package,name##_Interface)								\
+	{__VA_ARGS__} ___(package,name##_Interface);								\
+	typedef struct ___(package, name##_Interface) ___(package, name##_Interface##_ConstructArgs);		\
+	typedef struct ___(package, name##_Interface) ___(package, name##_Interface##_FormatArgs);		\
+	static const char ___(package, name##_Interface##_TypeID)[] = #name;					\
+	typedef struct ___(package,name##_Interface##_Ops_t) {OPERATOR_FUNCS(___(package, name##_Interface))}	\
+	___(package,name##_Interface##_Ops_t);									\
+	static const ___(package,name##_Interface##_Ops_t) ___(package,name##_Interface##_OpsImpl) = {0};	\
+	typedef struct ___(package,name##_Interface##_Type_t){							\
+		___(package,name##_Interface##_Ops_t)* ops;							\
+		const len_t size;										\
+		const char* id;											\
+		const ___(package, name##_Interface##_FormatArgs)* format;					\
+		const ___(package, name##_Interface##_ConstructArgs)* construct;				\
+	}___(package,name##_Interface##_Type_t);  								\
+	static const ___(package,name##_Interface##_Type_t) ___(package,name##_Interface##_TypeData) = {0};	\
+	static const ___(package,name##_Interface##_Type_t)* ___(package,name##_Interface##_Type) = 		\
+		&___(package,name##_Interface##_TypeData);
 
 #define private(...) struct {__VA_ARGS__} __private;  	\
 
