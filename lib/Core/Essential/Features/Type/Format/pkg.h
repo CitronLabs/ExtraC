@@ -12,6 +12,7 @@
 #define fmt_skip ((pntr)__SKIP_VALUE)
 #define fmt_end  ((pntr)__END_VALUE)
 
+
 #define f (*format)
 
 #define __AS_FMT_OBJ(var) 			\
@@ -71,6 +72,8 @@ default: 	var)
 #define scanln(...) 	 scanFrom(std.Stream.stdIn(), __VA_ARGS__ , "\n") 
 
 #define package std_Types_Format
+
+type_array(pntr, Args,)
 
 Data(Value,
 INIT(),
