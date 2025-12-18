@@ -1,29 +1,13 @@
 #include <Core/pkg.h>
 
 
-#include "Rendering/lib/pkg.h"
-#include "Testing/lib/pkg.h"
+#include "Testing/lib/LabRat.Test/pkg.h"
 
 Module(builtin){
-	interface(rk_render)    render;
-	interface(testing_test) test;
+	interface(labrat_Test) test;
 
 };
 
 #undef package
 
 
-import(builtin)
-
-use(rk, 
-	Terminal,
-    	Screen
-)
-
-void it(){
-	Terminal* term = builtin.render.Terminal.getPrimary();
-
-	Screen* t_scrn = builtin.render.Terminal.getScreen(term);
-
-	
-}
