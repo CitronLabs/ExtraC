@@ -1,23 +1,41 @@
+#include <OS/pkg.c>
+
+from(os_Env,
+	Input_Vec2D     	as Vec2D,
+	Graphics_Handle 	as GraphicsHandle,
+	Graphics_Display_Event  as DisplayEvent,
+)
+
+alias(OSEnv.Graphics.Display, Display)
 
 void test(){
+	std_Array_Queue* evntQueue = newArrayQueue(DisplayEvent, 10);
 
-	inst(Display) window = new(Display,
-		.parent = defaultDisplay,
-		.name = "Test Window :)"
-	);
+	GraphicsHandle window =
+     		Display.init(
+			push(Vec2D, 0,0),
+			push(Vec2D, 1920, 1080),
+			Display.getDefault()
+		);
 
-	if(!isinit(window)){
-		ERR(ERR_INITFAIL, "window is not initialize");
-		return;
-	}
+     	OSEnv.Graphics.handleEvents(window, evntQueue);
 
-	inst(Vulkin) vk = new(Vulkin);
-	
-	Vulkin.Render.setDisplay(generic vk, window);
-	
-	while(Display.isRunning(window)){
-		
-		Vulkin.Render.renderFrame(generic vk);
-		Vulkin.Render.swapBuffers(generic vk);
-	}
+     	bool running = true;
+
+     	while(running){
+	  while(elements(evntQueue)){
+		DisplayEvent evnt;
+
+     		read(evntQueue, &evnt);
+
+     		if  (evnt.type == Display.Event.CLOSE){
+			running = false;
+     			break;
+     		}
+     		elif(evnt.type == Display.Event.RESIZE){
+
+     		}
+
+     	  }
+     	}
 }

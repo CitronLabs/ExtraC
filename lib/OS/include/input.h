@@ -31,12 +31,6 @@ type(inputDevice,
      	arry(keyInput) keyInputs;
 )
 Interface(input,
-	const strc8 stdVersion;
-	arry(inputDevice) vmethod(enumDevices, 	    u64* numDevices);
-	errvt 		  vmethod(freeDevice,       inputHandle handle);
-	inputHandle 	  vmethod(grabDevice, 	    inputDevice* dev);
-	errvt 		  vmethod(handleEvents,     inputHandle handle, Queue(OSEvent) evntQueue);
-	u64 		  vmethod(pollEvents);
 )
 
 enum(InputEvent_Type,

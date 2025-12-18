@@ -19,11 +19,6 @@ FIELD(),
 	
 
 )
-Interface(RenderPrimitives,
-      	errvt imethod(drawRectangle, float x, float y, float w, float h, u16 z, Color Color);
-      	errvt imethod(drawLine,      float x, float y, float x2, float y2, u16 z, Color Color);
-      	errvt imethod(drawPixel,     float x, float y, u16 z, Color Color);
-)
 
 Interface(Render,
 	errvt imethod(setCanvas, inst(Canvas) display);
