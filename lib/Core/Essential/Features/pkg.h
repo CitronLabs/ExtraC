@@ -10,6 +10,7 @@
 #ifndef __XC_FEATURE__
 	#include "utils.h"
 
+	#include "Process/pkg.h"
 	#include "Type/pkg.h"
 	#include "XCTypes/pkg.h"
 	#include "Base/pkg.h"
