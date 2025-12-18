@@ -7,3 +7,6 @@
 [submodule "Testing"]
 	path = lib/Builtin/Testing
 	url = https://github.com/CitronLabs/ExtraC-Test
+[submodule "Network"]
+	path = lib/Builtin/Network
+	url = https://github.com/CitronLabs/Weaver
