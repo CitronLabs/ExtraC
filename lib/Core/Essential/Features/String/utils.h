@@ -1,6 +1,19 @@
 #pragma once
 #include "pkg.h"
 
+#define s(string) push(std_String,			\
+	generic string, chartype(string), 		\
+	(sizeof(string)) - 1,				\
+	true)
+
+#define S(string) new(std_String,			\
+	generic string, chartype(string),		\
+	(sizeof(string)) - 1,				\
+	true)
+
+#define asString(string, max_len) 			\
+	push(std_String, generic string, strsize(string, max_len), true)			
+
 #define cat(...)     (std.String.Cat(push(String), CAT_CSTRING, __VA_ARGS__, endstr))
 #define CAT(...)     (std.String.Cat(new(String), CAT_CSTRING, __VA_ARGS__, endstr))
 

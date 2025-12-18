@@ -6,7 +6,10 @@
 #include "../Base/pkg.h"
 #include "../Stream/pkg.h"
 
+
+#ifndef __XC_STRING__
 #include "utils.h"
+#include "types.h"
 
 #define package std
 
@@ -18,7 +21,12 @@ private(
 	len_t len_bytes; ArrayList(String) views; bool IsView : 1;
 )
 ){	
-	
+	values(Encoding, word,
+		UTF8,
+		UTF16,
+		UTF32,
+		ASCII
+	)
 	submodule(UTF8,
 		len_t fn(charSize) (rune codepoint);
 		errvt fn(decode) (char** start, rune* codepoint);
@@ -57,18 +65,10 @@ private(
 	errvt		method(String, StreamTo, std_Stream* stream);
 };
 
+
+
+
 #undef package
+#endif
 
 
-#define s(string) push(std_String,			\
-	generic string, chartype(string), 		\
-	(sizeof(string)) - 1,				\
-	true)
-
-#define S(string) new(std_String,			\
-	generic string, chartype(string),		\
-	(sizeof(string)) - 1,				\
-	true)
-
-#define asString(string, max_len) 			\
-	push(std_String, generic string, strsize(string, max_len), true)			
