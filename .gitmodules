@@ -10,3 +10,6 @@
 [submodule "Network"]
 	path = lib/Builtin/Network
 	url = https://github.com/CitronLabs/Weaver
+[submodule "Assembly"]
+	path = lib/Builtin/Assembly
+	url = https://github.com/CitronLabs/Diesel
