@@ -13,7 +13,15 @@
 #define Vec2D os_Env_Input_Vec2D
 
 Interface(Graphics,
-	const strc8 stdVersion;
+	values(Version, word,
+		MAJOR,
+		MINOR,
+		PATCH
+	)
+	values(ResourceID, word,
+		DISPLAY,
+		VIDEO
+	)
 	errvt 			fn(initSystem);
 	errvt 			fn(exitSystem);
 	GraphicsHandle 		fn(grabDevice)(GraphicsDevice* device);

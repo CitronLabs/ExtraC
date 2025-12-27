@@ -29,14 +29,13 @@ SOFTWARE.
 #define __EXTRAC_OS__
 
 
+#include "Storage/pkg.h"
 #include "Env/pkg.h"
 #include "Memory/pkg.h"
-#include "Storage/pkg.h"
+#include "Media/pkg.h"
+#include "User/pkg.h"
 #include "Scheduler/pkg.h"
 #include "Network/pkg.h"
-#include "Input/pkg.h"
-#include "Graphics/pkg.h"
-#include "Audio/pkg.h"
 
 Module(os){ 
   values(Version, word,

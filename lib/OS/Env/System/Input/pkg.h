@@ -9,20 +9,39 @@
 #define package os_Env
 
 Interface(Input,
-	const strc8 stdVersion;
+	values(Version, word,
+		MAJOR,
+		MINOR,
+		PATCH
+	)
+	values(Type, word,
+		KEY,
+		POSITION,
+		BUTTON
+	)
 	Array(InputDevice) fn(enumDevices)  ();
-	errvt 		   fn(freeDevice)   (InputHandle handle);
-	InputHandle 	   fn(grabDevice)   (InputDevice* dev);
+	errvt 		   fn(freeInput)    (InputHandle handle);
+	InputHandle 	   fn(grabInput)    (InputDevice* dev, len_t index);
 	errvt 		   fn(handleEvents) (InputHandle handle, ArrayQueue(OSEvent) evntQueue);
-	u64 		   fn(pollEvents);
+	u64 		   fn(pollEvents)   ();
+
+	submodule(Position,
+		
+	)
+	submodule(Key,
+
+	)
+	submodule(Button,
+
+	)
+
+	
 )
 #undef package
-#undef KeyData
-#undef KeyInput
-#undef PosData
-#undef PosType
-#undef PosInput
 #undef InputHandle
+#undef InputDevice
+#undef InputInfo
+#undef InputData
 #undef Vec3D
 #undef Vec2D
 #undef Vec1D

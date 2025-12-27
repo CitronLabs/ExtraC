@@ -5,7 +5,6 @@
 #define package os_Env_Graphics_Video
 
 typefrom(bool, Direction);
-typefrom(u32, FOURCC_CODE);
 
 #define FOURCC_CODE     os_Env_Graphics_Video_FOURCC_CODE
 #define VideoMode 	os_Env_Graphics_Video_Mode
@@ -20,7 +19,7 @@ type(Mode,
 )
 
 type(PixelFormat,
-	FOURCC_CODE type;
+	u32 type;
      	u32 
      	    bottomMostModeIndex,
      	    topMostModeIndex;

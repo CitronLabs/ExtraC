@@ -13,11 +13,14 @@ type(Vec1D, float x;);
 #define Vec3D 	 	os_Env_Input_Vec3D
 #define Vec2D 	 	os_Env_Input_Vec2D
 #define Vec1D 	 	os_Env_Input_Vec1D
-#define PosInput 	os_Env_Input_Position_Input
-#define KeyInput 	os_Env_Input_Key_Input
+
 #define InputHandle 	os_Env_Input_Handle
 #define InputDevice 	os_Env_Input_Device
+#define InputInfo 	os_Env_Input_Info
+#define InputData 	os_Env_Input_Data
 
+typefrom(word, Type)
+typefrom(word, EventType)
 
 type(Device,
 	std_String 
@@ -27,58 +30,49 @@ type(Device,
 
 	pntr uniqueID;
 
-     	Array(PosInput) posInputs;
-     	Array(KeyInput) keyInputs;
+     	Array(InputInfo)    inputs;
 )
 
+
+type(Info,
+	os_Env_Input_Type type;
+     	union{
+	  struct {
+		double 	low;
+		double 	high;
+		u8 	dimension  : 2;
+          } position;
+	  struct {
+     		std_String 	     locale;	
+		std_String_Encoding  encoding;
+     	  } key;
+     	  struct {
+		len_t states, low, high;
+     	  } button;
+     	} data;
+)
+
+type(Data,
+	os_Env_Input_Type type;
+     	union{
+	  struct {
+     		Vec3D pos; 
+     		float max, min;
+          } position;
+	  struct {
+     		rune code; 
+     		bool continues;
+     	  } key;
+     	  struct {
+		len_t state;
+     	  } button;
+     	} data;
+)
+
+type(Event,
+	InputHandle handle;
+     	InputData   input;	
+     	os_Env_Input_EventType type;
+)
 
 #undef  package
-
-
-
-
-#define package os_Env_Input_Position
-#define PosData os_Env_Input_Position_Data
-#define PosType os_Env_Input_Position_Type
-
-type(Data, 
-     Vec3D pos; 
-     float max, min;
-)
-
-typefrom(word, Type)
-
-type(Input,
-	u8 	dimension  : 2;
-     	PosType type 	   : 2;
-	float 	low;
-	float 	high;
-)
-	  
-
-
-Interface(Device,
-	PosData 	imethod(get);	
-	errvt 		imethod(update, PosData pos);
-	InputHandle 	imethod(getHandle);
-)
-
-#undef package
-#define package os_Env_Input_Key
-#define KeyData os_Env_Input_Key_Data
-
-type(Input,
-     	std_String 	     locale;	
-	std_String_Encoding  encoding;
-)
-
-type(Data, u32 code; bool cont;)
-
-Interface(KeyDevice,
-	KeyData     imethod(get);
-	InputHandle imethod(getHandle);
-)
-
-#undef package
-
-

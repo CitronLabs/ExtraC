@@ -1,5 +1,3 @@
-#pragma once
-#include "../OS.h"
 
 #define P_null  0x00
 #define P_TCP   0x01
@@ -48,39 +46,24 @@
 		, __parent_packet))
 
 
-type(socket_settings,
-	u8 protocol : 2;
-	u8 domain   : 2;
-	u8 blocking : 1;
-)
 
-typedef struct Connection_Instance Connection_Instance;
 
-Class(Socket,
-INIT(socket_settings settings;),
-FIELD(),
 
-	errvt method(Socket,Bind, socketAddress address);
-	errvt method(Socket,Listen, u32 num_waiting);
-	inst(Connection) method(Socket,Accept);
-	socket_settings method(Socket,GetSettings);
-      	socketAddress method(Socket, GetAddress);
-);
 
-Class(Connection,
-INIT(socket_settings settings; socketAddress address), 
-FIELD(),
+#define NetClass(name, interface, FIELD, ...)
+	  (Class, #name", interface,
+	    b(FIELD),
+	    b(__VA_ARGS__)
+	  )
 
-	errvt method(Connection,Send, 		inst(Buffer) message);
-	errvt method(Connection,Recieve, 	inst(Buffer) message);
-	errvt method(Connection,Watch);
-	errvt method(Connection,UnWatch);
-	bool  method(Connection,Check);
-	errvt method(Connection,GroupJoin, 	socketAddress address, socketAddress interface_addr);
-	errvt method(Connection,GroupLeave);
-	errvt method(Connection,GroupSend, 	inst(Buffer) message);
-	errvt method(Connection,GroupRecive, 	inst(Buffer) message);
-	socket_settings method(Connection,GetSettings);
-      	socketAddress method(Socket, GetAddress, bool groupAddress);
-);
+
+#define FIELD(...) __VA_ARGS__
+
+
+#define NetField(name, type) push(Field, #name, type##_Type)
+
+
+
+
+
 
