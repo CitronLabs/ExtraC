@@ -196,7 +196,7 @@ errvt DSN_Decoder(std_Stream* strm, void* data){
 len_t moduleMethod(std_DSN, format, std_DSN_Data* ds, std_Stream* out){
 
 	switch (ds->type) {
-	case std_DSN_Field_LIST:{
+	case std.DSN.Field.LIST:{
 		return std.DSN.List.format(self,   ds->data, out);
 	break;}
 	case std_DSN_Field_MAP:{

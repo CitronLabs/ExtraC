@@ -3,19 +3,23 @@
 
 #define module std, FS
 
+alias(XC.Dev, 	       Dev)
+alias(XC.Dev.Stream,   Stream)
+alias(XC.Dev.Register, Reg)
+
 std_Stream* moduleFn(open)(std_FSPath path, int flags){
-	devHandle io_dev = XC.Dev.stdHandle(XC.Dev.ID.IO);
+	devHandle io_dev = Dev.stdHandle(Dev.ID.IO);
 	
-	streamHandle strm = XC.Dev.Stream.open(io_dev, path, flags, nil);
+	streamHandle strm = Dev.Stream.open(io_dev, path, flags, nil);
 
 return new(std_Stream, std.Stream.Preset.fromHandle(strm));
 }
 
 
 errvt moduleFn(delete)(std_FSPath path){
-	devHandle io_dev = XC.Dev.stdHandle(XC.Dev.ID.IO);
+	devHandle io_dev = Dev.stdHandle(Dev.ID.IO);
 	
-	streamHandle strm = XC.Dev.Stream.open(io_dev, path, 0, nil);
+	streamHandle strm = Stream.open(io_dev, path, 0, nil);
 
 	XC.Dev.Stream.close(strm);
 return OK;
@@ -23,27 +27,26 @@ return OK;
 
 
 errvt moduleFn(chdir)(std_FSPath path){
-	devHandle io_dev = XC.Dev.stdHandle(XC.Dev.ID.IO);
+	devHandle io_dev = Dev.stdHandle(Dev.ID.IO);
 	
-	registerHandle curr_dir = XC.Dev.Register.fetch(io_dev, 0);
+	registerHandle curr_dir = Reg.stdHandle(Reg.ID.WorkDir);
 
-	XC.Dev.Register.writeTo(curr_dir, path, strnlen((char*)path, sizeof(std_FSPath)));
+	Reg.Modify.writeTo(curr_dir, path, strnlen((char*)path, sizeof(std_FSPath)));
 return OK;
 }
 std_Stream* moduleFn(search)(std_FSPath path, std_FSEntry* ent){
-	devHandle io_dev = XC.Dev.stdHandle(XC.Dev.ID.IO);
+	devHandle io_dev = Dev.stdHandle(XC.Dev.ID.IO);
 	
-	streamHandle strm = XC.Dev.Stream.fetch(io_dev, path, 0, nil);
+	streamHandle strm = Stream.fetch(io_dev, path, 0);
 	
 	if(strm == nil) {
 		return nil;
 	}
 
-	streamInfo info = XC.Dev.Stream.info(strm);
+	streamInfo info = XC.Dev.Stream.Modify.info(strm);
 
 	*ent = (std_FSEntry){
-	    .type.is.dir   = getbitflag(info.attributes, XC.Dev.Stream.Attrib.DIR),
-	    .type.is.link  = getbitflag(info.attributes, XC.Dev.Stream.Attrib.LINK),
+	    .isdir   	   = info.
 	    .name 	   = generic info.name,
 	    .path 	   = copy_use(std_FSPath_Type, &path, new_alloc(std_FSPath)),
 	    .size 	   = info.size,
