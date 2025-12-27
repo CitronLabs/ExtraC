@@ -6,6 +6,8 @@
 
 #define package std
 
+#include "utils.h"
+
 Class(Memory,
 INIT(len_t size), 
 FMT(), 
