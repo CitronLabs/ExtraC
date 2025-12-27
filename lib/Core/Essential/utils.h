@@ -49,8 +49,8 @@ static const PP_PASTE(__MODULE_CAT_NAME(module), _Interface) __MODULE_CAT_NAME(m
 #define ImplAs(interface, name) 	const interface##_Interface name = 				
 
 
-#define submodule(name, ...) const struct {__VA_ARGS__} name;
-#define alias(path, alias) typeof(path) alias = path;
+#define submodule(name, ...) struct {__VA_ARGS__} name;
+#define alias(path, alias) const typeof(path) alias = path;
 
 #define values(name, type, ...) struct { const type __VA_ARGS__; } name;
 
@@ -67,10 +67,12 @@ static const PP_PASTE(__MODULE_CAT_NAME(module), _Interface) __MODULE_CAT_NAME(m
 #define moduleIMethod(Class, name, ...) ___(__MODULE_CAT_NAME(module), name)(void* object __VA_OPT__(, __VA_ARGS__))
 
 
+#define moduleValue(name) constexpr typeof(__GET_MEMBER_PATH(name)) __MODULE_CAT_NAME(module, name)
+
 #define moduleValues(name, ...)											\
     enum { 													\
 	__VALUES_ENUM_FOR_EACH_DISPATCH(__VALUES_ENUM_IMPL, __MODULE_CAT_NAME(module, name), __VA_ARGS__) }; 	\
-   typeof(__GET_MEMBER_PATH(name)) __MODULE_CAT_NAME(module, name) = {	\
+   const typeof(__GET_MEMBER_PATH(name)) __MODULE_CAT_NAME(module, name) = {	\
 	__VALUES_DEFINE_FOR_EACH_DISPATCH(__VALUES_DEFINE_IMPL, __MODULE_CAT_NAME(module, name), __VA_ARGS__)};	
 
 
@@ -81,4 +83,7 @@ static const PP_PASTE(__MODULE_CAT_NAME(module), _Interface) __MODULE_CAT_NAME(m
 
 
 #define interface(name) const name##_Interface 
+
+
+
 

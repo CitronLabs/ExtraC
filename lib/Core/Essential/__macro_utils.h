@@ -2725,7 +2725,7 @@
 
 #define __TOP_MODULE_DEFINE(NAME, _submodule, _values, ...) \
     /* 3. Actual Definition: Defines the module instance using the declared functions. */ \
-	PP_PASTE(NAME, _Interface) NAME = { 		\
+	constexpr PP_PASTE(NAME, _Interface) NAME = { 		\
     	SUBMODULE_DEFINE(NAME, _submodule) VALUES_DEFINE(NAME, _values)			\
         __VA_OPT__(PP_PASTE(__MODULE_DEFINE_INIT_, \
             GET_MEMBER_COUNT(0, __VA_ARGS__, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68, 67, 66, 65, 64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1))(NAME, __VA_ARGS__)) } \
@@ -2733,7 +2733,7 @@
 
 #define __MODULE_DEFINE(NAME, _submodule, _values, ...) \
     /* 3. Actual Definition: Defines the module instance using the declared functions. */ \
-    typeof(__PATH_CAT_NAME(((PP_PASTE(__GET_FIRST(module), _Interface)){0}),		\
+    constexpr typeof(__PATH_CAT_NAME(((PP_PASTE(__GET_FIRST(module), _Interface)){0}),		\
 			    __GET_REST(module))) PP_PASTE(NAME, _Module) = { 		\
     	SUBMODULE_DEFINE(NAME, _submodule) VALUES_DEFINE(NAME, _values)			\
         __VA_OPT__(PP_PASTE(__MODULE_DEFINE_INIT_, \

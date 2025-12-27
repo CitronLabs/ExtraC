@@ -27,7 +27,13 @@
 
 
 #define intf(Class) const Class##_Interface*
-#define ifob(_interface) struct{ intf(_interface) interface; void* object;}
+#define ifob(interface) interface##_InterfaceObj
+
+#define with(_interface, _object) 				\
+	(interface##_InterfaceObj)				\
+  		{.interface = _interface, .object = _object}
+
+
 #define obj(Class) struct { Class public; Class##_Private private; }
 #define argsof(Class) Class##_ConstructArgs
 #define i(ifob) (*((ifob)->interface))

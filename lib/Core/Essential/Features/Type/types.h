@@ -40,7 +40,7 @@ asXCType(std_typeData);
 
 type(varData,
 	std_typeData type;
-       	void* data;
+       	void* 	     data;
 )
 
 #undef package
