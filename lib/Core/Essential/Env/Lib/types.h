@@ -57,117 +57,15 @@ typedef void* 			pntr;
 typedef const void* 	  	constpntr;
 typedef __XC_PNTRVAL_TYPE 	pntrval;
 
-typedef struct __xc_stateData* stateData;
 
-typedef __XC_REGS_TYPE sysRegisters;
-
-
-#define streamSettings(...) &(streamSettings){__VA_ARGS__}
-typedef struct streamSettings {
-	len_t buffer_limit;
-} streamSettings;
-
-typedef struct streamInfo {
-	streamSettings settings;
-	len_t size, time_created, time_modified, currentPos;
-	const char* name,* path;
-	int attributes;
-	bool valid;
-} streamInfo;
-
-typedef struct registerInfo {
-	len_t size, time_created, time_modified;
-	const char* name,* path;
-	int attributes;
-	bool valid;
-} registerInfo;
-
-typedef struct deviceInfo {
-	const c8
-     	* name,
-     	* vendorName,
-     	* productName,
-     	* serialCode,
-     	* path;
-
-	int attributes;
-
-     	len_t 
-	    num_streams, 
-	    num_registers, 
-	    num_resources;
-
-	bool valid;
-} deviceInfo;
-
-
-#define streamHandle_Invalid ((streamHandle)0)
+typedef void* devHandle;
+typedef void* registerHandle;
 typedef void* streamHandle;
 
-typedef struct timeSpec {
-    	u64 seconds;
-    	u64 nanoseconds;
-} timeSpec;
-
-typedef void* registerHandle;
-typedef void* devHandle;
-
-typedef union XC_Sys_Arch_Flags{ 
-	struct{
-	    word 
-	 	carry 	 : 1,
-	     	zero  	 : 1,
-	     	overflow : 1,
-	     	sign 	 : 1;
-	} flags;
-	word allFlags;
-
-}XC_Sys_Arch_Flags;
 
 
-typedef struct XC_Locale_Data {
 
-	const char * Identifier;
 
-	submodule(Time,
-	    const char
-	    	* day_names[7],
-	    	* short_day_names[7],
-	    
-	    	* month_names[7],
-	    	* short_month_names[7]
-	    ;
 
-	    byte first_day_in_week;
-	)
-	submodule(Currency,
-	    const char 
-	   	* currency_symbol,
-	    	* int_curr_symbol,
-    	     	* mon_decimal_point,        
-    	     	* mon_thousands_sep,        
-    	    	* positive_sign,            
-    	    	* negative_sign,            
-    	    	* mon_grouping;          
-    	    int 
-		frac_digits,                
-    	    	int_frac_digits,            
 
-    	    	pos_cs_precedes,              
-    	    	pos_sep_by_space,             
-    	    	pos_sign_posn,                
 
-    	    	neg_cs_precedes,              
-    	    	neg_sep_by_space,             
-    	    	neg_sign_posn;                
-	)
-	submodule(Measure,
-	// System of Measurement
-	    word measurement_system;           // The primary system for length, weight, and volume
-	    
-	// Temperature System
-	    word temperature_system;
-	)
-
-	
-} XC_Locale_Data;
