@@ -2,12 +2,12 @@
 #include "pkg.h"
 
 #define s(string) push(std_String,			\
-	generic string, chartype(string), 		\
+	generic string, 				\
 	(sizeof(string)) - 1,				\
 	true)
 
 #define S(string) new(std_String,			\
-	generic string, chartype(string),		\
+	generic string, 				\
 	(sizeof(string)) - 1,				\
 	true)
 
