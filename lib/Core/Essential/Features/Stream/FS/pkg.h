@@ -24,19 +24,13 @@ FMT(
 	len_t tab_lvl;
 
 ),
-	union {
-     	    struct {
-     	    	bool dir:  1;
-     	    	bool link: 1;
-     	    }is;
-     	    bool typeFlags;
-     	}type;
 	std_Stream* stream;
 	char* name;
 	char* path;
 	len_t size;
-	u64 time_created;
-	u64 time_modified;
+	u64   time_created;
+	u64   time_modified;
+     	bool  isdir;
 );
 
 Interface(FS,
