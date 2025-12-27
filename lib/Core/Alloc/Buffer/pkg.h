@@ -109,18 +109,18 @@ private(
 be of the same type
 */
 	#define b(first, ...) 							\
-		initialize(Buffer, 						\
+		create(std_Buffer, 							\
 		    (memcpy(							\
-			alloca(							\
-				sizeof(Buffer) + sizeof_Buffer_Private + 	\
+			malloc(							\
+				sizeof(std_Buffer) + 				\
 				sizeof((typeof(first)[]){first, __VA_ARGS__}))	\
-			+ sizeof(Buffer) + sizeof_Buffer_Private,		\
+			+ sizeof(std_Buffer),					\
 		        (typeof(first)[]){first, __VA_ARGS__}, 			\
         	        sizeof((typeof(first)[]){first, __VA_ARGS__})) 		\
-       		     - sizeof(Buffer) + sizeof_Buffer_Private),			\
+       		     - sizeof(std_Buffer)),						\
 		sizeof((typeof(first)[]){first, __VA_ARGS__}), 			\
 		sizeof(typeof(first)),						\
-		true, null 							\
+		true, nil 							\
 	     	)
 /**
 @def B(first, ...)
@@ -129,26 +129,26 @@ be of the same type
 be of the same type
 */
 	#define B(first, ...) 							\
-		initialize(Buffer, 						\
+		create(std_Buffer, 							\
 		    (memcpy(							\
 			malloc(							\
-				sizeof(Buffer) + sizeof_Buffer_Private + 	\
+				sizeof(std_Buffer) + 				\
 				sizeof((typeof(first)[]){first, __VA_ARGS__}))	\
-			+ sizeof(Buffer) + sizeof_Buffer_Private,		\
+			+ sizeof(std_Buffer),					\
 		        (typeof(first)[]){first, __VA_ARGS__}, 			\
         	        sizeof((typeof(first)[]){first, __VA_ARGS__})) 		\
-       		     - sizeof(Buffer) + sizeof_Buffer_Private),			\
+       		     - sizeof(std_Buffer)),						\
 		sizeof((typeof(first)[]){first, __VA_ARGS__}), 			\
 		sizeof(typeof(first)),						\
-		true, null 							\
+		true, nil 							\
 	     	)
 
 
 	#define pushBufferView(type, len, pntr) \
-			Buffer.fromView(alloca(sizeof(Buffer) + sizeof_Buffer_Private), pntr, sizeof(type), len)
+			Buffer.fromView(alloca(sizeof(std_Buffer)), pntr, sizeof(type), len)
 
 	#define newBufferView(type, len, pntr) \
-			Buffer.fromView(malloc(sizeof(Buffer) + sizeof_Buffer_Private), pntr, sizeof(type), len)
+			Buffer.fromView(malloc(sizeof(std_Buffer)), pntr, sizeof(type), len)
 
 
 
