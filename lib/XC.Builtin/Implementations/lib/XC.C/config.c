@@ -1,0 +1,6 @@
+#pragma once
+
+#define __XC_LIBC_IMPL_USE_SYSTEM 0x575
+#define __XC_LIBC_IMPL_USE_LIBXC  0xC
+
+#define __XC_LIBC_IMPL __XC_LIBC_IMPL_USE_SYSTEM

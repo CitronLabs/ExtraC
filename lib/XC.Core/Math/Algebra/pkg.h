@@ -1,0 +1,14 @@
+#pragma once
+#define __XC_MATH__
+#include "../pkg.h"
+
+#define package std_Math
+
+Interface(Algebra,
+  submodule(Linear,
+			
+
+  )
+)
+
+#undef package

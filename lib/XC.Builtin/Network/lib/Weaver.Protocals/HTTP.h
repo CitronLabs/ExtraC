@@ -1,0 +1,68 @@
+#include "../../os.h"
+
+enum(HTTPMethod,
+	HTTP_GET,
+	HTTP_POST,
+	HTTP_PUT
+);
+
+#define HTTPRequest(method, route, ...)	\
+	msg(HTTP_Request, HTTP_##method, route, \
+     	(HTTPHeader[]){				\
+     		__VA_ARGS__			\
+	})
+#define HTTPResponse(status, ...)		\
+	msg(HTTP_Response, status, 		\
+     	(HTTPHeader[]){				\
+     		__VA_ARGS__			\
+	})
+
+type(HTTPHeader,
+	strc8 key, value;
+)
+
+Protocol(HTTP_Request,
+	HTTPMethod method;
+	strc8 route;
+	HTTPHeader* headers;
+){}
+
+Protocol(HTTP_Response,
+	u16 statuscode;
+	HTTPHeader* headers;
+){}
+
+
+Class(HTTPServer,
+INIT(),
+FIELD(),
+	
+)
+
+
+
+void testo(){
+
+	inst(HTTPServer) server = new(HTTPServer);
+
+	Packet packet;
+	bool send = true;
+
+    	msgBuild(packet, 
+	    if(!send){
+		HTTPRequest(GET, "/index.html", 
+	 	    {"Age", "54325"},
+	      	){
+	      	}
+	    }else{
+		HTTPResponse(200){
+		msgText(
+			<div> Hello, World! </div>
+		)
+		};
+	    }
+	);
+
+	msgSend(null, __parent_packet = packet;)
+	
+}
