@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 u32 hash_bytes(void* data_ptr, u64 size){
 

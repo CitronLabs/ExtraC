@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.pkg.c>
 
 #define module std, Stream
 
@@ -6,61 +6,38 @@ from(std,
 	Array_Stack    as Stack,
 	Array_List     as List,
     	Stream_Options as Options,
-    	use(Local),
-    	use(Stream)
+    	use(Stream),
+    	use(Process)
 );
 
 typedef struct {
-	Stream* 		activeStream;
-	ArrayStack(Stream*) 	activeStreamStack;
 	std_StreamDecoder 	activeDecoder;
-	ArrayStack(len_t)	frameSizeStack;
-	ArrayStack(Stream_Proc*)activeProc;
-} localStreamContext;
+} StreamData;
+
+typedef const struct std_Stream_Process_Proc SP_Result;
+extern SP_Result Stream_Proc_Fail, Stream_Proc_OK;
 
 #define STREAM_TYPE_REAL 1
 #define STREAM_TYPE_MEM  2
 #define STREAM_TYPE_BUFF 3
 
 
-localStreamContext* fetchLocalStreamCtx(){
-	static Local* localStreamCtx = nil;
+Process* moduleFn(getProcess)(){
+	thread_local static struct {
+		Process* process;
+		StreamData data;
+	} Context = {};
 	
-	localStreamContext* result = nil;
+	if(!Context.process){
+		Context.process = new(Process, T(Stream), &Context.data);
 
-	if(!localStreamCtx){
-		localStreamCtx = new(Local, 
-		       sizeof(localStreamContext)
-		);
-
-		if(localStreamCtx == nil){
-		    ERR(ERR.INIT, 
-       			"failed to initalize local Stream context");
-		
-		    XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);	
-		}
-
-	 	result = std.Local.getData(localStreamCtx);
-
-		if(result == nil){
-		    ERR(ERR.INIT, 
-       			"failed to get local Stream context");
-		
-		    XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);	
-		}
-
-		result->activeStreamStack = newArrayStack(Stream*, 5);
-	} else {
-	 	result = std.Local.getData(localStreamCtx);
-
-		if(result == nil){
-		    ERR(ERR.INIT, 
-       			"failed to get local Stream context");
-		
-		    XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);	
+		if(!Context.process){
+			ERR(ERR.INIT, "Failed to initialize stream process context");
+	  		return nil;
 		}
 	}
-return result;
+
+return Context.process;
 }
 
 
@@ -100,7 +77,7 @@ const Options std_Stream_Preset_fromHandle(streamHandle handle){
 }
 
 streamHandle moduleMethod(std_Stream, getHandle){
-	nonull(self){ return streamHandle_Invalid; }
+	nonull(self){ return nil; }
 
 return priv.stream.handle;
 }
@@ -108,14 +85,14 @@ return priv.stream.handle;
 errvt moduleMethod(std_Stream, Flush){
 	nonull(self){ return err; }
 
-return priv.stream.handle ? XC.Dev.Stream.flush(priv.stream.handle) : OK;
+return priv.stream.handle ? XC.Dev.Stream.Modify.flush(priv.stream.handle) : OK;
 }	
 void* moduleMethod(std_Stream, ToPointer){
 	nonull(self){ return nil; }
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = XC.Dev.Stream.info(priv.stream.handle);
+		streamInfo info = XC.Dev.Stream.Modify.info(priv.stream.handle);
 
 		iferr(!info.valid){
 			ERR(ERR.FAIL, "failed to get stream size");
@@ -129,7 +106,7 @@ void* moduleMethod(std_Stream, ToPointer){
 			return nil;
 		}
 
-		if(!XC.Dev.Stream.readFrom(priv.stream.handle, priv.pointer, info.size)){
+		if(!XC.Dev.Stream.Modify.readFrom(priv.stream.handle, priv.pointer, info.size)){
 			ERR(ERR.FAIL, "failed to read data into stream pointer buff");
 			free(priv.pointer);
 			return nil;
@@ -157,99 +134,55 @@ return priv.pointer;
 }
 void* moduleMethod(std_Stream, GetPointer){ return priv.pointer ? priv.pointer : std.Stream.ToPointer(self); }
 
-typedef struct Stream_Proc SP_Result;
-extern const struct Stream_Proc Stream_Proc_Fail, Stream_Proc_OK;
 
-static inline const struct Stream_Proc setProc(localStreamContext* ctx, const struct Stream_Proc* to){
+SP_Result moduleFn(Process_start)(std_Stream* strm){
+	Process* ctx = mod(getProcess)();
 
-	if(ctx->activeProc->items) 
-	    *(const struct Stream_Proc**) index(ctx->activeProc, 
-		  ctx->activeProc->items) = to;
-return *to;
-}
-
-
-SP_Result std_Stream_Process_start(std_Stream* strm){
-	localStreamContext* ctx = fetchLocalStreamCtx();
-
-	nonull(strm){
-		setProc(ctx,&Stream_Proc_Fail);
+	nonull(strm)
 		return Stream_Proc_Fail;
-	}
-
 	
-	if(ctx->activeStream)
-		write(ctx->activeStreamStack, &ctx->activeStream);	
-		
-	ctx->activeStream = strm;
-
-return setProc(ctx, &Stream_Proc_OK);
+return Stream_Proc_OK;
 }
-SP_Result std_Stream_Process_cont(){
-	localStreamContext* ctx = fetchLocalStreamCtx();
+SP_Result moduleFn(Process_doEncode)(std_StreamEncoder encoder, void* data){
+	Process* ctx = mod(getProcess)();
 
-	Stream* self = ctx->activeStream;
-	
-	if(elements(ctx->frameSizeStack)){
-		read(ctx->frameSizeStack, &priv.frameSize);
-	}
+	nonull(encoder, data){ return Stream_Proc_Fail; }
 
-return setProc(ctx, &Stream_Proc_OK);
-}
-SP_Result std_Stream_Process_doEncode(std_StreamEncoder encoder, void* data){
-	localStreamContext* ctx = fetchLocalStreamCtx();
-
-	nonull(encoder, data){ return setProc(ctx, &Stream_Proc_Fail); }
-
-	iferr(encoder(ctx->activeStream, data)){
+	iferr(encoder(std.Process.result(ctx), data)){
 		ERR(ERR.FAIL, "failed to encode data into stream");
 		return Stream_Proc_Fail;
 	}
-return setProc(ctx, &Stream_Proc_OK);
+
+return Stream_Proc_OK;
 }
 
-SP_Result std_Stream_Process_doDecode(std_StreamDecoder decoder){
-	localStreamContext* ctx = fetchLocalStreamCtx();
+SP_Result moduleFn(Process_doDecode)(std_StreamDecoder decoder){
+	Process* ctx = mod(getProcess)();
 
-	nonull(decoder){ return setProc(ctx,&Stream_Proc_Fail); }
+	nonull(decoder){ return Stream_Proc_Fail; }
 
-	ctx->activeDecoder = decoder;
+	((StreamData*)ctx->extraData)->activeDecoder = decoder;
 
-return setProc(ctx, &Stream_Proc_OK);
+return Stream_Proc_OK;
 }
 
-SP_Result std_Stream_Process_each(len_t frameSize){
-	localStreamContext* ctx = fetchLocalStreamCtx();
-
-	Stream* self = ctx->activeStream;
+SP_Result moduleFn(Process_advance)(len_t num){
+	Process* ctx = mod(getProcess)();
 	
-	if(!write(ctx->frameSizeStack, &priv.frameSize)){
-		ERR(ERR.FAIL, "could not save previous frame size for each stream iteration");
-		return setProc(ctx,&Stream_Proc_Fail);
-	}
-
-	priv.frameSize = frameSize;
-	
-
-return setProc(ctx, &Stream_Proc_OK);
-}
-SP_Result std_Stream_Process_advance(len_t num){
-	localStreamContext* ctx = fetchLocalStreamCtx();
-	
-	Stream* self = ctx->activeStream;
+	Stream* self = std.Process.result(ctx);
 	
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = XC.Dev.Stream.info(priv.stream.handle);
+		streamInfo info = XC.Dev.Stream.Modify.info(priv.stream.handle);
 		
 		if(!info.valid){
 			ERR(ERR.FAIL, "failed to get stream cursor position to advance");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 
-		iferr(XC.Dev.Stream.shift(priv.stream.handle, num, info.currentPos)){
+		iferr(XC.Dev.Stream.Modify.shift(priv.stream.handle, num, info.currentPos)){
 			ERR(ERR.FAIL, "failed to shift stream cursor position to advance");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 	break;}
 	case STREAM_TYPE_MEM:{
@@ -264,29 +197,29 @@ SP_Result std_Stream_Process_advance(len_t num){
 	break;}
 	default:{
 		ERR(ERR.INVALID, "invalid stream type");
-	  	return setProc(ctx, &Stream_Proc_Fail);
+	  	return Stream_Proc_Fail;
 	}
 	}
 
-return setProc(ctx, &Stream_Proc_OK);
+return Stream_Proc_OK;
 }
-SP_Result std_Stream_Process_rewind(len_t num){
-	localStreamContext* ctx = fetchLocalStreamCtx();
+SP_Result moduleFn(Process_rewind)(len_t num){
+	Process* ctx = mod(getProcess)();
 
-	Stream* self = ctx->activeStream;
+	Stream* self = std.Process.result(ctx);
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = XC.Dev.Stream.info(priv.stream.handle);
+		streamInfo info = XC.Dev.Stream.Modify.info(priv.stream.handle);
 		
 		if(!info.valid){
 			ERR(ERR.FAIL, "failed to get stream cursor position to advance");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 
-		iferr(XC.Dev.Stream.shift(priv.stream.handle, -num, info.currentPos)){
+		iferr(XC.Dev.Stream.Modify.shift(priv.stream.handle, -num, info.currentPos)){
 			ERR(ERR.FAIL, "failed to shift stream cursor position to advance");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 	break;}
 	case STREAM_TYPE_MEM:{
@@ -301,25 +234,25 @@ SP_Result std_Stream_Process_rewind(len_t num){
 	break;}
 	default:{
 		ERR(ERR.INVALID, "invalid stream type");
-	  	return setProc(ctx, &Stream_Proc_Fail);
+	  	return Stream_Proc_Fail;
 	}
 	}
 	
 
-return setProc(ctx, &Stream_Proc_OK);
+return Stream_Proc_OK;
 }
 
 
-SP_Result std_Stream_Process_readData(void* buff, len_t len){
-	localStreamContext* ctx = fetchLocalStreamCtx();
+SP_Result moduleFn(Process_readData)(void* buff, len_t len){
+	Process* ctx = mod(getProcess)();
 
-	Stream* self = ctx->activeStream;
+	Stream* self = std.Process.result(ctx);
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		if(!XC.Dev.Stream.readFrom(priv.stream.handle, buff, len * priv.frameSize)){
+		if(!XC.Dev.Stream.Modify.readFrom(priv.stream.handle, buff, len * priv.frameSize)){
 			ERR(ERR.FAIL, "failed to read from stream");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 	break;}
 	case STREAM_TYPE_MEM:{
@@ -329,7 +262,7 @@ SP_Result std_Stream_Process_readData(void* buff, len_t len){
 	  	    len * priv.frameSize
 		)){
 			ERR(ERR.FAIL, "failed to read from stream");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 	break;}
 	case STREAM_TYPE_BUFF:{
@@ -342,23 +275,22 @@ SP_Result std_Stream_Process_readData(void* buff, len_t len){
 	break;}
 	default:{
 		ERR(ERR.INVALID, "invalid stream type");
-	  	return setProc(ctx, &Stream_Proc_Fail);
+	  	return Stream_Proc_Fail;
 	}
 	}
 	
-return setProc(ctx, &Stream_Proc_OK);
+return Stream_Proc_OK;
 }
-SP_Result std_Stream_Process_writeData(void* buff, len_t len){
+SP_Result moduleFn(Process_writeData)(void* buff, len_t len){
+	Process* ctx = mod(getProcess)();
 
-	localStreamContext* ctx = fetchLocalStreamCtx();
-
-	Stream* self = ctx->activeStream;
+	Stream* self = std.Process.result(ctx);
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		if(!XC.Dev.Stream.writeTo(priv.stream.handle, buff, len * priv.frameSize)){
+		if(!XC.Dev.Stream.Modify.writeTo(priv.stream.handle, buff, len * priv.frameSize)){
 			ERR(ERR.FAIL, "failed to write from stream");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 	break;}
 	case STREAM_TYPE_MEM:{
@@ -368,7 +300,7 @@ SP_Result std_Stream_Process_writeData(void* buff, len_t len){
 	  	    len * priv.frameSize
 		)){
 			ERR(ERR.FAIL, "failed to write from stream");
-			return setProc(ctx,&Stream_Proc_Fail);
+			return Stream_Proc_Fail;
 		}
 	break;}
 	case STREAM_TYPE_BUFF:{
@@ -381,49 +313,32 @@ SP_Result std_Stream_Process_writeData(void* buff, len_t len){
 	break;}
 	default:{
 		ERR(ERR.INVALID, "invalid stream type");
-	  	return setProc(ctx, &Stream_Proc_Fail);
+	  	return Stream_Proc_Fail;
 	}
 	}
 	
-return setProc(ctx, &Stream_Proc_OK);
+return Stream_Proc_OK;
 
 }
 
-std_Stream* std_Stream_Process_current(){
-	localStreamContext* ctx = fetchLocalStreamCtx();
+std_Stream* moduleFn(Process_result)(){ return std.Process.result(mod(getProcess)()); }
 
-return ctx->activeStream;
-}
+noFail moduleFn(Process_end)(){ std.Process.end(mod(getProcess)()); }
 
-noFail std_Stream_Process_end(){
-	localStreamContext* ctx = fetchLocalStreamCtx();
-
-	if(elements(ctx->activeStreamStack) != 0){
-		ctx->activeStream = index(
-			ctx->activeStreamStack, 
-			ctx->activeStreamStack->items
-		);
-
-		ctx->activeStreamStack--;
-	} else {
-		ctx->activeStream = nil;
-	}
-	ctx->activeProc = nil;
-}
-noFail std_Stream_Process_fail(){
-	std.Stream.Process.end();
+noFail moduleFn(Process_fail)(){
+	std.Process.end(mod(getProcess)());
 	ERR(ERR.FAIL, "stream process failed");
 }
-noFail std_Stream_Process_doRun(){}
-noFail std_Stream_Process_pause(){}
 
-noFail std_Stream_Process_SkipAll(){}
+SP_Result moduleFn(Process_each)(){ return Stream_Proc_OK; }
 
-pntr std_Stream_Process_next(pntr* buff){
-	localStreamContext* ctx = fetchLocalStreamCtx();
+noFail moduleFn(Process_doRun)(){}
+
+pntr moduleFn(Process_next)(pntr* buff){
+	Process* ctx = mod(getProcess)();
 
 	if(std.Stream.Process.readData(buff, 1)
-	   .readData == generic std_Stream_Process_SkipAll){
+	   .readData == generic std.Process.noOp){
 		ERR(ERR.FAIL, "failed to get next item in stream");
 		return nil;
 	}
@@ -433,40 +348,36 @@ return *buff;
 
 
 
-const struct Stream_Proc 
+SP_Result 
 	Stream_Proc_Fail = {
-	        .start		= generic std_Stream_Process_SkipAll,
-		.cont		= generic std_Stream_Process_SkipAll,
-		.doEncode	= generic std_Stream_Process_SkipAll,
-		.doDecode	= generic std_Stream_Process_SkipAll,
-		.each		= generic std_Stream_Process_SkipAll,
-		.advance	= generic std_Stream_Process_SkipAll,
-		.rewind		= generic std_Stream_Process_SkipAll,
-		.readData	= generic std_Stream_Process_SkipAll,
-		.writeData	= generic std_Stream_Process_SkipAll,
-		.pause		= generic std_Stream_Process_SkipAll,
-		.current	= generic std_Stream_Process_SkipAll,
-	    	.end		= generic std_Stream_Process_SkipAll,
-		.fail		= generic std_Stream_Process_SkipAll,
-		.doRun		= generic std_Stream_Process_SkipAll,
-	    	.next		= generic std_Stream_Process_SkipAll,
+	        .start		= generic std.Process.noOp,
+		.doEncode	= generic std.Process.noOp,
+		.doDecode	= generic std.Process.noOp,
+		.each		= generic std.Process.noOp,
+		.advance	= generic std.Process.noOp,
+		.rewind		= generic std.Process.noOp,
+		.readData	= generic std.Process.noOp,
+		.writeData	= generic std.Process.noOp,
+		.result		= generic std.Process.noOp,
+	    	.end		= generic std.Process.noOp,
+		.fail		= generic std.Process.noOp,
+		.doRun		= generic std.Process.noOp,
+	    	.next		= generic std.Process.noOp,
 	},
 	Stream_Proc_OK   = {
-	        .start		= std_Stream_Process_start,
-		.cont		= std_Stream_Process_cont,
-		.doEncode	= std_Stream_Process_doEncode,
-		.doDecode	= std_Stream_Process_doDecode,
-		.each		= std_Stream_Process_each,
-		.advance	= std_Stream_Process_advance,
-		.rewind		= std_Stream_Process_rewind,
-		.readData	= std_Stream_Process_readData,
-		.writeData	= std_Stream_Process_writeData,
-		.pause		= std_Stream_Process_pause,
-		.current	= std_Stream_Process_current,
-	    	.end		= std_Stream_Process_end,
-		.fail		= std_Stream_Process_fail,
-		.doRun		= std_Stream_Process_doRun,
-	    	.next		= std_Stream_Process_next,
+	        .start		= mod(Process_start),
+		.doEncode	= mod(Process_doEncode),
+		.doDecode	= mod(Process_doDecode),
+		.each		= mod(Process_each),
+		.advance	= mod(Process_advance),
+		.rewind		= mod(Process_rewind),
+		.readData	= mod(Process_readData),
+		.writeData	= mod(Process_writeData),
+		.result		= mod(Process_result),
+	    	.end		= mod(Process_end),
+		.fail		= mod(Process_fail),
+		.doRun		= mod(Process_doRun),
+	    	.next		= mod(Process_next),
 	}
 ;
 
@@ -576,7 +487,7 @@ SET(std_Stream){
 	}
 
 	switch(store_temp.__private.flags.streamType){
-	case STREAM_TYPE_REAL:{ XC.Dev.Stream.drop(store_temp.__private.stream.handle); break;} 
+	case STREAM_TYPE_REAL:{ XC.Dev.Stream.close(store_temp.__private.stream.handle); break;} 
 	case STREAM_TYPE_MEM: { del(priv.stream.mem.data); break;}
 	}
 		
@@ -619,7 +530,7 @@ DESTROY(std_Stream){
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		XC.Dev.Stream.drop(priv.stream.handle);
+		XC.Dev.Stream.close(priv.stream.handle);
 	break;}
 	case STREAM_TYPE_MEM:{
 		del(priv.stream.mem.data);
@@ -634,13 +545,13 @@ SIZE(std_Stream){
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = XC.Dev.Stream.info(priv.stream.handle);
+		streamInfo info = XC.Dev.Stream.Modify.info(priv.stream.handle);
 
 		return elements ? info.size / priv.frameSize : info.size;
 	break;}
 	case STREAM_TYPE_MEM:{
 		return elements ? 
-			elements(priv.stream.mem.data) : 
+			len(priv.stream.mem.data) : 
 			size(priv.stream.mem.data);
 	break;}
 	case STREAM_TYPE_BUFF:{

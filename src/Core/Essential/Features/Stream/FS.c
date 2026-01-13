@@ -1,5 +1,4 @@
-#include <Core/pkg.c>
-#include <XC/pkg.c>
+#include <XC.pkg.c>
 
 #define module std, FS
 
@@ -46,7 +45,7 @@ std_Stream* moduleFn(search)(std_FSPath path, std_FSEntry* ent){
 	streamInfo info = XC.Dev.Stream.Modify.info(strm);
 
 	*ent = (std_FSEntry){
-	    .isdir   	   = info.
+	    .isdir   	   = info.type == &XC.Dev.Stream.Type.DIR,
 	    .name 	   = generic info.name,
 	    .path 	   = copy_use(std_FSPath_Type, &path, new_alloc(std_FSPath)),
 	    .size 	   = info.size,
@@ -65,7 +64,7 @@ errvt moduleFn(setname)(std_FSPath path, std_FSPath new_name){
 	
 	streamHandle strm = XC.Dev.Stream.open(io_dev, path, 0, nil);
 
-	XC.Dev.Stream.modify(strm, new_name, 0);
+	XC.Dev.Stream.edit(strm, new_name, 0);
 
 return OK;
 }
@@ -83,7 +82,7 @@ WRITE(std_FSEntry){
 
 return std.Types.data.writeTo(
   	VFrom(streamHandle_Type, std.Stream.getHandle(self->stream)),
-  	data, size
+  	generic data, size
 );
 }
 SET(std_FSEntry){

@@ -1,10 +1,10 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 #define module std, String
 
 bool moduleMethod(std_String, Compare, std_String* cmp_string){
 	
-	if(elements(self) != elements(cmp_string) 		|| 
+	if(len(self) != elements(cmp_string) 		|| 
 	   priv.len_bytes != privof(cmp_string).len_bytes
 	) 
 		return false;
@@ -58,7 +58,7 @@ std_String* moduleMethod(std_String, View, len_t from, len_t to){
 	if(!priv.views)
 		priv.views = newArrayList(std_String, 5);
 
-	len_t index = elements(priv.views);
+	len_t index = len(priv.views);
 	
 	write(priv.views, &(std_String){0});
 

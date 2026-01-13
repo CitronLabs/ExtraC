@@ -1,24 +1,36 @@
-#include <Core/pkg.c>
-#include <Core/Essential/Features/String/Encodings/utils.h>
+#include <XC.Core/pkg.c>
+#include <XC.Core/Essential/Features/String/Encodings/utils.h>
+#define module std, String, Encoding, UTF8
 
 
-#undef rewind
 
-// Helper function to encode a UTF-16 codepoint
-static inline u64 encode_utf16(c16 *dest, rune codepoint) {
-    if (codepoint <= UTF8_3BYTE_MAX) { // Corresponds to the basic multilingual plane
-        *dest = (c16)codepoint;
-        return 1;
-    } else if (codepoint <= UTF8_4BYTE_MAX) { // Supplementary plane
-        codepoint -= UTF16_SURROGATE_OFFSET_BASE;
-        dest[0] = (c16)(UTF16_HIGH_SURROGATE_START | (codepoint >> UTF16_HIGH_SURROGATE_SHIFT));
-        dest[1] = (c16)(UTF16_LOW_SURROGATE_START | (codepoint & UTF16_LOW_SURROGATE_BITS));
-        return 2;
-    }
-return 0; // Invalid codepoint
+
+
+
+len_t moduleFn(len)(c8* str, len_t len, c8** end){
+	len_t length = 0;
+	while (*str != '\0' && len >= length) {
+		if ((*str & UTF8_1BYTE_MASK) == UTF8_1BYTE_HEADER) {
+			str++;
+		} else if ((*str & UTF8_2BYTE_MASK) == UTF8_2BYTE_HEADER) {
+			str += 2;
+		} else if ((*str & UTF8_3BYTE_MASK) == UTF8_3BYTE_HEADER) {
+			str += 3;
+		} else if ((*str & UTF8_4BYTE_MASK) == UTF8_4BYTE_HEADER) {
+			str += 4;
+		} else {
+			ERR(ERR.INVALID, "invalid utf8 string");
+			return 0;
+		}
+		length++;
+	}
+
+	if(end != nil) *end = str;
+
+return length;
 }
 
-static inline errvt UTF8_decode(char** start, rune* codepoint){
+errvt moduleFn(decode)(char** start, rune* codepoint){
 
 	char* encoding = *start;
 	rune c = 0;
@@ -58,7 +70,7 @@ return OK;
 
 
 // Helper function to encode a UTF-8 codepoint
-static inline errvt UTF8_encode(char *dest, rune codepoint) {
+errvt moduleFn(encode)(char *dest, rune codepoint) {
     if (codepoint <= UTF8_1BYTE_MAX) {
         dest[0] = (char)codepoint;
         return OK;
@@ -82,7 +94,7 @@ static inline errvt UTF8_encode(char *dest, rune codepoint) {
 return ERR(ERR.INVALID, "invalid codepoint"); 
 }
 
-errvt UTF8_streamEncoder(std_Stream* stream, void* data){
+errvt moduleFn(Encoder)(std_Stream* stream, void* data){
 	nonull(stream, data){ return err; }
 
 	std.Stream.Process.writeData(data, strnlen((strc8)data, maxof(len_t)));
@@ -90,29 +102,29 @@ errvt UTF8_streamEncoder(std_Stream* stream, void* data){
 return OK;
 }
 
-errvt UTF8_streamDecoder(std_Stream* stream, void* data){ 
+errvt moduleFn(Decoder)(std_Stream* stream, void* data){ 
 	
 	strc8 str_data = &((strc8)std.Stream.GetPointer(stream))
 				[std.Stream.GetCursorPos(stream)];
 
-	iferr(std.String.UTF8.decode(&str_data, data))
+	iferr(std.String.Encoding.UTF8.decode(&str_data, data))
 		return ERR(ERR.FAIL, "failed to decode stream");
 
 return OK;
 }
 
 // UTF-8 to UTF-16 conversion
-errvt UTF8_toUtf16(c8* in, len_t in_max, c16* dest, len_t dest_max) {
+errvt moduleFn(toUtf16)(c8* in, len_t in_max, c16* dest, len_t dest_max) {
 	nonull(in, dest){ return err; }
 
 	u64 new_len = 0;
 	rune codepoint;
 
 	while (*in || new_len >= dest_max) {
-		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
+		if (std.String.Encoding.UTF8.decode(&in, &codepoint) != OK) 
 			return ERR(ERR.STRING.ENCODING, "Invalid UTF8 sequence");
 		
-		u64 encoded_len = encode_utf16(&dest[new_len], codepoint);
+		u64 encoded_len = std.String.Encoding.UTF16.encode(&dest[new_len], codepoint);
 
 		if (encoded_len == 0) 
 			return ERR(ERR.STRING.ENCODING, "Failed to encode UTF16 codepoint");
@@ -126,14 +138,14 @@ return OK;
 
 
 // UTF-8 to UTF-32 conversion
-errvt UTF8_toUtf32(c8* in, len_t in_max, c32* dest, len_t dest_max) {
+errvt moduleFn(toUtf32)(c8* in, len_t in_max, c32* dest, len_t dest_max) {
 	nonull(in, dest){ return err; }
 
 	u64 new_len = 0;
 	rune codepoint;
 
 	while (*in || new_len >= dest_max) {
-		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
+		if (std.String.Encoding.UTF8.decode(&in, &codepoint) != OK) 
 			return ERR(ERR.STRING.ENCODING, "Invalid UTF8 sequence");
 		
 		dest[new_len++] = codepoint;
@@ -144,7 +156,7 @@ return OK;
 
 
 // UTF-8 to ASCII conversion
-errvt UTF8_toAscii(c8* in, len_t in_max, char* dest, len_t dest_max) {
+errvt moduleFn(toAscii)(c8* in, len_t in_max, char* dest, len_t dest_max) {
 	nonull(in, dest){ return err; }
 
 
@@ -152,7 +164,7 @@ errvt UTF8_toAscii(c8* in, len_t in_max, char* dest, len_t dest_max) {
 	rune codepoint;
 
 	while (*in || new_len >= dest_max) {
-		if (std.String.UTF8.decode(&in, &codepoint) != OK) 
+		if (std.String.Encoding.UTF8.decode(&in, &codepoint) != OK) 
 			return ERR(ERR.STRING.ENCODING, "Invalid UTF8 sequence");
 		
 		if (codepoint <= ASCII_MAX) {
@@ -165,3 +177,5 @@ errvt UTF8_toAscii(c8* in, len_t in_max, char* dest, len_t dest_max) {
 
 return OK;
 }
+
+

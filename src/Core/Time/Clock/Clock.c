@@ -1,12 +1,11 @@
-#include <Core/pkg.c>
-#include <XC/pkg.c>
+#include <XC.pkg.c>
 
 #define module std, Clock
 
 
 std_Time* moduleFn(System_UTC_getTime)(std_Time* time_buff){
 	timeSpec XCtime_buff;
-	XC.Time.getNow(XC.Time.Source.REALTIME, &XCtime_buff);
+	XC.Sys.Time.getNow(XC.Sys.Time.Source.REALTIME, &XCtime_buff);
 	
 	time_buff->seconds = XCtime_buff.seconds;
 	time_buff->nanosec = XCtime_buff.nanoseconds;
@@ -26,7 +25,7 @@ return &clock;
 
 std_Time* moduleFn(System_TAI_getTime)(std_Time* time_buff){
 	timeSpec XCtime_buff;
-	XC.Time.getNow(XC.Time.Source.MONOTONIC, &XCtime_buff);
+	XC.Sys.Time.getNow(XC.Sys.Time.Source.MONOTONIC, &XCtime_buff);
 	
 	time_buff->seconds = XCtime_buff.seconds;
 	time_buff->nanosec = XCtime_buff.nanoseconds;
@@ -50,7 +49,7 @@ return &clock;
 
 std_Time* moduleFn(System_TT_getTime)(std_Time* time_buff){
 	timeSpec XCtime_buff;
-	XC.Time.getNow(XC.Time.Source.MONOTONIC, &XCtime_buff);
+	XC.Sys.Time.getNow(XC.Sys.Time.Source.MONOTONIC, &XCtime_buff);
 	
 	len_t carry = 
 		(XCtime_buff.nanoseconds + TAI_TO_TT_DECIMAL_OFFSET) / 1000000000;
@@ -73,18 +72,11 @@ return &clock;
 
 
 std_Time*  moduleFn(getNow)(){
-	Local(std_Time) time_buff = 0;
+	thread_local static std_Time time_buff = {0};
 	
-	if(!time_buff){
-	    time_buff = new(std_Local, 
-		     	    sizeof(std_Time),
-		     	    &(std_Time){std_Time_Type}
-			);
-	}
-
 return std.Clock.getTime(
 	    std.Clock.getPrimary(), 
-	    std.Local.getData(time_buff)
+	    &time_buff
        );
 }
 

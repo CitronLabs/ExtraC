@@ -1,17 +1,18 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 #define module std, Memory
+
+
 
 bool  moduleFn(compare)(void* a, void* b, len_t size);
 void* moduleFn(setTo)(void* dest, int val, len_t size);
 void* moduleFn(copyTo)(void* dest, void* from, len_t size);
-void* moduleFn(heapAlloc)(len_t size);
-void* moduleFn(grow)(void* data, len_t size);
-void  moduleFn(heapDealloc)(void* data);
 
+std_Memory* moduleFn(getHeap)(){
+
+}
 
 WRITE(std_Memory){
-	
 	len_t usage = 0, num_iter = 0;
 
 	loop(i, size){

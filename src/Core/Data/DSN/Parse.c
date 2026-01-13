@@ -1,8 +1,10 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 #define module std, DSN
 
 #include "Utils.c"
+
+alias(std.Stream.Process, process)
 
 len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 	
@@ -14,23 +16,23 @@ len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
-		while(iswblank(c)) process->next();
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
+		while(iswblank(c)) process.next();
 		
 		if(c == ']'){
-			process->end();
+			process.end();
 			return prev_size - size(in);
 		}
 
 
 		if(!std.DSN.parse(self, &sub_field, in)){
-			process->end();
+			process.end();
 			ERR(ERR.DATA.DSN, "failed to parse item");
 			return 0;
 		}
 
 		if(sub_field.type == std_DSN_Field_NONE){
-			process->end();
+			process.end();
 			ERR(ERR.DATA.DSN, "invalid entry");
 			return 0;
 		}
@@ -39,22 +41,22 @@ len_t parseListLikeDataStruct(std_DSN* self, std_Stream* in, std_varData data){
 			first_type = sub_field.type;
 
 		}else if(first_type != sub_field.type) { 
-			process->end();
+			process.end();
 			ERR(ERR.DATA.DSN, "multiple types not allowed in privs");
 			return 0;
 		}
 
 		write_use(&data.type, data.data, sub_field.data);
 		
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 
 		if(c != ','){
-			process->end();
+			process.end();
 			ERR(ERR.DATA.DSN, "expected a ,");
 			return 0;
 		}
 		}
-	    then.end()
+	    process.end()
 	;
 
 ERR(ERR.DATA.DSN, "unexpected end of string");
@@ -100,8 +102,8 @@ len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 	       		return 0;
 		}
 	    }
-	    then.doDecode(std.String.UTF8.Decoder, c){
-		while(iswblank(c)) process->next();
+	    process.doDecode(std.String.Encoding.UTF8.Decoder, c){
+		while(iswblank(c)) process.next();
 
 	//SCANNING FOR KEY	
 		
@@ -118,7 +120,7 @@ len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 
 		}
 
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 		
 	//SCANNING FOR DATA	
 		
@@ -144,14 +146,14 @@ len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 
 		write(buckets, &currbucket);
 
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 		
 		if(c == ',')
-			process->next();
+			process.next();
 		else if(c == '}') 
 			break; 
 	    }
-	    then.end()
+	    process.end()
 	;
 
 	std_Map* map = new(std_Map, 
@@ -188,9 +190,9 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 	       		return 0;
 		}
 	    }
-	    then.doDecode(std.String.UTF8.Decoder, c){
+	    process.doDecode(std.String.Encoding.UTF8.Decoder, c){
 
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 
 		if(!isalpha(c)){
 			ERR(ERR.DATA.DSN, "invalid field name");
@@ -209,7 +211,7 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 			return 0;
 		}
 
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 
 		if(!scanFrom(in, "=")){
 			ERR(ERR.DATA.DSN, "invalid struct format");
@@ -217,7 +219,7 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 			return 0;
 		}
 
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 
 		if(!std.DSN.parse(self, &field, in)){
 			ERR(ERR.DATA.DSN, "failed to parse DSN structure");
@@ -231,7 +233,7 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 			return 0;
 		}
 	    }
-	    then.end()
+	    process.end()
 	;
 
 	*data = result;

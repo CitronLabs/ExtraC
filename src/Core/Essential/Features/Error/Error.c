@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.pkg.c>
 
 #define module std, Error
 
@@ -6,63 +6,36 @@ typedef struct {
 	errvt* errors_to_catch; len_t errors_to_catch_len;
 	stateData try_throw_jumppoint;
 	u8 trying : 1, showErrors : 1;
+	const char* err_func,* err_module,* err_name;
 }errorState;
 
-std_Local* local_errState;
 
 
-#define ERR_MSG(msg) XC.Dev.Stream.writeTo(XC.Dev.Stream.stdHandle(XC.Dev.Stream.ID.Err), msg, sizeof(msg))
+#define ERR_MSG(msg) XC.Dev.Stream.Modify.writeTo(XC.Dev.Stream.stdHandle(XC.Dev.Stream.ID.Err), msg, sizeof(msg))
 
 static inline errorState* fetchErrState(){
+	thread_local static errorState err_state;
 
-	errorState* err_state;
-
-	if(!local_errState){
-		local_errState = new(std_Local, sizeof(std_Error));
-		
-	  	if(local_errState == nil){
-	  		ERR_MSG(
-			    RED"[CRITICAL ERROR] ERR_INITFAIL\n"
-	     		    "errormsg: Failed to initialize the local error state value\n\n"
-	     		);
-			XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);
-		}
-		
-		err_state = std.Local.getData(local_errState);
-		
-		err_state->showErrors = true;
-	} else {
-		err_state = std.Local.getData(local_errState);
-	}
-
-return err_state;
+return &err_state;
 }
 
 std_Error* std_err_Get(){
-	static std_Local* local_err = 0;
+	thread_local static std_Error local_err = {0};
 
-	if(!local_err){
-		local_err = new(std_Local, sizeof(std_Error));
-		
-	  	if(local_err == nil){
-	  		ERR_MSG(
-			    RED"[CRITICAL ERROR] ERR_INITFAIL\n"
-	     		    "errormsg: Failed to initialize the local error state value\n\n"
-	     		);
-			XC.Sys.terminate(XC.Sys.ExitCode.FAILURE, 0);
-		}
-	}
-		
-return std.Local.getData(local_err);
+return &local_err;
 }
 
-errvt std_err_Set(std_Error* err, const strc8 err_name, const char funcname[]){
+errvt std_err_Set(std_Error* err, const strc8 err_name, const char funcname[], const char modulename[]){
 
 	std_Error*  local_err = std.Error.Get();
 	errorState* err_state = fetchErrState();
 	u8 count = 0;
 	
 	*local_err = *err;
+
+	err_state->err_func   = funcname;
+	err_state->err_module = modulename;
+	err_state->err_name   = err_name;
 	
 return err->errorcode;
 }
@@ -115,8 +88,14 @@ void std_err_Throw(){
 }
 
 PRINT(std_Error){
-return write(out,
-	 RED"[ERROR] ", self->message, "\n");
+	errorState* err_state = fetchErrState();
+
+return printTo(out,
+	 RED,"[ERROR] ",NC, err_state->err_name,
+	       " in ",    err_state->err_module,
+	       " at ",    err_state->err_func,
+	       ": ",      self->message
+	);
 }
 
 SET(std_Error){

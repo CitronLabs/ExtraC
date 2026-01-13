@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 static inline std_DSN_FieldType resolveDSNType(std_typeData type){
 

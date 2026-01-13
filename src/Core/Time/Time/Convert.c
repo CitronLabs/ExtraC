@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #include "conversion_macros.h"
 #define module std, Time, Convert
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #include "../__Internal/pkg.c"
 
 static u32 std_Number_divide_smallInt(std_Number* self, u32 divisor) {
@@ -48,13 +48,13 @@ u64 moduleMethod(std_Number, IntPrintDeci, std_Stream* out) {
 	u32 chunk_val = 0;
 	char buffer[CHUNK_SIZE + 1];
 	
-	chunk_val = *(u32*)index(digit_chunks, elements(digit_chunks) - 1);
+	chunk_val = *(u32*)index(digit_chunks, len(digit_chunks) - 1);
 	
 	formatted_len += printTo(out, $F(chunk_val, .precision = CHUNK_SIZE));
 	
 	// Append remaining chunks with padding
-	for (int i = elements(digit_chunks) - 2; i >= 0; i--) {
-		chunk_val = *(u32*)index(digit_chunks, elements(digit_chunks) - 1);
+	for (int i = len(digit_chunks) - 2; i >= 0; i--) {
+		chunk_val = *(u32*)index(digit_chunks, len(digit_chunks) - 1);
 		formatted_len += printTo(out, $F(chunk_val, .precision = CHUNK_SIZE));
 	}
 	pop(digit_chunks);
@@ -73,7 +73,7 @@ u64 moduleMethod(std_Number, IntPrintHex, std_Stream* out) {
 	
 	u32 digit = 0;
 	
-	digit = *(u32*)index(priv.digits, elements(priv.digits) - 1);
+	digit = *(u32*)index(priv.digits, len(priv.digits) - 1);
 	
 	formatted_len += printTo(out, $F(digit, .base = 6));
 	

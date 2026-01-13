@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #define module std, Array
 
 from(std_Array, 
@@ -14,7 +14,7 @@ errvt moduleMethod(Queue, Queue_Grow, u64 add_amount);
 errvt moduleMethod(List,  List_Grow, u64 add_amount);
 errvt moduleMethod(Stack, Stack_Grow, u64 add_amount);
 
-errvt moduleIMethod(std_Array, Write, void* data, len_t len){
+errvt moduleIMethod(Write, void* data, len_t len){
 	self(std_Object);
 
 	switchT(this.__type){
@@ -77,7 +77,7 @@ return ERR(ERR.NIL, "empty type data");
 }
 
 
-errvt moduleIMethod(std_Array, Read, void* data, len_t len){
+errvt moduleIMethod(Read, void* data, len_t len){
 	self(std_Object);
 
 	switchT(this.__type){

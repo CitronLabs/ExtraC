@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 #define module std, Logger
 
@@ -62,7 +62,7 @@ return OK;
 SIZE(std_Logger){
 	nonull(self){ return 0; }
 
-	return elements ? elements(&priv.logs) : sizeof(std_Logger);
+	return elements ? len(&priv.logs) : sizeof(std_Logger);
 }
 
 ITER(std_Logger){

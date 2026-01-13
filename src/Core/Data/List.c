@@ -1,5 +1,5 @@
-#include <Core/pkg.c>
-#include <Core/Data/config.c>
+#include <XC.Core/pkg.c>
+#include <XC.Core/Data/config.c>
 
 #define module std, List
 

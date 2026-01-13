@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #define module std, Buffer
 
 
@@ -6,15 +6,15 @@ u64  		moduleMethod (std_Buffer, getMaxItems)	{ return priv.alloced_size; }
 std_typeData	moduleMethod (std_Buffer, getType)	{ return priv.type; }
 u64  		moduleMethod (std_Buffer, getMaxSize)	{ return priv.type.size * priv.alloced_size; }
 pntr		moduleMethod (std_Buffer, getPointer)	{ return priv.data; }
-u64 		moduleIMethod(std_Buffer, getBytesAlloced){ self(std_Buffer); return priv.type.size * priv.size; }
-bool		moduleIMethod(std_Buffer, isStatic)	{ self(std_Buffer); return priv.isStatic; }
+u64 		moduleIMethod(getBytesAlloced){ self(std_Buffer); return priv.type.size * priv.size; }
+bool		moduleIMethod(isStatic)	{ self(std_Buffer); return priv.isStatic; }
 
-errvt moduleIMethod(std_Buffer, setMax, u64 max){ 
+errvt moduleIMethod(setMax, u64 max){ 
 	self(std_Buffer); 
 	return std.Buffer.resize(self, max); 
 }
 
-pntr moduleIMethod(std_Buffer, New, u64 size){
+pntr moduleIMethod(New, u64 size){
 	self(std_Buffer);
 	if(priv.alloced_size + size > priv.size){
 		if(priv.isStatic){
@@ -32,7 +32,7 @@ pntr moduleIMethod(std_Buffer, New, u64 size){
 return result;
 }
 
-void* moduleIMethod(std_Buffer, Realloc, pntr instance, u64 new_size){
+void* moduleIMethod(Realloc, pntr instance, u64 new_size){
 	self(std_Buffer);
 	iferr(std.Buffer.resize(self, new_size)){
 		return nil;

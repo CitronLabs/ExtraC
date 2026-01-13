@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 #define module std, Struct
 
@@ -60,7 +60,7 @@ COPY(std_Struct){
 	std_Struct* dest = where;
 
 	if(create(std_Struct, dest, 
-		.num_of_fields  = elements(self->fields),
+		.num_of_fields  = len(self->fields),
 		.fields		= 
 			std.List.GetPointer(
 			    std.Map.GetEntries(
@@ -76,7 +76,7 @@ return where;
 
 SIZE(std_Struct){
 	if(elements)
-		return elements(self->fields);
+		return len(self->fields);
 	else
 		return sizeof(std_Struct); 
 }

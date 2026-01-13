@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #include "../__Internal/pkg.c"
 
 u64 moduleMethod(std_Number, FloatPrint, std_Stream* out) {

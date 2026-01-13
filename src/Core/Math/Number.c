@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 
 from(std,
@@ -114,7 +114,7 @@ errvt moduleMethod(std_Number, SubtractInto, Number* a, Number* b){
 		}
 		
 		std.List.Pop(priv.digits, 1);
-		std.List.Insert(priv.digits, 0, elements(zero_operand), std.List.GetPointer(zero_operand, 0));
+		std.List.Insert(priv.digits, 0, len(zero_operand), std.List.GetPointer(zero_operand, 0));
 		
 		Internal.clearLeadingZeros(self);
 		return OK;
@@ -167,7 +167,7 @@ errvt moduleMethod(std_Number, MultiplyInto, Number* a, Number* b){
 		return ERR(ERR.DATA.OUTOFRANGE, "number overflows");
 	}
 	std.List.Reserve(priv.digits, RESERVE_EXACT,
-		elements(priv.digits) + elements(bpriv.digits));
+		len(priv.digits) + elements(bpriv.digits));
 
 
 	List* tempList = nil;

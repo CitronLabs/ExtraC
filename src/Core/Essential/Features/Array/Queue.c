@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #define module std, Array, Queue
 
 from(std_Array, 

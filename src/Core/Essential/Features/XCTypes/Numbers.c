@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #include <float.h>
 #include <stdio.h>
 #include <wchar.h>

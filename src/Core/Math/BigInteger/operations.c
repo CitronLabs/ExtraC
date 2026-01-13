@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #include "../__Internal/pkg.c"
 
 errvt moduleMethod(std_Number, IntAdd, std_Number* other, std_Number* result) {

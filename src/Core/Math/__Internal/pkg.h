@@ -1,4 +1,4 @@
-#include <Core/pkg.h>
+#include <XC.Core/pkg.h>
 #include "utils.h"
 
 #define package std_Number

@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 #include "DSN/Format.c"
 #include "DSN/Parse.c"
@@ -75,9 +75,9 @@ len_t resolveReference(std_DSN* self, std_DSN_Data* ds, std_Stream* in){
 
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
 		
-		while(iswalnum(c)){ write(name_builder, &c); process->next(); }
+		while(iswalnum(c)){ write(name_builder, &c); process.next(); }
 
 		reference = std.DSN.search(self, std.StringBuilder.GetStr(name_builder));
 		
@@ -87,7 +87,7 @@ len_t resolveReference(std_DSN* self, std_DSN_Data* ds, std_Stream* in){
 			return 0;
 		}
 
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 	
 		// Simply use the reference data as the data for the field;
 		if(c == ',') break;
@@ -98,7 +98,7 @@ len_t resolveReference(std_DSN* self, std_DSN_Data* ds, std_Stream* in){
 			return 0;
 		}
 
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) process.next();
 		
 		std_DSN_Data override = {0};
 		errvt err = ERR.NONE;
@@ -132,7 +132,7 @@ len_t resolveReference(std_DSN* self, std_DSN_Data* ds, std_Stream* in){
 
 		reference = &override;
 	    }
-	    then.end()
+	    process.end()
 	;
 
 	copy_use(std_DSN_Data_Type, reference, ds);
@@ -148,9 +148,9 @@ len_t moduleMethod(std_DSN, parse, std_DSN_Data* ds, std_Stream* in){
 
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
 		
-		while(iswblank(c)) process->next(); 
+		while(iswblank(c)) process.next(); 
 
 		switch (c) {
 		case '[':{
@@ -184,7 +184,7 @@ len_t moduleMethod(std_DSN, parse, std_DSN_Data* ds, std_Stream* in){
 
 		break;
 	    }
-	    then.end();
+	    process.end();
 return 0;
 }
 
@@ -419,7 +419,7 @@ SCAN(std_DSN){
 
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
 	
 		while(scanFrom(in, $(name), " = ")){
 		    std_DSN_Data field_data = {0};
@@ -429,7 +429,7 @@ SCAN(std_DSN){
 		    	del(header, body);
 		    	pop(name);
 
-			process->fail();
+			process.fail();
 		    	return 0;
 		    }
 
@@ -438,19 +438,19 @@ SCAN(std_DSN){
 		    	del(header, body);
 		    	pop(name);
 
-			process->fail();
+			process.fail();
 		    	return 0;
 		    }			
 		    
-		    process->next();
-		    while(iswblank(c)) process->next();
+		    process.next();
+		    while(iswblank(c)) process.next();
 
 		    if(c != ','){
 			ERR(ERR.DATA.DSN, "missing a ',' at the end of a header declaration");
 		    	del(header, body);
 		    	pop(name);
 
-			process->fail();
+			process.fail();
 		    	return 0;
 		    }			
 		}
@@ -461,12 +461,12 @@ SCAN(std_DSN){
 		    	del(header, body);
 		    	pop(name);
 
-			process->fail();
+			process.fail();
 		    	return 0;
 		    }
 		}
 	    }
-	    then.end()
+	    process.end()
 	;
 
 	if(this.body) del(this.body);
@@ -487,8 +487,8 @@ DEF(),
 	this.name = new(std_String, args->name, 255);
 	this.body = new(std_Struct);
 
-	priv.header 	 = new(std_Struct);
-	priv.imports 	 = newList(std_DSN, arg.includes_num ? args->includes_num : 10);
+	priv.header 	     = new(std_Struct);
+	priv.imports 	     = newList(std_DSN, arg.includes_num ? args->includes_num : 10);
 	priv.import_resolve  = newMap(std_String, u64, 5);
 	
 

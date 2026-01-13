@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #define module std, DSN
 
 
@@ -15,7 +15,7 @@ len_t moduleMethod(std_DSN, formatList, std_List* data, std_Stream* out){
 	foreach(data, void, elmnt){
 	    formated_len += std.DSN.format(self, &(std_DSN_Data){dsn_type, elmnt}, out);
 
-	    if(elmnt_iterator + 1 < elements(data))
+	    if(elmnt_iterator + 1 < len(data))
 		formated_len += write(out, ", ", fmt_end);
 	}
 

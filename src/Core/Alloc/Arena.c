@@ -1,4 +1,5 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
+#include <limits.h>
 #define module std, Arena
 
 
@@ -33,6 +34,7 @@ errvt moduleMethod(std_Arena, Grow, u64 num_bytes){
 
  return OK;	
 }
+
 void* moduleMethod(std_Arena, Alloc, u64 num_bytes){
 
 	std_Buffer* alloc_buff = nil;
@@ -51,28 +53,28 @@ void* moduleMethod(std_Arena, Alloc, u64 num_bytes){
 return std.Buffer.Allocator.New(generic alloc_buff, num_bytes);
 }
 
-void* moduleIMethod(std_Arena, New, u64 size){ 
+void* moduleIMethod(New, u64 size){ 
 	self(std_Arena); 
 return std.Arena.Alloc(self, size); 
 }
 
-void* moduleIMethod(std_Arena, Resize, void* instance, u64 size){ 
+void* moduleIMethod(Resize, void* instance, u64 size){ 
 	self(std_Arena); 
 	std.Arena.Grow(self, size);
 return instance;
 }
 
-errvt moduleIMethod(std_Arena, setMax, u64 size){
+errvt moduleIMethod(setMax, u64 size){
 	self(std_Arena);
 	priv.max_size = size;
 return OK;
 }
-u64 moduleIMethod(std_Arena, getBytesAlloced){
+u64 moduleIMethod(getBytesAlloced){
 	self(std_Arena);
 return priv.alloc_size;
 }
 
-bool moduleIMethod(std_Arena, isStatic){ 
+bool moduleIMethod(isStatic){ 
 	self(std_Arena);
 return priv.isStatic;
 }

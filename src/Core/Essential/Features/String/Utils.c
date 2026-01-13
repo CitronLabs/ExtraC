@@ -1,30 +1,29 @@
-#include <Core/pkg.c>
-#include <Core/Essential/Features/String/Encodings/utils.h>
+#include <XC.Core/pkg.c>
+#include <XC.Core/Essential/Features/String/Encodings/utils.h>
 
 #define module std, String, Utils, Str
 
-len_t moduleFn(len)(void* in, len_t len, void** end) {
-	const char* str = in;
-	len_t length = 0;
-	while (*str != '\0' && len >= length) {
-		if ((*str & UTF8_1BYTE_MASK) == UTF8_1BYTE_HEADER) {
-			str++;
-		} else if ((*str & UTF8_2BYTE_MASK) == UTF8_2BYTE_HEADER) {
-			str += 2;
-		} else if ((*str & UTF8_3BYTE_MASK) == UTF8_3BYTE_HEADER) {
-			str += 3;
-		} else if ((*str & UTF8_4BYTE_MASK) == UTF8_4BYTE_HEADER) {
-			str += 4;
-		} else {
-			ERR(ERR.INVALID, "invalid utf8 string");
-			return 0;
-		}
-		length++;
+len_t moduleFn(len)(std_varData in, len_t len, void** end) {
+
+	switchT(&in.type){
+	caseT(std_String){
+
+
 	}
-return length;
+	caseT(strc8){
+
+	}
+	caseT(strc16){
+
+	}
+	caseT(strc32){
+
+	}
+	}
+
 }
 
-len_t moduleFn(siz)(void* in, len_t len) {
+len_t moduleFn(siz)(std_varData in, len_t len) {
 	void* end = nil;
 
 	std.String.Utils.Str.len(in, len, &end);
@@ -45,8 +44,8 @@ bool moduleFn(cmp)(void* str1, void* str2, len_t len){
 		// Decode codepoint for s1
 		rune codepoint1 = 0, codepoint2 = 0;
 		
-		if(std.String.UTF8.decode(&s1, &codepoint1) != OK &&
-		   std.String.UTF8.decode(&s2, &codepoint2) != OK
+		if(std.String.Encoding.UTF8.decode(&s1, &codepoint1) != OK &&
+		   std.String.Encoding.UTF8.decode(&s2, &codepoint2) != OK
 		){
 			return false;
 		}

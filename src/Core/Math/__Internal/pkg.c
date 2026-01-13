@@ -3,7 +3,7 @@
 
 #define module Internal
 
-exportModule(
+export(
 SUBMODULE(),
 VALUES(),
 	Copy,	

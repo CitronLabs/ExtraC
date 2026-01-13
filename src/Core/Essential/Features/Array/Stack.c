@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #define module std, Array, Stack
 
 from(std_Array, 

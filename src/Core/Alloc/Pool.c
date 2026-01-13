@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #define module std, Pool
 
 
@@ -23,7 +23,7 @@ void* moduleMethod(std_Pool, Alloc, u64 num){
 return std.Buffer.Allocator.New(generic alloc_buff, num);
 }
 
-void* moduleIMethod(std_Pool, New, len_t size){
+void* moduleIMethod(New, len_t size){
 	self(std_Pool);
 return std.Pool.Alloc(self, size);
 }
@@ -34,7 +34,7 @@ return OK;
 }
 
 
-errvt moduleIMethod(std_Pool, Delete, void* instance){	
+errvt moduleIMethod(Delete, void* instance){	
 	self(std_Pool);
 	write(priv.free_slots, instance);
 return OK;
@@ -74,20 +74,20 @@ errvt moduleMethod(std_Pool, ForceDestroy){
 return OK;
 }
 
-errvt moduleIMethod(std_Pool, setMax, u64 size){
+errvt moduleIMethod(setMax, u64 size){
 	self(std_Pool);
 	nonull(self){ return err; }
 
 	priv.max_size = size;
 return OK;
 }
-bool  moduleIMethod(std_Pool, isStatic){ 
+bool  moduleIMethod(isStatic){ 
 	self(std_Pool);
 	nonull(self){ return err; }
 
 return priv.isStatic;
 }
-u64   moduleIMethod(std_Pool, getBytesAlloced){
+u64   moduleIMethod(getBytesAlloced){
 	self(std_Pool);
 	nonull(self){ return err; }
 
@@ -149,7 +149,7 @@ ITER(std_Pool){
 	}
 
 	foreach(priv.pool_buffers, std_Buffer*, buff){
-	    if(index < elements(*buff)){
+	    if(index < len(*buff)){
 		return index(*buff, index);
 	    }
 	}

@@ -1,5 +1,5 @@
 #pragma once
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 #include "../__Internal/pkg.c"
 
 #ifndef HIDE_USE

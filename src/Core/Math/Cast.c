@@ -1,4 +1,4 @@
-#include <Core/pkg.c>
+#include <XC.Core/pkg.c>
 
 
 float moduleMethod(std_Number, castToFloat){
