@@ -23,26 +23,11 @@ SOFTWARE.
 ---------------------------------------------------------------------------*/
 #pragma once
 #define __ENV__
-#include "../pkg.h"
-#include "../Common/pkg.h"
 
+#include <XC.Core/pkg.h>
+#include <XC.OS/pkg.h>
+#include "../XC.Common/pkg.h"
 #ifndef __ENV_LINUX__
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <pthread.h>
-#include <bits/pthreadtypes.h>
-#include <sys/ptrace.h>
-#include <sys/wait.h>
-#include <semaphore.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/un.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <net/if.h>
-#include <sys/epoll.h>
 
 #include "Runtime/pkg.h"
 
@@ -56,6 +41,9 @@ Interface(Linux,
   )	
 	interface(env_Linux_Runtime) 	Runtime;
   
+	submodule(XC,
+		interface(XC) Core;
+	)
 
 );
 
