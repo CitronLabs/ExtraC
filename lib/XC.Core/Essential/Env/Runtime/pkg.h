@@ -16,7 +16,7 @@ Interface(App,
 extern const App_Interface __MAIN_APP;
 
 #define setApp(module) 							\
-	const App_Interface __MAIN_APP = __PATH_CAT_NAME(module, App); 	\
+	const App_Interface __MAIN_APP = __PATH_CAT_NAME(module); 	\
 
 #define main(...) 							\
 	errvt moduleFn(App_start)(__);					\
