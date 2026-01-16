@@ -8,9 +8,11 @@
 
 #define package std
 
+#define getErrorPos()	(std_ErrorPosition){__func__, __FILE__, __module__, __LINE__}
+
 #define OK std.Error.Code.NONE
 
-#define ERR(code, msg) std.Error.Set(&(std_Error){code, msg}, #code, __func__, __module__)
+#define ERR(code, msg) std.Error.Set(&(std_Error){code, msg}, #code, getErrorPos())
 
 #define check(...) for(std_Error* err = std.Error.Get(); err->errorcode != std.Error.Code.NONE; std.Error.Clear()) 	\
 		   loop(i, 										\
@@ -54,6 +56,16 @@ type(Error,
 	char* message;
 );
 
+type(ErrorPosition,
+	const char
+     		* func,
+     		* file_,
+     		* module_;
+     	len_t 	line;
+     	
+
+)
+
 Interface(Error,
 	submodule(Code,
 	    const errvt 
@@ -65,14 +77,28 @@ Interface(Error,
 	    	DSN				
 	    )					
 	    values(MEM, errvt,			
-	    	OVERFLOW			
+	    	OVERFLOW,
+    		OUT_OF_MEMORY,
+    		METADATA_CAP_EXCEEDED,
+    		HEAP_LIMIT_REACHED,
+    		INVALID_POINTER,
+    		DOUBLE_FREE,
+    		CORRUPTION_DETECTED,
+    		ALIGNMENT_FAILURE,
+    		RELOCATION_FAILED,
+    		INVALID_SIZE,
+    		UNALIGNED_BASE,
+    		INVALID_SETTINGS,
+    		THREAD_SAFETY_VIOLATION,
+    		REALLOC_FAILED,
+    		QUARANTINE_FULL
 	    )		
 	    values(STRING, errvt,			
 	    	ENCODING			
 	    )		
 	)
 
-	errvt fn(Set)(std_Error* err, const char* errname, const char funcname[], const char modulename[]);
+	errvt fn(Set)(std_Error* err, const char* err_name, pkg(ErrorPosition) position);
       	noFail fn(Clear)();
       	errvt fn(Try)(errvt* errors_to_catch, len_t num);
       	noFail fn(Throw)();

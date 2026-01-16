@@ -31,7 +31,7 @@ private(
 )
 ){
       	u64 method(Arena, Size);
-      	void* method(Arena, Alloc, u64 num_bytes);
+      	void* method(Arena, Alloc, u64 num_bytes, std_ErrorPosition errorPos);
       	errvt method(Arena, Reserve, u64 num_bytes);
       	errvt method(Arena, Grow, u64 add_num_bytes);
       };

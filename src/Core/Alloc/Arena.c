@@ -35,7 +35,7 @@ errvt moduleMethod(std_Arena, Grow, u64 num_bytes){
  return OK;	
 }
 
-void* moduleMethod(std_Arena, Alloc, u64 num_bytes){
+void* moduleMethod(std_Arena, Alloc, u64 num_bytes, std_ErrorPosition errorPos){
 
 	std_Buffer* alloc_buff = nil;
 
@@ -50,19 +50,21 @@ void* moduleMethod(std_Arena, Alloc, u64 num_bytes){
 	}
 	priv.current_size += num_bytes;
 
-return std.Buffer.Allocator.New(generic alloc_buff, num_bytes);
+return std.Buffer.Allocator.New(generic alloc_buff, num_bytes, errorPos);
 }
 
-void* moduleIMethod(New, u64 size){ 
+void* moduleIMethod(New, u64 size, std_ErrorPosition errorPos){ 
 	self(std_Arena); 
-return std.Arena.Alloc(self, size); 
+return mod(Alloc)(self, size, errorPos); 
 }
 
-void* moduleIMethod(Resize, void* instance, u64 size){ 
+void* moduleIMethod(Resize, void* instance, u64 size, std_ErrorPosition errorPos){ 
 	self(std_Arena); 
 	std.Arena.Grow(self, size);
 return instance;
 }
+
+errvt moduleIMethod(Free, void* instance, std_ErrorPosition errorPos){ return OK; }
 
 errvt moduleIMethod(setMax, u64 size){
 	self(std_Arena);
@@ -137,12 +139,12 @@ DEF(),
 	.Hash	 = nil,
 	.Iter	 = nil,
 	.Scan 	 = nil,
-	.Create  = std_Arena_Op_Create,
-	.Destroy = std_Arena_Op_Destroy,
-	.Set	 = std_Arena_Op_Set,
-	.Copy	 = std_Arena_Op_Copy,
-	.Size	 = std_Arena_Op_Size,
-	.Print 	 = std_Arena_Op_Print
+	.Create  = mod(Op_Create),
+	.Destroy = mod(Op_Destroy),
+	.Set	 = mod(Op_Set),
+	.Copy	 = mod(Op_Copy),
+	.Size	 = mod(Op_Size),
+	.Print 	 = mod(Op_Print)
 ){
 	if(arg.init_size == 0) {
 	    ERR(ERR.INVALID, "initial size cannot be 0 for priv");

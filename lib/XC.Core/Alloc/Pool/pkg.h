@@ -36,8 +36,8 @@ private(
 )
 ){
 	errvt	method(Pool, ForceDestroy);
-      	void* 	method(Pool, Alloc, u64 num);
-      	errvt 	method(Pool, Return, void* instance);
+      	void* 	method(Pool, Alloc, u64 num, std_ErrorPosition errorPos);
+      	errvt 	method(Pool, Return, void* instance, std_ErrorPosition errorPos);
       	errvt 	method(Pool, Reserve, u64 num_members);
       	errvt 	method(Pool, Grow, u64 add_num_members);
 };
