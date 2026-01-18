@@ -60,7 +60,7 @@ private(
 @param num the number of items to resize the buffer to
 @return ERR_NONE if 
 */
-      	errvt 		method(Buffer, resize, u64 num);
+      	errvt 		method(Buffer, resize, u64 num, std_ErrorPosition errorPos);
 
 /**
 @brief casts the buffer's type to  another size

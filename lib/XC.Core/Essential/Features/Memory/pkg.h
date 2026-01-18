@@ -19,7 +19,32 @@ Interface(Allocator,
 );
 
 type(Memory_AllocSettings,
-
+    u32 bin_count;
+    len_t min_split_threshold;
+    len_t alignment;
+    len_t maxMetadataPages;
+    bool  ensureContiguous;
+    bool  allowRuntimeTuning;
+    bool  enableTelemetry;
+    len_t maxHeapSize;
+    
+    /* Security & Debugging Features */
+    bool  zeroOnFree;
+    bool  poisonOnFree;
+    bool  useCanaries;
+    bool  validateOnEntry;
+    bool  useRandomCanaries;     /* Random canary per allocation */
+    bool  useQuarantine;         /* Delay reuse of freed blocks */
+    len_t quarantineSize;       /* Max quarantine bytes */
+    
+    /* Performance Features */
+    bool  useDeferredCoalescing; /* Delay coalescing for performance */
+    bool  enableThreadCache;     /* Thread-local caching (future) */
+    len_t largeMmapThreshold;   /* Direct mmap for large allocations */
+    
+    /* Diagnostic Features */
+    bool  trackCallSites;        /* Track file/line of allocations */
+    bool  verboseErrors;         /* Detailed error messages */
 
 
 )
@@ -37,13 +62,16 @@ FMT(),
     		FIRST_FIT        /* Fast, less fragmentation than segregated */
 	    )
 	    values(Optimize, uword,
+    		DEFAULT,    /* Default settings */
     		SPEED,      /* Minimize allocation time */
     		SPACE,      /* Minimize fragmentation */
     		BALANCED,   /* Balance speed and space */
     		SECURITY    /* Maximum security features */
 	    )
 	    pkg(Memory_AllocSettings) fn(optimizeSettings)(uword flag);
-	    errvt fn(setup)(pkg(Memory_AllocSettings) settings);
+	    errvt fn(setup)(pkg(Memory)* mem, pkg(Memory_AllocSettings) settings);
+	    void* fn(allocAligned)(len_t size, len_t alignment);
+
 	    interface(std_Allocator) Interface;
 
      	} Allocator;

@@ -1,5 +1,4 @@
 #include <XC.Core/pkg.c>
-#include <limits.h>
 #define module std, Arena
 
 
@@ -50,7 +49,7 @@ void* moduleMethod(std_Arena, Alloc, u64 num_bytes, std_ErrorPosition errorPos){
 	}
 	priv.current_size += num_bytes;
 
-return std.Buffer.Allocator.New(generic alloc_buff, num_bytes, errorPos);
+return std.Buffer.Allocator.Alloc(generic alloc_buff, num_bytes, errorPos);
 }
 
 void* moduleIMethod(New, u64 size, std_ErrorPosition errorPos){ 
@@ -91,7 +90,7 @@ COPY(std_Arena){
 		{ERR(ERR.FAIL, "failed to create copy"); return nil; }
 
 	foreach(priv.arena_buffers, std_Buffer*, buff){
-		pntr copy_loc = std.Arena.Alloc(where, size(*buff));
+		pntr copy_loc = std.Arena.Alloc(where, size(*buff), getErrorPos());
 
 		memcpy(copy_loc, std.Buffer.getPointer(*buff), size(*buff));
 	}
