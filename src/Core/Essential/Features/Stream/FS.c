@@ -2,9 +2,9 @@
 
 #define module std, FS
 
-alias(XC.Dev, 	       Dev)
-alias(XC.Dev.Stream,   Stream)
-alias(XC.Dev.Register, Reg)
+alias(core.Dev, 	 Dev)
+alias(core.Dev.Stream,   Stream)
+alias(core.Dev.Register, Reg)
 
 std_Stream* moduleFn(open)(std_FSPath path, int flags){
 	devHandle io_dev = Dev.stdHandle(Dev.ID.IO);
@@ -20,7 +20,7 @@ errvt moduleFn(delete)(std_FSPath path){
 	
 	streamHandle strm = Stream.open(io_dev, path, 0, nil);
 
-	XC.Dev.Stream.close(strm);
+	core.Device.Stream.close(strm);
 return OK;
 }
 
@@ -34,7 +34,7 @@ errvt moduleFn(chdir)(std_FSPath path){
 return OK;
 }
 std_Stream* moduleFn(search)(std_FSPath path, std_FSEntry* ent){
-	devHandle io_dev = Dev.stdHandle(XC.Dev.ID.IO);
+	devHandle io_dev = Dev.stdHandle(core.Device.ID.IO);
 	
 	streamHandle strm = Stream.fetch(io_dev, path, 0);
 	
@@ -42,10 +42,10 @@ std_Stream* moduleFn(search)(std_FSPath path, std_FSEntry* ent){
 		return nil;
 	}
 
-	streamInfo info = XC.Dev.Stream.Modify.info(strm);
+	streamInfo info = core.Device.Stream.Modify.info(strm);
 
 	*ent = (std_FSEntry){
-	    .isdir   	   = info.type == &XC.Dev.Stream.Type.DIR,
+	    .isdir   	   = info.type == &core.Device.Stream.Type.DIR,
 	    .name 	   = generic info.name,
 	    .path 	   = copy_use(std_FSPath_Type, &path, new_alloc(std_FSPath)),
 	    .size 	   = info.size,
@@ -60,11 +60,11 @@ return ent->stream;
 
 
 errvt moduleFn(setname)(std_FSPath path, std_FSPath new_name){
-	devHandle io_dev = XC.Dev.stdHandle(XC.Dev.ID.IO);
+	devHandle io_dev = core.Device.stdHandle(core.Device.ID.IO);
 	
-	streamHandle strm = XC.Dev.Stream.open(io_dev, path, 0, nil);
+	streamHandle strm = core.Device.Stream.open(io_dev, path, 0, nil);
 
-	XC.Dev.Stream.edit(strm, new_name, 0);
+	core.Device.Stream.edit(strm, new_name, 0);
 
 return OK;
 }

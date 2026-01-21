@@ -4,7 +4,7 @@
 
 #include "./Formats.c"
 
-alias(XC.Dev.Register, Reg);
+alias(core.Device.Register, Reg);
 
 bool moduleMethod(std_Date, isValid){
 	return 

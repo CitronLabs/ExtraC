@@ -8,4 +8,5 @@
 #endif
 
 
-alias(__XC_PATH.Core, XC)
+alias(__XC_PATH.Core, core)
+alias(__XC_PATH.Sys,  sys)

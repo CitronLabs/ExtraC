@@ -13,7 +13,7 @@ moduleValues(Version,
 
 
 export(
-SUBMODULE(Dev, Sys),
+SUBMODULE(Device, System),
 VALUES(),
 );
 

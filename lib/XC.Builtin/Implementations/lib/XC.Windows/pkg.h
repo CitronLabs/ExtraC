@@ -46,7 +46,8 @@ Interface(Windows,
 	interface(env_Windows_Utils) 	Utils;
 
 	submodule(XC,
-		interface(XC) Core;
+		interface(XC_Core) Core;
+		interface(XC_Sys)  Sys;
 	)
 );
 

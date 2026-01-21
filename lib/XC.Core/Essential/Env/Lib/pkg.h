@@ -6,19 +6,18 @@
 #include "utils.h"
 #include "types.h"
 
-#include "Dev/Dev.h"
-#include "Sys/Sys.h"
-#include "Vec/Vec.h"
+#include "Device/Device.h"
+#include "System/System.h"
 
-Module(XC){
+Module(XC_Core){
 	values(Version, word,
 		MAJOR,
 		MINOR,
 		PATCH
 	);
 
-	interface(__XC_DEVICE) 	Dev;
-	interface(__XC_SYS) 	Sys;
+	interface(__XC_DEVICE) 	Device;
+	interface(__XC_SYSTEM) 	System;
 };
 
 

@@ -1,7 +1,5 @@
 #pragma once
-#include <XC.Core/pkg.c>
-#include "Env/pkg.c"
-
+#include "pkg.h"
 
 
 #define module os

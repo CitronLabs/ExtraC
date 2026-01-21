@@ -4,10 +4,10 @@
 
 /*--------------------------------------|
  *					|
- *	    XC.Sys.Mem Module		|
+ *	   XC.System.Mem Module		|
  *					|
  *------------------------------------*/
-#define module __ENV_NAME, XC, Core, Sys, Mem
+#define module __ENV_NAME, XC, Core, System, Mem
 
 moduleValues(Perms,
       	READ  , (1 << 0),
@@ -23,10 +23,10 @@ VALUES(Perms),
 #undef module
 /*--------------------------------------|
  *					|
- *	    XC.Sys.Time Module		|
+ *	   XC.System.Time Module	|
  *					|
  *------------------------------------*/
-#define module __ENV_NAME, XC, Core, Sys, Time
+#define module __ENV_NAME, XC, Core, System, Time
 
 
 moduleValues(Source, 
@@ -44,10 +44,10 @@ VALUES(),
 
 /*--------------------------------------|
  *					|
- *	   XC.Sys.Locale Module		|
+ *	  XC.System.Locale Module	|
  *					|
  *------------------------------------*/
-#define module __ENV_NAME, XC, Core, Sys, Locale
+#define module __ENV_NAME, XC, Core, System, Locale
 
 moduleValues(Temp,
 	Celsius,,
@@ -68,10 +68,10 @@ VALUES(Temp, Measure),
 
 /*--------------------------------------|
  *					|
- *	       XC.Sys Module		|
+ *	     XC.System Module		|
  *					|
  *------------------------------------*/
-#define module __ENV_NAME, XC, Core, Sys
+#define module __ENV_NAME, XC, Core, System
 
 moduleValues(ExitCode,
 	FAILURE, -1,

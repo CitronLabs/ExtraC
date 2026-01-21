@@ -1,7 +1,7 @@
 #pragma once
 #define __XC_OS__
 #include "../pkg.h"
-#include "../Env/types.h"
+#include "../Sys/types.h"
 
 
 #ifndef __XC_OS_MEDIA__

@@ -4,8 +4,8 @@
 
 
 std_Time* moduleFn(System_UTC_getTime)(std_Time* time_buff){
-	timeSpec XCtime_buff;
-	XC.Sys.Time.getNow(XC.Sys.Time.Source.REALTIME, &XCtime_buff);
+	XC_Time XCtime_buff;
+	core.System.Time.getNow(core.System.Time.Source.REALTIME, &XCtime_buff);
 	
 	time_buff->seconds = XCtime_buff.seconds;
 	time_buff->nanosec = XCtime_buff.nanoseconds;
@@ -24,8 +24,8 @@ return &clock;
 }
 
 std_Time* moduleFn(System_TAI_getTime)(std_Time* time_buff){
-	timeSpec XCtime_buff;
-	XC.Sys.Time.getNow(XC.Sys.Time.Source.MONOTONIC, &XCtime_buff);
+	XC_Time XCtime_buff;
+	core.System.Time.getNow(core.System.Time.Source.MONOTONIC, &XCtime_buff);
 	
 	time_buff->seconds = XCtime_buff.seconds;
 	time_buff->nanosec = XCtime_buff.nanoseconds;
@@ -48,8 +48,8 @@ return &clock;
 #define TAI_TO_TT_DECIMAL_OFFSET (184 * NUMBER_OF_MILLISEC_IN_MICROSEC)
 
 std_Time* moduleFn(System_TT_getTime)(std_Time* time_buff){
-	timeSpec XCtime_buff;
-	XC.Sys.Time.getNow(XC.Sys.Time.Source.MONOTONIC, &XCtime_buff);
+	XC_Time XCtime_buff;
+	core.System.Time.getNow(core.System.Time.Source.MONOTONIC, &XCtime_buff);
 	
 	len_t carry = 
 		(XCtime_buff.nanoseconds + TAI_TO_TT_DECIMAL_OFFSET) / 1000000000;

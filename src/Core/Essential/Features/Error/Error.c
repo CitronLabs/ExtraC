@@ -71,7 +71,7 @@ errvt moduleFn(Try)(errvt* errors_to_catch, len_t num){
 	std_Error* local_err  = std.Error.Get();
 	errorState* err_state = mod(fetchErrState)();
 
-	if(XC.Sys.saveState(&err_state->try_throw_jumppoint)){
+	if(core.System.saveState(&err_state->try_throw_jumppoint)){
 		err_state->trying = false;
 		return local_err->errorcode;
 	}
@@ -89,11 +89,11 @@ errvt moduleFn(Throw)(){
 	
 	if(err_state->trying){
 	    if(err_state->errors_to_catch_len == 0)
-		XC.Sys.loadState(err_state->try_throw_jumppoint);
+		core.System.loadState(err_state->try_throw_jumppoint);
 
 	    else loop(i, err_state->errors_to_catch_len)
 		if(local_err->errorcode == err_state->errors_to_catch[i])
-	    	    XC.Sys.loadState(err_state->try_throw_jumppoint);
+	    	    core.System.loadState(err_state->try_throw_jumppoint);
 	}
 
 return local_err->errorcode;
