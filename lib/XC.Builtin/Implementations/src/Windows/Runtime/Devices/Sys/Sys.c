@@ -13,19 +13,19 @@ CliArgs_Info = {
 .path 		= "CliArgs",
 .interface 	= &WinRTDev.Resource.Locale,
 .type 		= Dev.Resource.Type.STREAM,
-.attributes 	= XC.Dev.Stream.Attrib.READ 
+.attributes 	= core.Device.Stream.Attrib.READ 
 },
 Locale_Info = {
 .name 		= "Locale",
 .path 		= "Locale",
 .interface 	= &WinRTDev.Resource.CliArgs,
 .type 		= Dev.Resource.Type.REGISTER,
-.attributes 	= XC.Dev.Stream.Attrib.READ | XC.Dev.Stream.Attrib.WRITE
+.attributes 	= core.Device.Stream.Attrib.READ | core.Device.Stream.Attrib.WRITE
 };
 
 static inline pntr moduleFn(Sys_Open_EnvVar)(const char* name, word attributes, void* interface, bool create){
 
-	if(interface != &XC.Dev.Register.Type.ENV_VAR){
+	if(interface != &core.Device.Register.Type.ENV_VAR){
 		ERR(ERR.FAIL, "Invalid stream type for XC.IO device, can only FILE or DIR");
 		return nil;
 	}
@@ -86,7 +86,7 @@ pntr moduleFn(Sys_Open)(word resource, const char* name, word attributes, void* 
 	Manager* devManager = WinRTDev.getManager();
 
 	switchV(resource){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 
 		if(create(std_Map, &SysDevice.envVarLookup,
 			.key  = T(std_String),
@@ -103,7 +103,7 @@ pntr moduleFn(Sys_Open)(word resource, const char* name, word attributes, void* 
 
 		return &SysDevice;
 	}
-	caseV(XC.Dev.Resource.Register){ return mod(Sys_Open_EnvVar)(name, attributes, type, true); }
+	caseV(core.Device.Resource.Register){ return mod(Sys_Open_EnvVar)(name, attributes, type, true); }
 	defaultV{
 		ERR(ERR.INVALID, 
       			"XC.Sys device does not allow "
@@ -122,14 +122,14 @@ return nil;
 
 errvt moduleFn(Sys_Close)(word resource, pntr handle){
 	switchV(resource){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 		return ERR(ERR.INVALID, 
       			"XC.Sys device does not allow "
       			"creation, deletion, or modification "
       			"itself by users"
 		);
 	}
-	caseV(XC.Dev.Resource.Register){
+	caseV(core.Device.Resource.Register){
 		iferr(Dev.Resource.remove(
 			WinRTDev.getManager(),
 			WinRTDev.getSys(),
@@ -156,14 +156,14 @@ return ERR(ERR.NOTIMPLEM, "unreachable code reached");
 
 errvt moduleFn(Sys_Edit)(word resourceType, pntr handle, const char* name, word attributes){
 	switchV(resourceType){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 		return ERR(ERR.INVALID, 
       			"XC.Sys device does not allow "
       			"creation, deletion, or modification "
       			"itself by users"
 		);
 	}
-	caseV(XC.Dev.Resource.Register){
+	caseV(core.Device.Resource.Register){
 		var streamInfo = Dev.Resource.getOne(
 			WinRTDev.getManager(),
 			WinRTDev.getIO(),
@@ -189,7 +189,7 @@ return ERR(ERR.NOTIMPLEM, "unreachable code reached");
 
 pntr moduleFn(Sys_Fetch)(word resourceType, const char* name, word attributes, void* type){
 	switchV(resourceType){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 	    ERR(ERR.INVALID, 
       	    	"XC.Sys device does not "
       	    	"allow multiple handles "
@@ -197,7 +197,7 @@ pntr moduleFn(Sys_Fetch)(word resourceType, const char* name, word attributes, v
       	    );
 	    return nil;
 	}
-	caseV(XC.Dev.Resource.Register){ return mod(Sys_Open_EnvVar)(name, attributes, type, false); }
+	caseV(core.Device.Resource.Register){ return mod(Sys_Open_EnvVar)(name, attributes, type, false); }
 	defaultV{
 		ERR(ERR.INVALID, 
       			"XC.Sys device does not allow "
@@ -213,14 +213,14 @@ return nil;
 
 errvt moduleFn(Sys_Delete)(word resourceType, pntr handle){
 	switchV(resourceType){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 		return ERR(ERR.INVALID, 
       			"XC.Sys device does not allow "
       			"creation, deletion, or modification "
       			"itself by users"
 		);
 	}
-	caseV(XC.Dev.Resource.Register){
+	caseV(core.Device.Resource.Register){
 		var streamInfo = Dev.Resource.getOne(
 			WinRTDev.getManager(),
 			WinRTDev.getIO(),

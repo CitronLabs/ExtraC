@@ -15,34 +15,34 @@ StdIn_Info = {
 .path 		= "Console/StdIn",
 .interface 	= &WinRTDev.Resource.StdIn,
 .type 		= Dev.Resource.Type.STREAM,
-.attributes 	= XC.Dev.Stream.Attrib.READ
+.attributes 	= core.Device.Stream.Attrib.READ
 },
 StdOut_Info = {
 .name 		= "StdOut",
 .path 		= "Console/StdOut",
 .interface 	= &WinRTDev.Resource.StdOut,
 .type 		= Dev.Resource.Type.STREAM,
-.attributes 	= XC.Dev.Stream.Attrib.WRITE 
+.attributes 	= core.Device.Stream.Attrib.WRITE 
 },
 StdErr_Info = {
 .name 		= "StdErr",
 .path 		= "Console/StdErr",
 .interface 	= &WinRTDev.Resource.StdErr,
 .type 		= Dev.Resource.Type.STREAM,
-.attributes 	= XC.Dev.Stream.Attrib.WRITE
+.attributes 	= core.Device.Stream.Attrib.WRITE
 },
 WorkDir_Info = {
 .name 		= "WorkDir",
 .path 		= "WorkDir",
 .interface 	= &WinRTDev.Resource.WorkDir,
 .type 		= Dev.Resource.Type.REGISTER,
-.attributes 	= XC.Dev.Stream.Attrib.WRITE | XC.Dev.Stream.Attrib.READ
+.attributes 	= core.Device.Stream.Attrib.WRITE | core.Device.Stream.Attrib.READ
 };
 
 
 static inline pntr moduleFn(IO_Open_Stream)(const char* path, word attributes, void* interface, bool create){
 
-	if(interface != &XC.Dev.Stream.Type.FILE || interface != &XC.Dev.Stream.Type.DIR){
+	if(interface != &core.Device.Stream.Type.FILE || interface != &core.Device.Stream.Type.DIR){
 		ERR(ERR.FAIL, "Invalid stream type for XC.IO device, can only FILE or DIR");
 		return nil;
 	}
@@ -110,7 +110,7 @@ pntr moduleFn(IO_Open)(word resource, const char* name, word attributes, void* t
 	nonull(name) return nil;
 
 	switchV(resource){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 
 		if(create(std_Map, &IODevice.fileLookup,
 			.key  = T(std_String),
@@ -127,7 +127,7 @@ pntr moduleFn(IO_Open)(word resource, const char* name, word attributes, void* t
 
 		return &IODevice;
 	}
-	caseV(XC.Dev.Resource.Stream){ return mod(IO_Open_Stream)(name, attributes, type, true); }
+	caseV(core.Device.Resource.Stream){ return mod(IO_Open_Stream)(name, attributes, type, true); }
 	defaultV {
 		ERR(ERR.INVALID, "Invalid resource type");
 		return nil;
@@ -145,7 +145,7 @@ errvt moduleFn(IO_Close)(word resource, pntr handle){
 	devID 	 IO_DevID 	= WinRTDev.getIO();
 
 	switchV(resource){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 
 	    var IODeviceEntry = Dev.getOne(devManager, IO_DevID);
 
@@ -154,7 +154,7 @@ errvt moduleFn(IO_Close)(word resource, pntr handle){
 	    
 	    return OK;
 	}
-	caseV(XC.Dev.Resource.Stream){ 
+	caseV(core.Device.Resource.Stream){ 
 	    Dev.Resource.release(
 	        devManager,
 	        IO_DevID,
@@ -176,13 +176,13 @@ return ERR(ERR.NOTIMPLEM, "unreachable code reached");
 
 errvt moduleFn(IO_Edit)(word resourceType, pntr handle, const char* name, word attributes){
 	switchV(resourceType){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 	   return ERR(ERR.INVALID, 
       	    	"XC.IO device is not"
       	    	"allowed to be edited"
       	    );
 	}
-	caseV(XC.Dev.Resource.Stream){
+	caseV(core.Device.Resource.Stream){
 		var streamInfo = Dev.Resource.getOne(
 			WinRTDev.getManager(),
 			WinRTDev.getIO(),
@@ -205,7 +205,7 @@ return ERR(ERR.NOTIMPLEM, "unreachable code reached");
 
 pntr moduleFn(IO_Fetch)(word resourceType, const char* name, word attributes, void* type){
 	switchV(resourceType){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 	    ERR(ERR.INVALID, 
       	    	"XC.IO device does not "
       	    	"allow multiple handles "
@@ -213,7 +213,7 @@ pntr moduleFn(IO_Fetch)(word resourceType, const char* name, word attributes, vo
       	    );
 	    return nil;
 	}
-	caseV(XC.Dev.Resource.Stream){ return mod(IO_Open_Stream)(name, attributes, type, false); }
+	caseV(core.Device.Resource.Stream){ return mod(IO_Open_Stream)(name, attributes, type, false); }
 	defaultV{
 		ERR(ERR.INVALID, "Invalid resource type");
 		return nil;
@@ -225,13 +225,13 @@ return nil;
 }
 errvt moduleFn(IO_Delete)(word resourceType, pntr handle){
 	switchV(resourceType){
-	caseV(XC.Dev.Resource.Device){
+	caseV(core.Device.Resource.Device){
 	   return ERR(ERR.INVALID, 
       	    	"XC.IO device is not"
       	    	"allowed to be deleted"
       	    );
 	}
-	caseV(XC.Dev.Resource.Stream){
+	caseV(core.Device.Resource.Stream){
 
 		var streamInfo = Dev.Resource.getOne(
 			WinRTDev.getManager(),

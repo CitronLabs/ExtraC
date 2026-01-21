@@ -16,7 +16,7 @@ alias(env.Windows.Runtime.Device,  WinRTDev)
 alias(env.Windows.Runtime.Console, WinRTCon)
 alias(env.Windows.Utils, 	   WinUtils)
 alias(env.Common.Devices.Manager,  Dev)
-alias(XC.Dev.Attrib, 		   DevAttrib)
+alias(core.Device.Attrib, 		   DevAttrib)
 
 
 static const deviceInfo 

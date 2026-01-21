@@ -12,7 +12,7 @@ from(env_Common,
 
 alias(env.Linux.Runtime.Devices,   Devices);
 alias(env.Common.Devices.Resource, Resource);
-alias(XC.Dev.Stream.Attrib,        Attribs);
+alias(core.Device.Stream.Attrib,        Attribs);
 
 StreamResource openIOStream(const char* key, word attributes, bool create){
 	

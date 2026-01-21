@@ -5,10 +5,10 @@ IO_Stream* moduleFn(IO_Open_File)(const char* path, word attributes, bool create
 	LPOFSTRUCT fileInfo  =  0;
 	int	   fileFlags =  0;
 
-	if(attributes & XC.Dev.Stream.Attrib.READ)
+	if(attributes & core.Device.Stream.Attrib.READ)
 		fileFlags = OF_READ;
 
-	if(attributes & XC.Dev.Stream.Attrib.WRITE){
+	if(attributes & core.Device.Stream.Attrib.WRITE){
 	    if(!fileFlags)
 		fileFlags = OF_WRITE;
 	    else

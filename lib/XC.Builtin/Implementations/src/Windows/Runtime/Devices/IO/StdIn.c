@@ -5,7 +5,6 @@ static struct {
 	len_t lastSize;
 	len_t currentSize;
 	WORD type;
-
 } StdIn;
 
 errvt moduleFn(Resource_StdIn_open)(streamHandle handle, bool create){
@@ -64,11 +63,16 @@ len_t moduleFn(Resource_StdIn_shift)(streamHandle handle, word offset, len_t fro
 
 }
 len_t moduleFn(Resource_StdIn_readFrom)(streamHandle handle, void* buffer, len_t size){
-	ERR(ERR.INVALID, "XC.IO:/Console/StdIn cannot be read from");
-	return 0;
+	DWORD bytesRead = 0;
+
+	if(!ReadFile(StdIn.handle, buffer, size, &bytesRead, NULL)){
+		ERR(ERR.FAIL, "Failed to read from XC.IO:/Console/StdIn");
+		return 0;
+	}
 }
 len_t moduleFn(Resource_StdIn_writeTo)(streamHandle handle, const void* buffer, len_t size){
-
+	ERR(ERR.INVALID, "XC.IO:/Console/StdIn cannot be written to");
+	return 0;
 }
 
 
@@ -76,7 +80,7 @@ streamInfo moduleFn(Resource_StdIn_info)(streamHandle handle){
 return (streamInfo){
 .name 		= "StdIn",
 .path 		= "Console/StdIn",
-.attributes 	= XC.Dev.Stream.Attrib.READ,
+.attributes 	= core.Device.Stream.Attrib.READ,
 .type 		= nil,
 .currentPos    	= 0,
 .time_created  	= 0,
