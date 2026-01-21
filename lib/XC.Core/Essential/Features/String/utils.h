@@ -26,6 +26,15 @@
 #define strnlen(_string, maxlen) (std.String.Utils.Str.length(V(_string), maxlen, nil))
 #define strsize(_string, maxlen) (std.String.Utils.Str.siz(V(_string), maxlen))
 
+#undef iswblank
+#undef iswdigit
+#undef iswalpha
+#undef iswalnum
+
+#undef isblank
+#undef isdigit
+#undef isalpha
+#undef isalnum
 
 #define iswblank(c) std.String.Utils.Char.blank(c)
 #define iswdigit(c) std.String.Utils.Char.digit(c)

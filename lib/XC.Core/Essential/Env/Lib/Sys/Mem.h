@@ -4,8 +4,7 @@
 typedef struct {
 	len_t 
 	    pageSize,
-	    pagesAlloced,
-	    numNilAccess;
+	    pagesAlloced;
 } XC_Memory_Info;
 
 Interface(__XC_SYS_MEM,
@@ -19,10 +18,5 @@ Interface(__XC_SYS_MEM,
 		WRITE,
 		EXEC
 	)
-	errvt fn(protect)(
-		void* ptr, 
-		len_t num_pages, 
-		errvt fn(fault_callback)(void*, len_t), 
-		word permissions
-	);
+	errvt fn(setViolationHandler)(errvt fn(fault_callback)(void*, len_t));
 )

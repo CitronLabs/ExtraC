@@ -18,7 +18,7 @@ moduleValues(Perms,
 export(
 SUBMODULE(),
 VALUES(Perms),
-	alloc, getInfo, dealloc, protect);
+	alloc, getInfo, dealloc);
 
 #undef module
 /*--------------------------------------|
@@ -38,24 +38,6 @@ export(
 SUBMODULE(),
 VALUES(),
 	getNow, sleep
-);
-
-#undef module
-
-/*--------------------------------------|
- *					|
- *	    XC.Sys.Arch Module		|
- *					|
- *------------------------------------*/
-#define module __ENV_NAME, XC, Core, Sys, Arch
-
-export(
-SUBMODULE(),
-VALUES(),
-	addCarry, subCarry, getFlags, 
-	getFramePtr, getInstructionPtr, 
-	getStackPtr, saveRegs, loadRegs,
-	setFlags
 );
 
 #undef module
@@ -97,9 +79,9 @@ moduleValues(ExitCode,
 )
 
 export(
-SUBMODULE(Arch),
+SUBMODULE(Mem, Locale, Time),
 VALUES(ExitCode),
-	saveState, loadState, terminate
+	saveState, loadState, terminate, execute
 )
 
 

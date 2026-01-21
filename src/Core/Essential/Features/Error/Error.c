@@ -3,32 +3,32 @@
 #define module std, Error
 
 typedef struct {
-	errvt* errors_to_catch; len_t errors_to_catch_len;
-	stateData try_throw_jumppoint;
-	u8 trying : 1, showErrors : 1;
-	const char* err_func,* err_module,* err_name;
+	errvt* 		errors_to_catch; 
+	len_t 		errors_to_catch_len;
+	std_Stream** 	error_output;
+	stateData 	try_throw_jumppoint;
+	const char* 	err_func,* err_module,* err_name;
+	u8 		trying : 1, showErrors : 1;
 }errorState;
 
 
 
-#define ERR_MSG(msg) XC.Dev.Stream.Modify.writeTo(XC.Dev.Stream.stdHandle(XC.Dev.Stream.ID.Err), msg, sizeof(msg))
-
-static inline errorState* fetchErrState(){
+errorState* moduleFn(fetchErrState)(){
 	thread_local static errorState err_state;
 
 return &err_state;
 }
 
-std_Error* std_err_Get(){
+std_Error* moduleFn(Get)(){
 	thread_local static std_Error local_err = {0};
 
 return &local_err;
 }
 
-errvt std_err_Set(std_Error* err, const strc8 err_name, const char funcname[], const char modulename[]){
+errvt moduleFn(Set)(std_Error* err, const strc8 err_name, const char funcname[], const char modulename[]){
 
 	std_Error*  local_err = std.Error.Get();
-	errorState* err_state = fetchErrState();
+	errorState* err_state = mod(fetchErrState)();
 	u8 count = 0;
 	
 	*local_err = *err;
@@ -36,24 +36,28 @@ errvt std_err_Set(std_Error* err, const strc8 err_name, const char funcname[], c
 	err_state->err_func   = funcname;
 	err_state->err_module = modulename;
 	err_state->err_name   = err_name;
+
+	if(err_state->showErrors && err_state->error_output != nil){
+		printTo(*err_state->error_output, $(local_err));
+	}
 	
 return err->errorcode;
 }
 
 
 
-noFail std_err_Hide(){
-	fetchErrState()->showErrors = false;
+noFail moduleFn(Hide)(){
+	mod(fetchErrState)()->showErrors = false;
 }
 
 
-noFail std_err_Show(){
-	fetchErrState()->showErrors = true;
+noFail moduleFn(Show)(){
+	mod(fetchErrState)()->showErrors = true;
 }
 
-noFail std_err_Clear(){
+noFail moduleFn(Clear)(){
 	std_Error* local_err  = std.Error.Get();
-	errorState* err_state = fetchErrState();
+	errorState* err_state = mod(fetchErrState)();
 
 	local_err->errorcode = 0;
 	local_err->message = "No Error";
@@ -63,11 +67,10 @@ noFail std_err_Clear(){
 	}
 }
 
-errvt std_err_Try(errvt* errors_to_catch, len_t num){
+errvt moduleFn(Try)(errvt* errors_to_catch, len_t num){
 	std_Error* local_err  = std.Error.Get();
-	errorState* err_state = fetchErrState();
+	errorState* err_state = mod(fetchErrState)();
 
-	XC.Sys.Arch.getInstructionPtr();
 	if(XC.Sys.saveState(&err_state->try_throw_jumppoint)){
 		err_state->trying = false;
 		return local_err->errorcode;
@@ -80,21 +83,30 @@ errvt std_err_Try(errvt* errors_to_catch, len_t num){
 return OK;
 }
 
-void std_err_Throw(){
-	errorState* err_state = fetchErrState();
+errvt moduleFn(Throw)(){
+	std_Error*  local_err = std.Error.Get();
+	errorState* err_state = mod(fetchErrState)();
 	
-	if(err_state->trying)
-	    XC.Sys.loadState(err_state->try_throw_jumppoint);
+	if(err_state->trying){
+	    if(err_state->errors_to_catch_len == 0)
+		XC.Sys.loadState(err_state->try_throw_jumppoint);
+
+	    else loop(i, err_state->errors_to_catch_len)
+		if(local_err->errorcode == err_state->errors_to_catch[i])
+	    	    XC.Sys.loadState(err_state->try_throw_jumppoint);
+	}
+
+return local_err->errorcode;
 }
 
 PRINT(std_Error){
-	errorState* err_state = fetchErrState();
+	errorState* err_state = mod(fetchErrState)();
 
 return printTo(out,
 	 RED,"[ERROR] ",NC, err_state->err_name,
-	       " in ",    err_state->err_module,
-	       " at ",    err_state->err_func,
-	       ": ",      self->message
+	       " in ",      err_state->err_module,
+	       " at ",      err_state->err_func,
+	       ": ",        this.message
 	);
 }
 
@@ -131,20 +143,15 @@ CREATE(std_Error);
 construct(std_Error,
 FMT(),
 DEF(),
-	.Print 	 = std_Error_Op_Print,
-	.Set 	 = std_Error_Op_Set,
-	.Hash	 = std_Error_Op_Hash,
-	.Copy	 = std_Error_Op_Copy,
-	.Destroy = std_Error_Op_Destroy,
-	.Size 	 = std_Error_Op_Size,
-	.Create	 = std_Error_Op_Create,
+	.Print 	 = mod(Op_Print),
+	.Set 	 = mod(Op_Set),
+	.Hash	 = mod(Op_Hash),
+	.Copy	 = mod(Op_Copy),
+	.Destroy = mod(Op_Destroy),
+	.Size 	 = mod(Op_Size),
+	.Create	 = mod(Op_Create),
 	.Iter 	 = nil,
 	.Scan 	 = nil,
 	.Write   = nil,
 	.Read	 = nil,
-){
-	self->errorcode = arg.errorcode;
-	self->message   = arg.message;
-	
-return self;
-}
+){ passover }

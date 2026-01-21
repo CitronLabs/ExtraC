@@ -29,7 +29,7 @@ Interface(register,
 	errvt fn(delete)(registerHandle handle);	
 	errvt fn(edit)(registerHandle handle, const char* name, word attributes);
 	errvt fn(watch)(registerHandle handle);
-	errvt fn(isModified)(registerHandle handle);
+	len_t fn(isModified)(registerHandle handle);
 
 	len_t fn(readFrom)(registerHandle handle, const void* buffer, len_t size);
 	len_t fn(writeTo) (registerHandle handle, const void* buffer, len_t size);
@@ -64,6 +64,6 @@ Interface(__XC_DEV_REGISTER,
 	interface(register) Modify;
 
 	submodule(Type,
-		interface(register) GENERIC;
+		interface(register) ENV_VAR;
 	)
 )

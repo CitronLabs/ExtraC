@@ -21,14 +21,9 @@ devID moduleFn(getIO)(){
 	
 	if(IOHandle == -1){
 		
-	    	IOHandle = Dev.add(
-			WinRTDev.getManager(), 
-			IODeviceInfo, 
-			WinRTDev.IO, 
-			true
-		);
+	    	IOHandle = Dev.add(WinRTDev.getManager(), IODeviceInfo, WinRTDev.IO);
 
-		if(IOHandle == -1){
+		if(IOHandle == -1 || Dev.init(WinRTDev.getManager(), IOHandle, true)){
 			ERR(ERR.INIT, "Failed to create XC.IO device");
 			return -1;
 		}
@@ -41,14 +36,9 @@ devID moduleFn(getSys)(){
 	static devID SysHandle = -1;
 
 	if(SysHandle == -1){
-	    	SysHandle = Dev.add(
-			WinRTDev.getManager(), 
-			SysDeviceInfo, 
-			WinRTDev.Sys, 
-			true
-		);
+	    	SysHandle = Dev.add(WinRTDev.getManager(), SysDeviceInfo, WinRTDev.Sys);
 
-		if(SysHandle == -1){
+		if(SysHandle == -1 || Dev.init(WinRTDev.getManager(), SysHandle, true)){
 			ERR(ERR.INIT, "Failed to create XC.IO device");
 			return -1;
 		}

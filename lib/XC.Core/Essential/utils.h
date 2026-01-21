@@ -71,7 +71,7 @@ static const typeof(__PATH_CAT_NAME(((PP_PASTE(__GET_FIRST(module), _Interface))
 
 
 #define submodule(name, ...) struct {__VA_ARGS__} name;
-#define alias(path, alias) const typeof(path) alias = path;
+#define alias(path, alias) static const typeof(path) alias = path;
 
 #define values(name, type, ...) struct { const type __VA_ARGS__; } name;
 

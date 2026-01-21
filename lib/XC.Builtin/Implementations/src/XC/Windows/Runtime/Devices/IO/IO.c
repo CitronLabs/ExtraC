@@ -47,17 +47,15 @@ static inline pntr moduleFn(IO_Open_Stream)(const char* path, word attributes, v
 		return nil;
 	}
 
-	rsrcID  result    = -1;
-	rsrcID* foundFile = std.Map.Search(&IODevice.fileLookup, asString(path, PATH_MAX));
+	var devManager     = WinRTDev.getManager();
+	var IO_DevID       = WinRTDev.getIO();
+	rsrcID   result    = -1;
+	rsrcID*  foundFile = std.Map.Search(&IODevice.fileLookup, asString(path, PATH_MAX));
 
 	if(foundFile){
 		result = *foundFile;
 
-		Dev.Resource.grab(
-		    WinRTDev.getManager(),
-		    WinRTDev.getIO(),
-		    result
-		);
+		Dev.Resource.grab(devManager, IO_DevID, result);
 	} else {
 
 		rsrcInfo fileInfo = {
@@ -66,23 +64,14 @@ static inline pntr moduleFn(IO_Open_Stream)(const char* path, word attributes, v
 			.type 	    = Dev.Resource.Type.STREAM
 		};
 
-		rsrcID fileID = Dev.Resource.add(
-		    WinRTDev.getManager(),
-		    WinRTDev.getIO(),
-		    fileInfo,
-		    create
-		);
+		rsrcID fileID = Dev.Resource.add(devManager, IO_DevID, fileInfo);
 
-		if(fileID == -1){
+		if(fileID == -1 || Dev.Resource.init(devManager, IO_DevID, fileID, create) != OK){
 			ERR(ERR.FAIL, "Failed initialize file resource to IO device");
 			return nil;
 		}
 
-		Dev.Resource.grab(
-		    WinRTDev.getManager(),
-		    WinRTDev.getIO(),
-		    fileID
-		);
+		Dev.Resource.grab(devManager, IO_DevID, fileID);
 
 		result = fileID;
 	}
@@ -94,24 +83,24 @@ static inline errvt moduleFn(IO_InitStdResources)(){
 	var devManager = WinRTDev.getManager();
 	var IO_DevID   = WinRTDev.getIO();
 
-	IODevice.stdInID = Dev.Resource.add(devManager, IO_DevID, StdIn_Info, true);
+	IODevice.stdInID = Dev.Resource.add(devManager, IO_DevID, StdIn_Info);
 
-	if(IODevice.stdInID == -1)
+	if(IODevice.stdInID == -1 || Dev.Resource.init(devManager, IO_DevID, IODevice.stdInID, true) != OK)
 		return ERR(ERR.INIT, "Failed to initialize Console.StdIn resource");
 
-	IODevice.stdErrID = Dev.Resource.add(devManager, IO_DevID, StdErr_Info, true);
+	IODevice.stdErrID = Dev.Resource.add(devManager, IO_DevID, StdErr_Info);
 
-	if(IODevice.stdErrID == -1)
+	if(IODevice.stdErrID == -1 || Dev.Resource.init(devManager, IO_DevID, IODevice.stdErrID, true) != OK)
 		return ERR(ERR.INIT, "Failed to initialize Console.StdErr resource");
 
-	IODevice.stdOutID = Dev.Resource.add(devManager, IO_DevID, StdOut_Info, true);
+	IODevice.stdOutID = Dev.Resource.add(devManager, IO_DevID, StdOut_Info);
 
-	if(IODevice.stdOutID == -1)
+	if(IODevice.stdOutID == -1 || Dev.Resource.init(devManager, IO_DevID, IODevice.stdOutID, true) != OK)
 		return ERR(ERR.INIT, "Failed to initialize Console.StdOut resource");
 
-	IODevice.workDirID = Dev.Resource.add(devManager, IO_DevID, WorkDir_Info, true);
+	IODevice.workDirID = Dev.Resource.add(devManager, IO_DevID, WorkDir_Info);
 
-	if(IODevice.workDirID == -1)
+	if(IODevice.workDirID == -1 || Dev.Resource.init(devManager, IO_DevID, IODevice.workDirID, true) != OK)
 		return ERR(ERR.INIT, "Failed to initialize WorkDir resource");
 
 return OK;
@@ -122,14 +111,6 @@ pntr moduleFn(IO_Open)(word resource, const char* name, word attributes, void* t
 
 	switchV(resource){
 	caseV(XC.Dev.Resource.Device){
-		if(Dev.find(WinRTDev.getManager(), "XC.IO") != -1){
-	    		ERR(ERR.INVALID, 
-      	    		    "XC.IO device does not "
-      	    		    "allow multiple handles "
-      	    		    "to itself to be opened"
-      	    		);
-	    		return nil;
-		}
 
 		if(create(std_Map, &IODevice.fileLookup,
 			.key  = T(std_String),

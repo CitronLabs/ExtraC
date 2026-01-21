@@ -42,9 +42,11 @@ errvt moduleFn(Resource_StdErr_watch)(streamHandle handle){
 
 return OK;
 }
-errvt moduleFn(Resource_StdErr_isModified)(streamHandle handle){
+len_t moduleFn(Resource_StdErr_isModified)(streamHandle handle){
+	
+	mod(Resource_StdErr_sync)(handle);
 
-
+return StdErr.currentSize - StdErr.lastSize;
 }
 
 len_t moduleFn(Resource_StdErr_shift)(streamHandle handle, word offset, len_t from){
@@ -61,8 +63,15 @@ len_t moduleFn(Resource_StdErr_shift)(streamHandle handle, word offset, len_t fr
 	
 
 }
-len_t moduleFn(Resource_StdErr_readFrom)(streamHandle handle, void* buffer, len_t size);
-len_t moduleFn(Resource_StdErr_writeTo)(streamHandle handle, const void* buffer, len_t size);
+len_t moduleFn(Resource_StdErr_readFrom)(streamHandle handle, void* buffer, len_t size){
+	ERR(ERR.INVALID, "XC.IO:/Console/StdErr cannot be read from");
+	return 0;
+}
+len_t moduleFn(Resource_StdErr_writeTo)(streamHandle handle, const void* buffer, len_t size){
+
+}
+
+
 streamInfo moduleFn(Resource_StdErr_info)(streamHandle handle){
 return (streamInfo){
 .name 		= "StdErr",
@@ -79,6 +88,4 @@ return (streamInfo){
 errvt moduleFn(Resource_StdErr_control)(streamHandle handle, word command, void* args){ return OK; }
 errvt moduleFn(Resource_StdErr_flush)(streamHandle handle){ return OK; }
 errvt moduleFn(Resource_StdErr_sync)(streamHandle handle){ 
-	StdErr.currentSize;
-	return OK; 
 }

@@ -1,15 +1,28 @@
-#include <XC.Core/pkg.c>
+#include <XC.pkg.c>
 
 #define module std, Memory
 
+#undef memcmp
+#undef memcpy
+#undef memset
 
-
-bool  moduleFn(compare)(void* a, void* b, len_t size);
-void* moduleFn(setTo)(void* dest, int val, len_t size);
-void* moduleFn(copyTo)(void* dest, void* from, len_t size);
+bool  moduleFn(compare)(void* a, void* b, len_t size){ return memcmp(a, b, size) == 0; }
+void* moduleFn(setTo)(void* dest, int val, len_t size){ return memset(dest, val, size); }
+void* moduleFn(copyTo)(void* dest, void* from, len_t size){ return memcpy(dest, from, size); }
 
 std_Memory* moduleFn(getHeap)(){
+	static std_Memory HeapMemory = {};
 
+	if(HeapMemory.pointer == nil){
+	    create(std_Memory, &HeapMemory, XC.Sys.Mem.getInfo().pageSize);
+
+	    if(HeapMemory.pointer == nil){
+		ERR(ERR.INIT, "Failed to initialize Heap memory");
+		return nil;
+	    }
+	}
+
+return &HeapMemory;
 }
 
 WRITE(std_Memory){
@@ -17,7 +30,7 @@ WRITE(std_Memory){
 
 	loop(i, size){
 		std_Memory* mem = data[i];
-		len_t copy_size = mem->size > this.size ? this.size : mem->size;
+		len_t copy_size = mem->pages > this.pages ? this.pages : mem->pages;
 
 		memcpy(
 		    pntr_shiftcpy(this.pointer, usage), 
@@ -27,7 +40,7 @@ WRITE(std_Memory){
 
 		usage += copy_size;
 
-		if(usage >= this.size){
+		if(usage >= this.pages){
 			num_iter = i; break;
 		}
 	}
@@ -42,7 +55,7 @@ READ(std_Memory){
 
 	loop(i, size){
 		std_Memory* mem = data[i];
-		len_t copy_size = mem->size > this.size ? mem->size : this.size;
+		len_t copy_size = mem->pages > this.pages ? mem->pages : this.pages;
 
 		memcpy(
 		    mem->pointer,
@@ -52,7 +65,7 @@ READ(std_Memory){
 
 		usage += copy_size;
 
-		if(usage >= this.size){
+		if(usage >= this.pages){
 			num_iter = i; break;
 		}
 	}
@@ -64,7 +77,7 @@ SET(std_Memory){
 	word val = value ? *(word*)value : 0;
 
 	if(this.pointer)
-		memset(this.pointer, val, this.size);
+		memset(this.pointer, val, this.pages * XC.Sys.Mem.getInfo().pageSize);
 	
 return OK;
 }
@@ -76,15 +89,16 @@ COPY(std_Memory){
 		dest->__type = std_Memory_Type;
 
 	if(!dest->pointer) {
-		dest->pointer = malloc(this.size);
-		dest->size = this.size;
+		dest->pointer = malloc(this.pages);
+		dest->pages = this.pages;
 	}
 
 
 	memcpy(dest->pointer, 
 		this.pointer, 
- 		this.size > dest->size ? 
- 			dest->size : this.size
+ 		XC.Sys.Mem.getInfo().pageSize *
+		(this.pages > dest->pages ? 
+ 			dest->pages : this.pages)
  	);
 
 return where;
@@ -99,18 +113,18 @@ return OK;
 
 HASH(std_Memory){
 	return 
-	    hash_bytes(&this.size, sizeof(len_t)) + 
+	    hash_bytes(&this.pages, sizeof(len_t)) + 
 	    hash_bytes(&this.pointer, sizeof(pntr))
 	;
 }
 
-SIZE(std_Memory){ return this.size; }
+SIZE(std_Memory){ return elements ? this.pages : this.pages * XC.Sys.Mem.getInfo().pageSize; }
 
 PRINT(std_Memory){
 	return printTo(out,
 		"(std_Memory){ "
 		    ".pointer = ", $(this.pointer), ", ",
-		    ".size = ", $(this.size), ", ",
+		    ".pages = ",   $(this.pages),   ", ",
 		" }"
 	);
 }
@@ -118,18 +132,19 @@ PRINT(std_Memory){
 construct(std_Memory,
 FMT(),
 DEF(),
-	.Create  = std_Memory_Op_Create,
-	.Write 	 = std_Memory_Op_Write,
-	.Copy 	 = std_Memory_Op_Copy,
-	.Set 	 = std_Memory_Op_Set,
-	.Size 	 = std_Memory_Op_Size,
-	.Hash 	 = std_Memory_Op_Hash,
-	.Read 	 = std_Memory_Op_Read,
-	.Print 	 = std_Memory_Op_Print,
-	.Destroy = std_Memory_Op_Destroy,
+	.Create  = mod(Op_Create),
+	.Write 	 = mod(Op_Write),
+	.Copy 	 = mod(Op_Copy),
+	.Set 	 = mod(Op_Set),
+	.Size 	 = mod(Op_Size),
+	.Hash 	 = mod(Op_Hash),
+	.Read 	 = mod(Op_Read),
+	.Print 	 = mod(Op_Print),
+	.Destroy = mod(Op_Destroy),
 ){
-	this.pointer = malloc(arg.size);
-	this.size = arg.size;
+	len_t pageSize = XC.Sys.Mem.getInfo().pageSize;
+	this.pages     = arg.size / pageSize  + (pageSize % arg.size == 0 ? 0 : 1);
+	this.pointer   = XC.Sys.Mem.alloc(this.pages);
 
 	if(!this.pointer){
 		ERR(ERR.FAIL, "failed to allocate memory");

@@ -7,7 +7,7 @@ errvt moduleFn(Resource_StdErr_close)(streamHandle handle);
 errvt moduleFn(Resource_StdErr_delete)(streamHandle handle);	
 errvt moduleFn(Resource_StdErr_edit)(streamHandle handle, const char* name, word attributes);
 errvt moduleFn(Resource_StdErr_watch)(streamHandle handle);
-errvt moduleFn(Resource_StdErr_isModified)(streamHandle handle);
+len_t moduleFn(Resource_StdErr_isModified)(streamHandle handle);
 
 len_t moduleFn(Resource_StdErr_shift)(streamHandle handle, word offset, len_t from);
 len_t moduleFn(Resource_StdErr_readFrom)(streamHandle handle, void* buffer, len_t size);

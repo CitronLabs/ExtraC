@@ -331,7 +331,7 @@
 	static const ___(package,name##_Type_t)* ___(package,name##_Type) = 		\
 		&___(package,name##_TypeData);  					\
 	typedef ___(package, name) ___(package, name##_Instance); 			\
-	typedef struct ___(package, name##_ConstructArgs) {INIT} 			\
+	typedef struct ___(package, name##_ConstructArgs) {INIT;} 			\
 	___(package, name##_ConstructArgs);						\
 	typedef struct ___(package, name##_FormatArgs)  {FMT;} 				\
 	___(package, name##_FormatArgs);						\

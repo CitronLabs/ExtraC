@@ -44,6 +44,7 @@ VALUES(
 export(
 SUBMODULE(Code), 
 VALUES(),
+	Throw, Try, Get, Set, Show, Hide, SetOutput, Clear
 )
 
 

@@ -1,6 +1,6 @@
 #include <OS/pkg.c>
 
-from(os_Env,
+from(os_Sys,
 	Input_Vec2D     	as Vec2D,
 	Graphics_Handle 	as GraphicsHandle,
 	Graphics_Display_Event  as DisplayEvent,

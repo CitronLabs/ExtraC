@@ -2,23 +2,21 @@
 #include <XC.pkg.h>
 #include <XC.Common/pkg.c>
 
-#define module env, Windows, Runtime, Device
+#define module env, Windows, Runtime
 
-
-
-exportFrom(IO,
+exportFrom(PATH(Device, IO),
 SUBMODULE(),
 VALUES(),
 	fetch, info, close, delete, edit, open
 )
 
-exportFrom(Sys,
+exportFrom(PATH(Device, Sys),
 SUBMODULE(),
 VALUES(),
 	fetch, info, close, delete, edit, open
 )
 
-exportFrom(PATH(Resource, StdErr),
+exportFrom(PATH(Device, Resource, StdErr),
 SUBMODULE(),
 VALUES(),
 	open, close, delete, edit,
@@ -26,7 +24,7 @@ VALUES(),
 	control, info, flush, isModified
 )
 
-exportFrom(PATH(Resource, StdOut),
+exportFrom(PATH(Device, Resource, StdOut),
 SUBMODULE(),
 VALUES(),
 	open, close, delete, edit,
@@ -34,7 +32,7 @@ VALUES(),
 	control, info, flush, isModified
 )
 
-exportFrom(PATH(Resource, StdIn),
+exportFrom(PATH(Device, Resource, StdIn),
 SUBMODULE(),
 VALUES(),
 	open, close, delete, edit,
@@ -42,7 +40,7 @@ VALUES(),
 	control, info, flush, isModified
 )
 
-exportFrom(PATH(Resource, Locale),
+exportFrom(PATH(Device, Resource, Locale),
 SUBMODULE(),
 VALUES(),
 	open, close, delete, edit,
@@ -50,7 +48,7 @@ VALUES(),
 	access, info, isModified
 )
 
-exportFrom(PATH(Resource, WorkDir),
+exportFrom(PATH(Device, Resource, WorkDir),
 SUBMODULE(),
 VALUES(),
 	open, close, delete, edit,
@@ -58,7 +56,7 @@ VALUES(),
 	access, info, isModified
 )
 
-exportFrom(PATH(Resource, CliArgs),
+exportFrom(PATH(Device, Resource, CliArgs),
 SUBMODULE(),
 VALUES(),
 	open, close, delete, edit,
@@ -66,15 +64,39 @@ VALUES(),
 	access, info, isModified
 )
 
-exportFrom(Resource,
+exportFrom(PATH(Device, Resource),
 SUBMODULE(StdIn, StdOut, StdErr, Locale, CliArgs),
 VALUES(),
 )
 
-export(
+exportFrom(Device,
 SUBMODULE(IO, Sys, Resource),
 VALUES(),
 	getManager, getIO, getSys, init
+)
+
+moduleValues(PATH(Console, StreamType),
+	INPUT,,
+	OUTPUT,,
+	ERR,,
+)
+
+exportFrom(Console,
+SUBMODULE(),
+VALUES(),
+	init, getInfo, getStream
+)
+
+exportFrom(Memory,
+SUBMODULE(),
+VALUES(),
+	init 
+)
+
+export(
+SUBMODULE(Console, Device, Memory),
+VALUES(),
+	init
 )
 
 #undef module

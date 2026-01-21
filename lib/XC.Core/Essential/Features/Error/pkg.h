@@ -21,7 +21,8 @@
 		   ) if ((sizeof((errvt[]){__VA_ARGS__}) / sizeof(errvt)) ? 				\
     			 ((errvt[]){__VA_ARGS__})[i] == err->errorcode : err->errorcode != std.Error.Code.NONE)
 
-#define try(...) std.Error.Clear(); 									\
+#define try(...) std.Error.Clear(); 										\
+		for(int __i = 1; i--; std.Error.Clear())							\
 		if(!std.Error.Try((errvt[]){__VA_ARGS__}, sizeof((errvt[]){__VA_ARGS__})/sizeof(errvt)))	\
 
 #define catch else for(std_Error* err = std.Error.Get(); err->errorcode != std.Error.Code.NONE; std.Error.Clear())
@@ -35,8 +36,8 @@
         if(!err){								\
             if(((const void*[]){__VA_ARGS__})[__i - 1]) { continue; }		\
             else {								\
-                err = ERR(std.Error.Code.NIL, "null value detected"); 		\
-                println("NULL VALUE: ",  					\
+                err = ERR(std.Error.Code.NIL, "nil value detected"); 		\
+                println("NIL VALUE: ",  					\
 			((char*[]){QUOTE_LIST(__VA_ARGS__)}[__i]));		\
             }									\
 	} else
@@ -101,7 +102,7 @@ Interface(Error,
 	errvt fn(Set)(std_Error* err, const char* err_name, pkg(ErrorPosition) position);
       	noFail fn(Clear)();
       	errvt fn(Try)(errvt* errors_to_catch, len_t num);
-      	noFail fn(Throw)();
+      	errvt fn(Throw)();
 	std_Error* fn(Get)();
 )
 
