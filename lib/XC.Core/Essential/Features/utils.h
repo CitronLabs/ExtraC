@@ -46,11 +46,15 @@
 
 #define loopat(loopvar, init, num) for(int loopvar = init; loopvar < num; loopvar++)
 
-#define iter(array, size, type, item) 	\
-type* item; 				\
-for(int __##item##_iterator = 0; 	\
-    __##item##_iterator < size; 	\
-    item = &((type*)array)[__##item##_iterator++])
+#define or  		||
+#define and 		&&
+#define not 		!
+#define is 		==
+#define is_not 		!=
+#define less_equals 	<=
+#define greater_equals 	>=
+#define greater 	>
+#define less		<
 
 #define __VA_ARG_LEN__(type, ...)  sizeof((const void*[]){__VA_ARGS__}) / sizeof(const void*)
 
