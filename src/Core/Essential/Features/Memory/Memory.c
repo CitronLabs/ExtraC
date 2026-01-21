@@ -14,7 +14,7 @@ std_Memory* moduleFn(getHeap)(){
 	static std_Memory HeapMemory = {};
 
 	if(HeapMemory.pointer == nil){
-	    create(std_Memory, &HeapMemory, XC.Sys.Mem.getInfo().pageSize);
+	    create(std_Memory, &HeapMemory, core.System.Mem.getInfo().pageSize);
 
 	    if(HeapMemory.pointer == nil){
 		ERR(ERR.INIT, "Failed to initialize Heap memory");
@@ -77,7 +77,7 @@ SET(std_Memory){
 	word val = value ? *(word*)value : 0;
 
 	if(this.pointer)
-		memset(this.pointer, val, this.pages * XC.Sys.Mem.getInfo().pageSize);
+		memset(this.pointer, val, this.pages * core.Sys.Mem.getInfo().pageSize);
 	
 return OK;
 }
@@ -96,7 +96,7 @@ COPY(std_Memory){
 
 	memcpy(dest->pointer, 
 		this.pointer, 
- 		XC.Sys.Mem.getInfo().pageSize *
+ 		core.System.Mem.getInfo().pageSize *
 		(this.pages > dest->pages ? 
  			dest->pages : this.pages)
  	);
@@ -118,7 +118,7 @@ HASH(std_Memory){
 	;
 }
 
-SIZE(std_Memory){ return elements ? this.pages : this.pages * XC.Sys.Mem.getInfo().pageSize; }
+SIZE(std_Memory){ return elements ? this.pages : this.pages * core.Sys.Mem.getInfo().pageSize; }
 
 PRINT(std_Memory){
 	return printTo(out,
@@ -142,9 +142,9 @@ DEF(),
 	.Print 	 = mod(Op_Print),
 	.Destroy = mod(Op_Destroy),
 ){
-	len_t pageSize = XC.Sys.Mem.getInfo().pageSize;
+	len_t pageSize = core.Sys.Mem.getInfo().pageSize;
 	this.pages     = arg.size / pageSize  + (pageSize % arg.size == 0 ? 0 : 1);
-	this.pointer   = XC.Sys.Mem.alloc(this.pages);
+	this.pointer   = core.Sys.Mem.alloc(this.pages);
 
 	if(!this.pointer){
 		ERR(ERR.FAIL, "failed to allocate memory");

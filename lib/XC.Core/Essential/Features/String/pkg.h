@@ -41,17 +41,15 @@ private(
 	)
 
 	bool 		method(String, Compare, std_String* string2);
-	
 	errvt 		method(String, Copy, std_String* to);
 
 	std_String* 	method(String, Cat, Array(std_String*) strings);
-
 	std_String*	method(String, View,          len_t from, len_t to);
 	errvt		method(String, ViewShift,     len_t up,   len_t down);
 	
 	bool 		method(String, IsView);
-
 	errvt		method(String, StreamTo, std_Stream* stream);
+
 };
 
 

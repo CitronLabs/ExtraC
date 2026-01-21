@@ -2,12 +2,17 @@
 
 #define module std, Error
 
+from(std,
+	ErrorPosition as errPos
+)
+
 typedef struct {
 	errvt* 		errors_to_catch; 
 	len_t 		errors_to_catch_len;
 	std_Stream** 	error_output;
 	stateData 	try_throw_jumppoint;
-	const char* 	err_func,* err_module,* err_name;
+	const char* 	err_name;
+	errPos 		err_pos;
 	u8 		trying : 1, showErrors : 1;
 }errorState;
 
@@ -25,7 +30,7 @@ std_Error* moduleFn(Get)(){
 return &local_err;
 }
 
-errvt moduleFn(Set)(std_Error* err, const strc8 err_name, const char funcname[], const char modulename[]){
+errvt moduleFn(Set)(std_Error* err, const char* err_name, errPos errorPos){
 
 	std_Error*  local_err = std.Error.Get();
 	errorState* err_state = mod(fetchErrState)();
@@ -33,9 +38,8 @@ errvt moduleFn(Set)(std_Error* err, const strc8 err_name, const char funcname[],
 	
 	*local_err = *err;
 
-	err_state->err_func   = funcname;
-	err_state->err_module = modulename;
-	err_state->err_name   = err_name;
+	err_state->err_pos   	= errorPos;
+	err_state->err_name   	= err_name;
 
 	if(err_state->showErrors && err_state->error_output != nil){
 		printTo(*err_state->error_output, $(local_err));
@@ -104,8 +108,9 @@ PRINT(std_Error){
 
 return printTo(out,
 	 RED,"[ERROR] ",NC, err_state->err_name,
-	       " in ",      err_state->err_module,
-	       " at ",      err_state->err_func,
+	       " in ",      err_state->err_pos.module_,
+	       " at ",      err_state->err_pos.func,
+	       " line ",    $(err_state->err_pos.line),
 	       ": ",        this.message
 	);
 }

@@ -8,7 +8,7 @@
 
 #define package std
 
-#define getErrorPos()	(std_ErrorPosition){__func__, __FILE__, __module__, __LINE__}
+#define getErrorPos()	(std_ErrorPosition){__func__, __module__, __LINE__}
 
 #define OK std.Error.Code.NONE
 
@@ -60,7 +60,6 @@ type(Error,
 type(ErrorPosition,
 	const char
      		* func,
-     		* file_,
      		* module_;
      	len_t 	line;
      	
@@ -78,21 +77,14 @@ Interface(Error,
 	    	DSN				
 	    )					
 	    values(MEM, errvt,			
-	    	OVERFLOW,
-    		OUT_OF_MEMORY,
-    		METADATA_CAP_EXCEEDED,
-    		HEAP_LIMIT_REACHED,
-    		INVALID_POINTER,
-    		DOUBLE_FREE,
-    		CORRUPTION_DETECTED,
-    		ALIGNMENT_FAILURE,
-    		RELOCATION_FAILED,
-    		INVALID_SIZE,
-    		UNALIGNED_BASE,
-    		INVALID_SETTINGS,
-    		THREAD_SAFETY_VIOLATION,
-    		REALLOC_FAILED,
-    		QUARANTINE_FULL
+	    	OVERFLOW, OUT_OF_MEMORY,
+    		METADATA_CAP_EXCEEDED, HEAP_LIMIT_REACHED,
+    		INVALID_POINTER, DOUBLE_FREE, CORRUPTION_DETECTED,
+    		ALIGNMENT_FAILURE, RELOCATION_FAILED, INVALID_SIZE,
+    		UNALIGNED_BASE, INVALID_SETTINGS, THREAD_SAFETY_VIOLATION,
+    		REALLOC_FAILED, QUARANTINE_FULL, RUNTIME_TUNING_DISABLED,
+		INCOMPATIBLE_SETTINGS, LARGE_ALLOC_FAILED
+
 	    )		
 	    values(STRING, errvt,			
 	    	ENCODING			
@@ -100,6 +92,9 @@ Interface(Error,
 	)
 
 	errvt fn(Set)(std_Error* err, const char* err_name, pkg(ErrorPosition) position);
+	noFail fn(Show)();
+	noFail fn(Hide)();
+	errvt fn(SetOutput)(std_Stream*);
       	noFail fn(Clear)();
       	errvt fn(Try)(errvt* errors_to_catch, len_t num);
       	errvt fn(Throw)();

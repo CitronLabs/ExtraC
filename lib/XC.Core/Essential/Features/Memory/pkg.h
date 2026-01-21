@@ -3,11 +3,15 @@
 #include "../pkg.h"
 
 #include "../Type/pkg.h"
+#include "../XCTypes/pkg.h"
 #include "../Error/pkg.h"
+
+#ifndef __XC_MEMORY__
+#include "types.h"
+#include "utils.h"
 
 #define package std
 
-#include "utils.h"
 
 Interface(Allocator,
 	void* imethod(Alloc, u64 size, std_ErrorPosition errorPos);
@@ -18,18 +22,6 @@ Interface(Allocator,
       	u64   imethod(getBytesAlloced);
 );
 
-type(Memory_AllocatorSettings,
-     	// maximum allowed extra pages to be 
-     	// allocated for metadata reasons
-     	// if maximum is reached all further
-     	// memory allocations will fail
-     	len_t maxMetadataPages;
-
-	// ensures that all pages are contiguous,
-	// by copying all previous allocations and 
-     	// metadata to a new contiguous strip of memory
-     	bool  ensureContiguous; 
-)
 
 Class(Memory,
 INIT(len_t size), 
@@ -39,24 +31,33 @@ FMT(),
 private(bool managed;)
 ){
      	struct {
-     	    values(Strategy, uword,
-    		SEGREGATED_FIT,  /* Fast O(1) lookup */
-    		BEST_FIT,        /* Space-efficient, uses RB-tree */
-    		FIRST_FIT        /* Fast, less fragmentation than segregated */
-	    )
 	    values(Optimize, uword,
-    		DEFAULT,    /* Default settings */
     		SPEED,      /* Minimize allocation time */
     		SPACE,      /* Minimize fragmentation */
-    		BALANCED,   /* Balance speed and space */
     		SECURITY    /* Maximum security features */
 	    )
-	    pkg(Memory_AllocSettings) fn(optimizeSettings)(uword flag);
-	    errvt fn(setup)(pkg(Memory)* mem, pkg(Memory_AllocSettings) settings);
-	    void* fn(allocAligned)(len_t size, len_t alignment);
+
+	    const pkg(Memory_Allocator_Settings) defaultSettings;
+
+	    pkg(Memory_Allocator_Settings) fn(optimizeSettings)(uword flag);
+	    errvt method(Memory, setup, pkg(Memory_Allocator_Settings) settings);
 
 	    interface(std_Allocator) Interface;
-
+	    struct {
+		errvt 
+		method(Memory, settings, pkg(Memory_Allocator_Settings) settings),
+		method(Memory, optimization, uword flag),
+		method(Memory, setMinSplitThreshold, len_t value),
+		method(Memory, setLargeMmapThreshold, len_t value),
+		method(Memory, setVerboseErrors, bool value),
+		method(Memory, enableZeroOnFree, bool enable),
+		method(Memory, enablePoisonOnFree, bool enable),
+		method(Memory, enableCanaries, bool enable),
+		method(Memory, enableValidation, bool enable),
+		method(Memory, enableQuarantine, bool enable, len_t size),
+		method(Memory, enableDeferredCoalescing, bool enable),
+		method(Memory, setMaxHeapSize, len_t max);
+	    } Edit;
      	} Allocator;
 
 	bool  fn(compare)(void* a, void* b, len_t size);
@@ -66,34 +67,6 @@ private(bool managed;)
 	std_Memory* fn(getHeap)();
 };
 
-#include "./config.c"
-
-#define new_use(name, allocator, ...) \
-	create(name, (allocator)->Alloc(sizeof(name))__VA_OPT__(, __VA_ARGS__))
-
-#define new_use_with(name, constructor, allocator, ...) \
-	create_with(name, constructor, (allocator)->Alloc(sizeof(name))__VA_OPT__(, __VA_ARGS__))
-
-#define del_use(allocator, ...) \
-	std.Type.alloc.destructWith((allocator)->Free, (pntr[]){__VA_ARGS__}, sizeof((pntr[]){__VA_ARGS__}) / sizeof(pntr))
-
-
-#undef alloca 
-#undef malloc 
-#undef realloc
-#undef free   
-#undef memcpy 
-#undef memset 
-#undef memcmp 
-#undef calloc 
-
-#define alloca(size) 			__MEMORY_STACK_ALLOC(size)
-#define malloc(size) 			std.Memory.Allocator.Interface.Alloc (std.Memory.getHeap(), size)
-#define realloc(pntr, size) 		std.Memory.Allocator.Interface.Resize(std.Memory.getHeap(), pntr, size)
-#define free(pntr) 			std.Memory.Allocator.Interface.Free  (std.Memory.getHeap(), pntr)
-#define memcpy(dest, from,  size) 	std.Memory.copyTo(dest, from, size)
-#define memset(dest, value, size) 	std.Memory.setTo(dest, value, size)
-#define memcmp(a, b,  size) 		std.Memory.compare(a, b, size)
-#define calloc(num, size) 		memset(malloc(num * size), 0, num * size)
 
 #undef package
+#endif

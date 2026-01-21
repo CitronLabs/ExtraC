@@ -1,81 +1,6 @@
 #include "Helpers.c"
 
-
-/* For the complete implementation, I'll provide a working core with all APIs.
- * Due to artifact length limits, some helper function bodies are abbreviated
- * but the full logic is described in comments.
- */
-
-/* PART 1: Core allocation/deallocation (COMPLETE) */
-void* std_malloc(AllocatorContext** ctx, size_t size) {
-    return allocate_block(ctx, size, NULL, 0);
-}
-
-void* std_calloc(AllocatorContext** ctx, size_t nmemb, size_t size) {
-    /* Check for overflow */
-    if (nmemb != 0 && size > SIZE_MAX / nmemb) {
-        set_error(*ctx, ERR_SIZE_OVERFLOW,
-                  "calloc overflow: %llu * %llu exceeds maximum",
-                  (unsigned long long)nmemb, (unsigned long long)size);
-        return NULL;
-    }
-    
-    size_t total = nmemb * size;
-    void* ptr = allocate_block(ctx, total, NULL, 0);
-    
-    if (ptr) {
-        memset(ptr, 0, total);
-    }
-    
-    return ptr;
-}
-
-void* std_realloc(AllocatorContext** ctx, void* ptr, size_t size) {
-    return realloc_block(ctx, ptr, size, NULL, 0);
-}
-
-void* std_aligned_alloc(AllocatorContext** ctx, size_t alignment, size_t size) {
-    if (!IS_POWER_OF_TWO(alignment)) {
-        set_error(*ctx, ERR_ALIGNMENT_FAILURE,
-                  "Alignment %llu is not a power of 2",
-                  (unsigned long long)alignment);
-        return NULL;
-    }
-    
-    if (alignment > getPageSize()) {
-        set_error(*ctx, ERR_ALIGNMENT_FAILURE,
-                  "Alignment %llu exceeds page size %llu",
-                  (unsigned long long)alignment,
-                  (unsigned long long)getPageSize());
-        return NULL;
-    }
-    
-    /* Simplified aligned allocation:
-     * Allocate extra space and return aligned address within it.
-     * Note: This is a simplified version. Production code would need
-     * to store offset for proper freeing. */
-    size_t extra = alignment + sizeof(BlockHeader);
-    void* ptr = allocate_block(ctx, size + extra, NULL, 0);
-    if (!ptr) return NULL;
-    
-    uintptr_t addr = (uintptr_t)ptr;
-    uintptr_t aligned = ALIGN_UP(addr, alignment);
-    
-    /* If already aligned, return as-is */
-    if (aligned == addr) {
-        return ptr;
-    }
-    
-    /* Return aligned address (Note: simplified - not production ready) */
-    return (void*)aligned;
-}
-
-void std_free_diag(AllocatorContext* ctx, void* ptr) {
-    free_block(ctx, ptr);
-}
-
-/* PART 2: RUNTIME TUNING (ALL FUNCTIONS COMPLETE) */
-
+errvt moduleMethod()
 AllocError applyRuntimeSettings(AllocatorContext* ctx, MemAllocSettings* new_settings) {
     if (!ctx->settings.allowRuntimeTuning) {
         set_error(ctx, ERR_RUNTIME_TUNING_DISABLED, "Tuning disabled");
@@ -148,10 +73,37 @@ AllocError switchOptimizationMode(AllocatorContext* ctx, OptimizationMode mode) 
         return ERR_NONE; \
     }
 
-SETTING_MODIFIER(Strategy, AllocStrategy, strategy)
-SETTING_MODIFIER(MinSplitThreshold, size_t, min_split_threshold)
-SETTING_MODIFIER(LargeMmapThreshold, size_t, largeMmapThreshold)
-SETTING_MODIFIER(VerboseErrors, bool, verboseErrors)
+AllocError setStrategy(AllocatorContext *ctx, AllocStrategy value) {
+  if (!ctx->settings.allowRuntimeTuning)
+    return ERR_RUNTIME_TUNING_DISABLED;
+  ctx->settings.strategy = value;
+  ctx->telemetry.settingsChangeCount++;
+  return ERR_NONE;
+}
+
+AllocError setMinSplitThreshold(AllocatorContext *ctx, size_t value) {
+  if (!ctx->settings.allowRuntimeTuning)
+    return ERR_RUNTIME_TUNING_DISABLED;
+  ctx->settings.min_split_threshold = value;
+  ctx->telemetry.settingsChangeCount++;
+  return ERR_NONE;
+}
+
+AllocError setLargeMmapThreshold(AllocatorContext *ctx, size_t value) {
+  if (!ctx->settings.allowRuntimeTuning)
+    return ERR_RUNTIME_TUNING_DISABLED;
+  ctx->settings.largeMmapThreshold = value;
+  ctx->telemetry.settingsChangeCount++;
+  return ERR_NONE;
+}
+
+AllocError setVerboseErrors(AllocatorContext *ctx, bool value) {
+  if (!ctx->settings.allowRuntimeTuning)
+    return ERR_RUNTIME_TUNING_DISABLED;
+  ctx->settings.verboseErrors = value;
+  ctx->telemetry.settingsChangeCount++;
+  return ERR_NONE;
+}
 
 AllocError enableZeroOnFree(AllocatorContext* ctx, bool enable) {
     if (!ctx->settings.allowRuntimeTuning) return ERR_RUNTIME_TUNING_DISABLED;
@@ -217,75 +169,7 @@ AllocError setMaxHeapSize(AllocatorContext* ctx, len_t max) {
     return ERR_NONE;
 }
 
-AllocError setErrorCallback(AllocatorContext* ctx, 
-                            void (*cb)(AllocError, const char*, void*),
-                            void* userdata) {
-    if (!ctx->settings.allowRuntimeTuning) return ERR_RUNTIME_TUNING_DISABLED;
-    ctx->settings.errorCallback = cb;
-    ctx->settings.callbackUserdata = userdata;
-    ctx->telemetry.settingsChangeCount++;
-    return ERR_NONE;
-}
-
 /* PART 3: INITIALIZATION & UTILITIES (COMPLETE) */
-
-static MemAllocSettings get_default_settings(OptimizationMode mode) {
-    MemAllocSettings s = {0};
-    s.mode = mode;
-    s.bin_count = 32;
-    s.alignment = 16;
-    s.maxMetadataPages = 1000;
-    s.ensureContiguous = false;
-    s.allowRuntimeTuning = true;
-    s.enableTelemetry = true;
-    s.maxHeapSize = 0;
-    s.verboseErrors = true;
-    
-    switch (mode) {
-        case OPTIMIZE_SPEED:
-            s.strategy = STRATEGY_SEGREGATED_FIT;
-            s.min_split_threshold = 64;
-            s.useDeferredCoalescing = true;
-            s.largeMmapThreshold = 128 * 1024;
-            s.useCanaries = false;
-            s.validateOnEntry = false;
-            s.useQuarantine = false;
-            break;
-        case OPTIMIZE_SPACE:
-            s.strategy = STRATEGY_BEST_FIT;
-            s.min_split_threshold = 32;
-            s.useDeferredCoalescing = false;
-            s.largeMmapThreshold = 256 * 1024;
-            s.useCanaries = false;
-            s.validateOnEntry = false;
-            s.useQuarantine = false;
-            break;
-        case OPTIMIZE_BALANCED:
-            s.strategy = STRATEGY_SEGREGATED_FIT;
-            s.min_split_threshold = 48;
-            s.useDeferredCoalescing = false;
-            s.largeMmapThreshold = 192 * 1024;
-            s.useCanaries = true;
-            s.validateOnEntry = false;
-            s.useQuarantine = false;
-            s.trackCallSites = true;
-            break;
-        case OPTIMIZE_SECURITY:
-            s.strategy = STRATEGY_SEGREGATED_FIT;
-            s.min_split_threshold = 64;
-            s.useDeferredCoalescing = false;
-            s.largeMmapThreshold = 256 * 1024;
-            s.zeroOnFree = true;
-            s.useCanaries = true;
-            s.validateOnEntry = true;
-            s.useRandomCanaries = true;
-            s.useQuarantine = true;
-            s.quarantineSize = 1024 * 1024;
-            s.trackCallSites = true;
-            break;
-    }
-    return s;
-}
 
 AllocatorContext* createAllocator(OptimizationMode mode, size_t initial_size) {
     MemAllocSettings settings = get_default_settings(mode);
@@ -352,6 +236,125 @@ void destroyAllocator(AllocatorContext* ctx) {
 
 /* PART 4: DIAGNOSTICS (COMPLETE) */
 
+MemAllocSettings getCurrentSettings(AllocatorContext* ctx) {
+    return ctx->settings;
+}
+
+len_t moduleMethod(AllocCtx, printAllocs, std_Stream* out) {
+    fprintf(out, "=== Active Allocations ===\n");
+    
+    size_t ctx_sz = ALIGN_UP(sizeof(AllocatorContext) + 
+                             sizeof(intptr_t) * this.settings.bin_count,
+                             this.settings.alignment);
+    BlockHeader* curr = (BlockHeader*)((uint8_t*)this.base_addr + ctx_sz);
+    
+    uint64_t count = 0;
+    while (curr) {
+        if (!curr->is_free) {
+            count++;
+            fprintf(out, "[%llu] %p: %llu bytes", 
+                   count, 
+                   (void*)((uint8_t*)curr + sizeof(BlockHeader)),
+                   (unsigned long long)curr->requested_size);
+            
+            if (this.settings.trackCallSites && curr->alloc_file) {
+                fprintf(out, " (allocated at %s:%d, timestamp %llu)",
+                       curr->alloc_file, curr->alloc_line,
+                       (unsigned long long)curr->alloc_timestamp);
+            }
+            fprintf(out, "\n");
+        }
+        
+        if (curr->rel_next_phys == -1) break;
+        curr = (BlockHeader*)((uint8_t*)curr + curr->rel_next_phys);
+    }
+    
+    /* Also print large allocations */
+    LargeAlloc* la = this.large_allocs;
+    while (la) {
+        count++;
+        fprintf(out, "[%llu] %p: %llu bytes (large allocation)", 
+               count, la->ptr, (unsigned long long)la->requested_size);
+        if (this.settings.trackCallSites && la->alloc_file) {
+            fprintf(out, " (allocated at %s:%d, timestamp %llu)",
+                   la->alloc_file, la->alloc_line,
+                   (unsigned long long)la->alloc_timestamp);
+        }
+        fprintf(out, "\n");
+        la = la->next;
+    }
+    
+    fprintf(out, "Total active: %llu\n", count);
+    fprintf(out, "==========================\n");
+}
+
+len_t moduleMethod(AllocCtx, printDetailedStats, std_Stream* out) {
+    fprintf(out, "=== Detailed Allocator Statistics ===\n");
+    fprintf(out, "Current Mode: %s\n", 
+            this.settings.mode == OPTIMIZE_SPEED ? "SPEED" :
+            this.settings.mode == OPTIMIZE_SPACE ? "SPACE" :
+            this.settings.mode == OPTIMIZE_BALANCED ? "BALANCED" : "SECURITY");
+    fprintf(out, "Strategy: %s\n",
+            this.settings.strategy == STRATEGY_SEGREGATED_FIT ? "Segregated-fit" :
+            this.settings.strategy == STRATEGY_BEST_FIT ? "Best-fit" : "First-fit");
+    
+    fprintf(out, "\nMemory Usage:\n");
+    fprintf(out, "  Total allocated: %llu bytes\n", 
+            (unsigned long long)this.telemetry.totalAllocated);
+    fprintf(out, "  Overhead: %llu bytes\n", 
+            (unsigned long long)this.telemetry.totalOverhead);
+    fprintf(out, "  Heap size: %llu bytes\n", 
+            (unsigned long long)this.total_size);
+    fprintf(out, "  Peak usage: %llu bytes\n", 
+            (unsigned long long)this.telemetry.peakUsage);
+    fprintf(out, "  Utilization: %.2f%%\n", 
+            this.total_size > 0 ? 
+            (100.0 * this.telemetry.totalAllocated / this.total_size) : 0.0);
+    
+    fprintf(out, "\nOperations:\n");
+    fprintf(out, "  Allocations: %llu\n", 
+            (unsigned long long)this.telemetry.allocationCount);
+    fprintf(out, "  Frees: %llu\n", 
+            (unsigned long long)this.telemetry.freeCount);
+    fprintf(out, "  Reallocs: %llu\n", 
+            (unsigned long long)this.telemetry.reallocCount);
+    fprintf(out, "  Active: %llu\n", 
+            (unsigned long long)this.telemetry.activeAllocations);
+    fprintf(out, "  Peak active: %llu\n", 
+            (unsigned long long)this.telemetry.peakActiveAllocations);
+    
+    fprintf(out, "\nOptimizations:\n");
+    fprintf(out, "  Coalescing events: %llu\n", 
+            (unsigned long long)this.telemetry.coalescingEvents);
+    fprintf(out, "  Splitting events: %llu\n", 
+            (unsigned long long)this.telemetry.splittingEvents);
+    fprintf(out, "  Heap growths: %llu\n", 
+            (unsigned long long)this.telemetry.heapGrowthEvents);
+    fprintf(out, "  Deferred coalescing runs: %llu\n", 
+            (unsigned long long)this.telemetry.deferredCoalescingRuns);
+    fprintf(out, "  Settings changes: %llu\n", 
+            (unsigned long long)this.telemetry.settingsChangeCount);
+    
+    fprintf(out, "\nSecurity:\n");
+    fprintf(out, "  Canaries enabled: %s\n", 
+            this.settings.useCanaries ? "Yes" : "No");
+    fprintf(out, "  Quarantine enabled: %s\n", 
+            this.settings.useQuarantine ? "Yes" : "No");
+    if (this.settings.useQuarantine) {
+        fprintf(out, "  Quarantined blocks: %llu\n", 
+                (unsigned long long)this.telemetry.quarantinedBlocks);
+        fprintf(out, "  Quarantined bytes: %llu\n", 
+                (unsigned long long)this.telemetry.quarantinedBytes);
+    }
+    fprintf(out, "  Corruption events: %llu\n", 
+            (unsigned long long)this.telemetry.corruptionEvents);
+    fprintf(out, "  Validation failures: %llu\n", 
+            (unsigned long long)this.telemetry.validationFailures);
+    
+    fprintf(out, "\nLast Error: %s\n", this.telemetry.lastErrorMsg);
+    fprintf(out, "=====================================\n");
+}
+
 void dump_heap_stats(AllocatorContext* ctx, FILE* out) {
     fprintf(out, "=== Allocator Statistics ===\n");
     fprintf(out, "Mode: %s | Strategy: %s\n",
@@ -381,31 +384,8 @@ void dump_heap_stats(AllocatorContext* ctx, FILE* out) {
     fprintf(out, "===========================\n");
 }
 
-const char* getAllocatorError(AllocatorContext* ctx) {
-    return ctx->telemetry.lastErrorMsg;
+PRINT(std_Memory){
+	
 }
 
-AllocError getLastErrorCode(AllocatorContext* ctx) {
-    return ctx->telemetry.lastError;
-}
-
-void clearError(AllocatorContext* ctx) {
-    ctx->telemetry.lastError = ERR_NONE;
-    ctx->telemetry.lastErrorMsg[0] = '\0';
-}
-
-MemAllocSettings getCurrentSettings(AllocatorContext* ctx) {
-    return ctx->settings;
-}
-
-/* Convenience macros */
-#define MALLOC(ctx, size) std_malloc_debug(&(ctx), (size), __FILE__, __LINE__)
-#define FREE(ctx, ptr) std_free((ctx), (ptr))
-#define CALLOC(ctx, n, sz) std_calloc(&(ctx), (n), (sz))
-#define REALLOC(ctx, ptr, sz) std_realloc(&(ctx), (ptr), (sz))
-
-/* NOTE: Complete implementation includes all helper functions
- * (bin management, coalescing, validation, quarantine, large allocs)
- * which are fully functional as described in previous responses.
- * This provides the complete public API with all features working.
- */
+#undef module
