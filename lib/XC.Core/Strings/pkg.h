@@ -12,7 +12,7 @@ Decl(StringBuilder)
 
 	#include "types.h"
 	
-	#include "StringBuilder/pkg.h"
+	#include "Editor/pkg.h"
 	
 #undef package
 #endif

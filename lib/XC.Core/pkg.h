@@ -53,7 +53,7 @@ Module(std){
 	interface(std_Map)    		Map;
 	interface(std_Struct) 		Struct;
 	interface(std_DSN)    		DSN;
-   	interface(std_StringBuilder) 	StringBuilder;
+   	interface(std_Editor) 		Editor;
    	interface(std_Arena) 		Arena;
    	interface(std_Pool) 		Pool;
    	interface(std_Buffer) 		Buffer;
