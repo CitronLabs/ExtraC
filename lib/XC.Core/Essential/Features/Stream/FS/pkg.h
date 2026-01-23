@@ -44,7 +44,8 @@ Interface(FS,
 	   	LINK 
 	)
 	std_Stream* 	fn(open)(std_FSPath path, int flags, std_FSEntry* ent_buff);
-	std_Stream* 	fn(search)(std_FSPath path, std_FSEntry* ent);
+	std_Stream* 	fn(temp)(int flags, std_FSEntry* ent_buff);
+	bool 		fn(search)(std_FSPath path, std_FSEntry* ent);
 	errvt  	 	fn(delete)(std_FSPath path);
 	errvt  	 	fn(chdir)(std_FSPath path);
 	errvt  	 	fn(update)(std_FSEntry* ent);

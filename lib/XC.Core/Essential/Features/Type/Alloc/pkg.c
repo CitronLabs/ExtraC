@@ -3,12 +3,11 @@
 
 #define module std, Types, alloc
 
-importFn(init);
-
 export(
 SUBMODULE(),
 VALUES(),
-	init
+	init, 	  initWith,
+	destruct, destructWith
 );
 
 #undef module

@@ -21,13 +21,13 @@ static const char* DefaultErrMessage[] = {
     [ERR.MEM.LARGE_ALLOC_FAILED] 	= "Large allocation failed: direct page allocation error"
 };
 
-void moduleMethod(AllocCtx, recordError, errvt err) {
+errvt moduleMethod(AllocCtx, recordError, errvt err) {
     
 	if (err == ERR.MEM.CORRUPTION_DETECTED) {
 		this.telemetry.corruptionEvents++;
 	}
     
-    	ERR(err, generic DefaultErrMessage[err]);
+return ERR(err, generic DefaultErrMessage[err]);
 }
 
 /* === RANDOM NUMBER GENERATION === */
@@ -66,14 +66,6 @@ Block moduleFn(parseBlock)(BlockHeader* start){
 
 		result.free_data = pntr_shiftcpy(start, offset);
 	}
-
-	var heap = new(std_Memory, MemPage(1));
-
-	Alloc.setup(&heap, Alloc.optimizeSettings(Alloc.Optimize.SECURITY));
-
-	strc8 hello = Alloc.Interface.Alloc(heap, sizeof("Hello, World"), getErrorPos());
-
-	std.Memory.copyTo(hello, "Hello, World", sizeof("Hello, World"));
 
 return result;
 }
@@ -414,7 +406,7 @@ void moduleMethod(AllocCtx, Quarantine_push, Block blk){
 
 /* === LARGE ALLOCATION TRACKING === */
 
-void moduleMethod(AllocCtx, LargeAlloc_track, 
+void moduleMethod(AllocCtx, allocLarge, 
 	LargeAlloc* 	  la, 
 	size_t 		  size, 
 	size_t 		  requested, 
@@ -447,7 +439,7 @@ void moduleMethod(AllocCtx, LargeAlloc_track,
     this.telemetry.largeAllocations++;
 }
 
-errvt moduleMethod(AllocCtx, LargeAlloc_untrack, LargeAlloc* la) {
+errvt moduleMethod(AllocCtx, freeLarge, LargeAlloc* la) {
     LargeAlloc** curr = &this.large_allocs;
     
     /* Remove from list */
@@ -463,101 +455,90 @@ return OK;
 
 /* === HEAP GROWTH === */
 
-errvt moduleMethod(AllocCtx, grow, size_t needed) {
-    AllocatorContext* ctx = *ctx_ref;
+errvt moduleMethod(AllocCtx, grow, len_t pages) {
     
-    /* Cannot grow managed (fixed-size) heaps */
-    if (this.managed) {
-        set_error(ctx, ERR_HEAP_LIMIT_REACHED,
-                  "Cannot grow managed heap (fixed size: %llu bytes)",
-                  (unsigned long long)this.total_size);
-        return false;
-    }
-
-    size_t pg_size = getPageSize();
-    size_t req_size = ALIGN_UP(needed, pg_size);
+    len_t pg_size  = core.System.Mem.getInfo().pageSize;
+    len_t req_size = pages * pg_size;
     
     /* Check heap size limit */
-    if (this.settings.maxHeapSize > 0 && 
-        (this.total_size + req_size > this.settings.maxHeapSize)) {
-        set_error(ctx, ERR_HEAP_LIMIT_REACHED,
-                  "Allocation would exceed maxHeapSize (%llu + %llu > %llu)",
-                  (unsigned long long)this.total_size,
-                  (unsigned long long)req_size,
-                  (unsigned long long)this.settings.maxHeapSize);
-        return false;
-    }
+    if (this.settings.maxSize > 0 && 
+       (this.total_size + req_size > this.settings.maxSize)) {
 
-    /* Check page limit */
-    if (this.telemetry.metadataPageCount + 1 > this.settings.maxPages) {
-        set_error(ctx, ERR_METADATA_CAP_EXCEEDED,
-                  "Would exceed maxMetadataPages limit (%llu)",
-                  (unsigned long long)this.settings.maxMetadataPages);
-        return false;
+	    // Check if we can grow to fit the maximum size
+	    if(this.total_size >= this.settings.maxSize)
+        	return mod(recordError)(self, ERR.MEM.HEAP_LIMIT_REACHED);
+	    else
+		req_size = this.settings.maxSize - this.total_size;
     }
 
     /* Allocate new pages */
-    void* new_mem = allocPages(req_size);
+    void* new_mem = core.System.Mem.alloc(req_size, pntr_shiftcpy(self, this.total_size));
+
     if (!new_mem) {
-        set_error(ctx, ERR_OUT_OF_MEMORY,
-                  "System allocPages() failed for %llu bytes",
-                  (unsigned long long)req_size);
-        return false;
+        errvt err = mod(recordError)(self, ERR.MEM.OUT_OF_MEMORY); printlnErr(
+            "core.System.Mem.alloc failed to allocate "
+	    "pages for at least ",$(req_size)," bytes"
+	);
+        return err;
     }
 
     /* Check if new memory is contiguous */
-    bool contiguous = (new_mem == (uint8_t*)this.base_addr + this.total_size);
+    bool contiguous = (new_mem == pntr_shiftcpy(self, this.total_size));
 
     /* Handle contiguous requirement */
     if (this.settings.ensureContiguous && !contiguous) {
-        /* Need to relocate entire heap to ensure contiguity */
         size_t new_total = this.total_size + req_size;
-        void* big_strip = allocPages(new_total);
+        void* big_strip = core.System.Mem.alloc(new_total, nil);
         
         if (!big_strip) {
-            freePages(new_mem, req_size);
-            set_error(ctx, ERR_RELOCATION_FAILED,
-                      "Cannot allocate contiguous block of %llu bytes",
-                      (unsigned long long)new_total);
-            return false;
+            core.System.Mem.dealloc(new_mem, req_size);
+
+            errvt err = mod(recordError)(self, ERR.MEM.RELOCATION_FAILED); printlnErr(
+                "Cannot allocate new memory for ensuring "
+		"a contiguous block of ",$(new_total)," bytes"
+	    );
+            return err;
         }
 
         /* Copy existing heap to new location */
-        memcpy(big_strip, this.base_addr, this.total_size);
-        
-        /* Free old heap and unused new memory */
-        freePages(this.base_addr, this.total_size);
-        freePages(new_mem, req_size);
+        memcpy(big_strip, self, this.total_size);
 
         /* Update context */
-        ctx = (AllocatorContext*)big_strip;
-        this.base_addr = big_strip;
-        this.total_size = new_total;
-        *ctx_ref = ctx;
+        this.memory_object->pointer = big_strip;
+        this.total_size 	    = new_total;
+
+        /* Free old heap and unused new memory */
+        core.System.Mem.dealloc(self, this.total_size);
+        core.System.Mem.dealloc(new_mem, req_size);
+
+	// Set new memory to end of heap
+	new_mem = pntr_shiftcpy(self, this.total_size - req_size);
     } else {
         /* Just expand total size */
         this.total_size += req_size;
     }
 
-    /* Create new free block at end of heap */
-    BlockHeader* new_h = (BlockHeader*)((uint8_t*)this.base_addr + 
-                                        (this.total_size - req_size));
-    new_h->magic = MAGIC_FREE;
-    new_h->canary_top = get_canary(ctx);
-    new_h->size = req_size;
-    new_h->requested_size = 0;
-    new_h->is_free = 1;
-    new_h->rel_next_phys = -1;
-    new_h->rel_prev_phys = -1;
-    new_h->alloc_file = nil;
-    new_h->alloc_line = 0;
-    new_h->alloc_timestamp = 0;
+return OK;
+}
+errvt moduleMethod(AllocCtx, newBlock, len_t needed) {
+
+    /* Create new free block at the start of growth */
+    BlockHeader* new_h = new_mem;
+
+    new_h->magic 		= MAGIC_FREE;
+    new_h->canary_top 		= mod(getCanary)(self);
+    new_h->size 		= req_size;
+    new_h->requested_size 	= 0;
+    new_h->is_free 		= 1;
+    new_h->rel_next_phys 	= -1;
+    new_h->rel_prev_phys 	= -1;
     
     /* If contiguous, link to existing heap and try to coalesce */
     if (contiguous) {
-        size_t ctx_sz = ALIGN_UP(sizeof(AllocatorContext) + 
-                                 sizeof(intptr_t) * this.settings.bin_count,
+        size_t ctx_sz = ALIGN_UP(sizeof(AllocCtx) + 
+                                 sizeof(pntrval)  * this.settings.binCount,
                                  this.settings.alignment);
+
         BlockHeader* curr = (BlockHeader*)((uint8_t*)this.base_addr + ctx_sz);
         
         /* Find last block in heap */
@@ -583,112 +564,14 @@ errvt moduleMethod(AllocCtx, grow, size_t needed) {
     
     /* Update telemetry */
     this.telemetry.metadataPageCount = (this.total_size + pg_size - 1) / pg_size;
-    this.telemetry.heapGrowthEvents++;
+    this.telemetry.growthEvents++;
     
     return true;
-}
 
-/* === DIAGNOSTICS === */
-
-
-bool canModifySetting(AllocatorContext* ctx, const char* setting_name) {
-    if (!this.settings.allowRuntimeTuning) return false;
-    
-    /* Some settings are immutable after initialization */
-    if (strcmp(setting_name, "bin_count") == 0 || 
-        strcmp(setting_name, "alignment") == 0) {
-        return false;
-    }
-    
-    return true;
 }
 
 /* === DEFAULT SETTINGS GENERATOR === */
 
-MemAllocSettings get_default_settings(OptimizationMode mode) {
-    MemAllocSettings s = {0};
-    
-    /* Common defaults */
-    s.mode = mode;
-    s.bin_count = 32;
-    s.alignment = 16;
-    s.maxMetadataPages = 1000;
-    s.ensureContiguous = false;
-    s.allowRuntimeTuning = true;
-    s.enableTelemetry = true;
-    s.maxHeapSize = 0;  /* Unlimited */
-    s.verboseErrors = true;
-    s.errorCallback = nil;
-    s.callbackUserdata = nil;
-    
-    switch (mode) {
-        case OPTIMIZE_SPEED:
-            s.strategy = STRATEGY_SEGREGATED_FIT;
-            s.min_split_threshold = 64;
-            s.zeroOnFree = false;
-            s.poisonOnFree = false;
-            s.useCanaries = false;
-            s.validateOnEntry = false;
-            s.useRandomCanaries = false;
-            s.useQuarantine = false;
-            s.quarantineSize = 0;
-            s.useDeferredCoalescing = true;
-            s.enableThreadCache = false;
-            s.largeMmapThreshold = 128 * 1024;
-            s.trackCallSites = false;
-            break;
-            
-        case OPTIMIZE_SPACE:
-            s.strategy = STRATEGY_BEST_FIT;
-            s.min_split_threshold = 32;
-            s.zeroOnFree = false;
-            s.poisonOnFree = false;
-            s.useCanaries = false;
-            s.validateOnEntry = false;
-            s.useRandomCanaries = false;
-            s.useQuarantine = false;
-            s.quarantineSize = 0;
-            s.useDeferredCoalescing = false;
-            s.enableThreadCache = false;
-            s.largeMmapThreshold = 256 * 1024;
-            s.trackCallSites = false;
-            break;
-            
-        case OPTIMIZE_BALANCED:
-            s.strategy = STRATEGY_SEGREGATED_FIT;
-            s.min_split_threshold = 48;
-            s.zeroOnFree = false;
-            s.poisonOnFree = false;
-            s.useCanaries = true;
-            s.validateOnEntry = false;
-            s.useRandomCanaries = false;
-            s.useQuarantine = false;
-            s.quarantineSize = 0;
-            s.useDeferredCoalescing = false;
-            s.enableThreadCache = false;
-            s.largeMmapThreshold = 192 * 1024;
-            s.trackCallSites = true;
-            break;
-            
-        case OPTIMIZE_SECURITY:
-            s.strategy = STRATEGY_SEGREGATED_FIT;
-            s.min_split_threshold = 64;
-            s.zeroOnFree = true;
-            s.poisonOnFree = false;
-            s.useCanaries = true;
-            s.validateOnEntry = true;
-            s.useRandomCanaries = true;
-            s.useQuarantine = true;
-            s.quarantineSize = 1024 * 1024;
-            s.useDeferredCoalescing = false;
-            s.enableThreadCache = false;
-            s.largeMmapThreshold = 256 * 1024;
-            s.trackCallSites = true;
-            break;
-    }
-    
-    return s;
-}
 
 /* === COMPLETE ALLOCATION IMPLEMENTATION === */
 
@@ -709,15 +592,7 @@ void* allocate_block(AllocatorContext** ctx_ref, size_t size,
         size_t pg_size = getPageSize();
         size_t alloc_size = ALIGN_UP(size, pg_size);
         
-        void* ptr = allocPages(alloc_size);
-        if (!ptr) {
-            set_error(ctx, ERR_LARGE_ALLOC_FAILED,
-                      "Failed to allocate %llu bytes via direct mapping at %s:%d",
-                      (unsigned long long)size, file ? file : "unknown", line);
-            return nil;
-        }
-        
-        track_large_alloc(ctx, ptr, alloc_size, size, file, line);
+        large_alloc(ctx, ptr, alloc_size, size, file, line);
         
         if (this.settings.enableTelemetry) {
             this.telemetry.activeAllocations++;
@@ -751,18 +626,7 @@ void* allocate_block(AllocatorContext** ctx_ref, size_t size,
     FreeBlock* chosen = nil;
     
 retry:
-    /* Find suitable free block based on strategy */
-    switch (this.settings.strategy) {
-        case STRATEGY_BEST_FIT:
-            chosen = find_best_fit(ctx, actual);
-            break;
-        case STRATEGY_FIRST_FIT:
-            chosen = find_first_fit(ctx, actual);
-            break;
-        default:
-            chosen = find_segregated_fit(ctx, actual);
-            break;
-    }
+    chosen = find_segregated_fit(ctx, actual);
     
     /* No suitable block found - try to grow heap */
     if (!chosen) {
@@ -1029,36 +893,6 @@ void* realloc_block(AllocatorContext** ctx_ref, void* ptr, size_t new_size,
 
 /* === WRAPPER FUNCTIONS === */
 
-void* std_malloc_debug(AllocatorContext** ctx, size_t size, const char* file, int line) {
-    return allocate_block(ctx, size, file, line);
-}
-void* std_malloc(AllocatorContext** ctx, size_t size) {
-    return allocate_block(ctx, size, nil, 0);
-}
-
-void* std_calloc(AllocatorContext** ctx, size_t nmemb, size_t size) {
-    /* Check for overflow */
-    if (nmemb != 0 && size > SIZE_MAX / nmemb) {
-        set_error(*ctx, ERR_SIZE_OVERFLOW,
-                  "calloc overflow: %llu * %llu exceeds maximum",
-                  (unsigned long long)nmemb, (unsigned long long)size);
-        return nil;
-    }
-    
-    size_t total = nmemb * size;
-    void* ptr = allocate_block(ctx, total, nil, 0);
-    
-    if (ptr) {
-        memset(ptr, 0, total);
-    }
-    
-    return ptr;
-}
-
-void* std_realloc(AllocatorContext** ctx, void* ptr, size_t size) {
-    return realloc_block(ctx, ptr, size, nil, 0);
-}
-
 void* std_aligned_alloc(AllocatorContext** ctx, size_t alignment, size_t size) {
     if (!IS_POWER_OF_TWO(alignment)) {
         set_error(*ctx, ERR_ALIGNMENT_FAILURE,
@@ -1093,12 +927,4 @@ void* std_aligned_alloc(AllocatorContext** ctx, size_t alignment, size_t size) {
     
     /* Return aligned address (Note: simplified - not production ready) */
     return (void*)aligned;
-}
-
-void std_free_diag(AllocatorContext* ctx, void* ptr) {
-    free_block(ctx, ptr);
-}
-
-void std_free(AllocatorContext* ctx, void* ptr) {
-    free_block(ctx, ptr);
 }

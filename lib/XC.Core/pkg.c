@@ -1,8 +1,6 @@
 #pragma once
 #include "./pkg.h"
-#include "Essential/Features/Type/pkg.c"
-#include "Essential/Features/Error/pkg.c"
-#include "Essential/Env/pkg.c"
+#include "Essential/pkg.c"
 #include "Data/pkg.c"
 #include "Math/pkg.c"
 

@@ -18,8 +18,8 @@ moduleValues(Flags,
 export(
 SUBMODULE(),
 VALUES(Flags),
-	open,
-	chdir
+	open, chdir, rename, search, 
+	update, delete, cpy, move, temp
 );
 
 

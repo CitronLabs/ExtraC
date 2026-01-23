@@ -6,4 +6,5 @@
 #undef byte
 #undef DELETE
 #undef NEWFRAME
+#undef SPACE
 

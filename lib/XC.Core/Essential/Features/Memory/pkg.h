@@ -12,7 +12,6 @@
 
 #define package std
 
-
 Interface(Allocator,
 	void* imethod(Alloc, u64 size, std_ErrorPosition errorPos);
       	errvt imethod(Free, void* instance, std_ErrorPosition errorPos);
@@ -21,7 +20,6 @@ Interface(Allocator,
       	bool  imethod(isStatic);
       	u64   imethod(getBytesAlloced);
 );
-
 
 Class(Memory,
 INIT(len_t size), 
@@ -33,7 +31,7 @@ private(bool managed;)
      	struct {
 	    values(Optimize, uword,
     		SPEED,      /* Minimize allocation time */
-    		SPACE,      /* Minimize fragmentation */
+    		SIZE,      /* Minimize fragmentation */
     		SECURITY    /* Maximum security features */
 	    )
 

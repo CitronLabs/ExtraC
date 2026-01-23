@@ -3,6 +3,12 @@
 
 #define module std, Memory
 
+moduleValues(PATH(Allocator, Optimize),
+	SPEED 		as (1 << 0),
+	SIZE 		as (1 << 1),
+	SECURITY 	as (1 << 2),
+)
+
 exportFrom(PATH(Allocator, Interface),
 SUBMODULE(),
 VALUES(),
@@ -11,7 +17,7 @@ VALUES(),
 
 exportFrom(Allocator,
 SUBMODULE(Interface),
-VALUES(),
+VALUES(Optimize),
 	setup
 )
 

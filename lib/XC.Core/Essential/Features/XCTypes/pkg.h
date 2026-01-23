@@ -48,8 +48,13 @@ asXCType(pntrval)
 //boolean types
 asXCType(bool)
 
+asXCType(devHandle);
 asXCType(registerHandle);
 asXCType(streamHandle);
+
+asXCType(XC_Time);
+asXCType(XC_Locale_Data);
+asXCType(XC_Memory_Info);
 
 typefrom(constpntr, TypeID)
 

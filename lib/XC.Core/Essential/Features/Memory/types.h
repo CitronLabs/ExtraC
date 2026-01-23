@@ -9,12 +9,12 @@ typefrom(uword, Allocator_OptimizeMode)
 type(Allocator_Settings,
     pkg(Allocator_OptimizeMode) mode;
     u32 binCount;                   /* Number of segregated free list bins */
-    len_t minSplitThreshold;       /* Minimum size for splitting blocks */
-    len_t alignment;                 /* Memory alignment (must be power of 2) */
-    bool ensureContiguous;           /* Keep heap contiguous (requires relocation) */
-    bool allowRuntimeTuning;         /* Allow settings changes after init */
-    bool enableTelemetry;            /* Track detailed statistics */
-    len_t maxPages;                  /* Maximum size (0 = unlimited) */
+    len_t minSplitThreshold;        /* Minimum size for splitting blocks */
+    len_t alignment;                /* Memory alignment (must be power of 2) */
+    bool ensureContiguous;          /* Keep heap contiguous (requires relocation) */
+    bool allowRuntimeTuning;        /* Allow settings changes after init */
+    bool enableTelemetry;           /* Track detailed statistics */
+    len_t maxSize;                  /* Maximum size (0 = unlimited) */
     
     /* Security & Debugging Features */
     bool zeroOnFree;                 /* Clear memory on free (security) */
@@ -23,7 +23,7 @@ type(Allocator_Settings,
     bool validateOnEntry;            /* Validate heap integrity on every call */
     bool useRandomCanaries;          /* Use random canary values per allocation */
     bool useQuarantine;              /* Delay reuse of freed blocks */
-    len_t quarantineSize;           /* Maximum quarantine capacity in bytes */
+    len_t quarantineSize;            /* Maximum quarantine capacity in bytes */
     
     /* Performance Features */
     bool useDeferredCoalescing;      /* Batch coalescing operations */
