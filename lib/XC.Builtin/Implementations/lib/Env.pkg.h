@@ -25,16 +25,21 @@ SOFTWARE.
 
 #ifndef __ENV__
 
-#if defined(__linux__) || defined(__linux) || defined(linux)
+#if defined(__TUNDRA__) && defined(USE_TUNDRA)
+	#include "XC.Tundra/pkg.h"
+	#define __XC_PATH env.Tundra.XC
+#else
+    #if defined(__linux__) || defined(__linux) || defined(linux)
 	#include "XC.Linux/pkg.h"
 
 	#define __XC_PATH env.Linux.XC
-#endif
+    #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+    #if defined(_WIN32) || defined(_WIN64)
 	#include "XC.Windows/pkg.h"
 
 	#define __XC_PATH env.Windows.XC
+    #endif
 #endif
 
 #include "XC.Core/pkg.h"
@@ -44,6 +49,9 @@ SOFTWARE.
 #define package env
 
 Module(env){
+    #if defined(__TUNDRA__) && defined(USE_TUNDRA)
+		interface(env_Tundra)  Tundra;
+    #else
 	#if defined(__linux__) || defined(__linux) || defined(linux)
 		interface(env_Linux) 	Linux;
 	#endif
@@ -51,6 +59,8 @@ Module(env){
 	#if defined(_WIN32) || defined(_WIN64)
 		interface(env_Windows) 	Windows;
 	#endif
+    #endif
+
 
 		interface(env_Common) 	Common;
 };

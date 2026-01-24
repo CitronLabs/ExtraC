@@ -22,32 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ---------------------------------------------------------------------------*/
 #pragma once
-#define __ENV__
+
+#include "API/pkg.h"
 
 #include <XC.Core/pkg.h>
 #include <XC.OS/pkg.h>
 #include "../XC.Common/pkg.h"
-#ifndef __ENV_LINUX__
+
+#ifndef __ENV_TUNDRA__
 
 #include "Runtime/pkg.h"
 
 #define package env
 
-Interface(Linux,
-  values(Version, word,
-	MAJOR,
-	MINOR,
-	PATCH
-  )	
-	interface(env_Linux_Runtime) 	Runtime;
-  
-	submodule(XC,
-		interface(XC_Core) Core;
-		interface(XC_Sys)  Sys;
-	)
-
+Interface(Tundra,
+  	values(Version, word,
+		MAJOR,
+		MINOR,
+		PATCH
+  	)	
+  submodule(XC,
+	interface(XC_Core) Core;
+	interface(XC_Sys)  Sys;
+  )
 );
 
 #undef package
-
 #endif
