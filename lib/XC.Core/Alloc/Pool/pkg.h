@@ -25,7 +25,7 @@ lifetime of the Pool object.
 @param isStatic 	if the Pool is able to grow beyond the orginal init size
 */
 Class(Pool, 
-INIT(std_typeData type; len_t init_size, limit; bool isStatic),
+INIT(std_typeData type; len_t init_size, limit; bool isStatic; intf(std_Allocator) parentAllocator),
 FMT(),
 private(
 	std_typeData type;
@@ -36,8 +36,8 @@ private(
 )
 ){
 	errvt	method(Pool, ForceDestroy);
-      	void* 	method(Pool, Alloc, u64 num, std_ErrorPosition errorPos);
-      	errvt 	method(Pool, Return, void* instance, std_ErrorPosition errorPos);
+      	void* 	method(Pool, Alloc, u64 num, std_CodePos errorPos);
+      	errvt 	method(Pool, Return, void* instance, std_CodePos errorPos);
       	errvt 	method(Pool, Reserve, u64 num_members);
       	errvt 	method(Pool, Grow, u64 add_num_members);
 };

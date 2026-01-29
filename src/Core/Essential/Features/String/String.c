@@ -1,15 +1,16 @@
 #include <XC.Core/pkg.c>
-
 #define module std, String
+
+alias(std.Stream.Process, then);
 
 bool moduleMethod(std_String, Compare, std_String* cmp_string){
 	
-	if(len(self) != elements(cmp_string) 		|| 
+	if(len(self) != len(cmp_string)	|| 
 	   priv.len_bytes != privof(cmp_string).len_bytes
 	) 
 		return false;
 
-	std.String.Utils.Str.cmp(this.data, cmp_string->data, this.len);
+	strncmp(this.data, cmp_string->data, this.len);
 	
 return false;
 }
@@ -105,7 +106,7 @@ return OK;
 bool moduleMethod(std_String, IsView){ return priv.IsView; }
 
 errvt moduleMethod(std_String, StreamTo, std_Stream* stream){
-	std.String.UTF8.Encoder(stream, self);
+	std.String.Encoding.UTF8.Encoder(stream, self);
 return OK;
 }
 
@@ -125,7 +126,7 @@ PRINT(std_String){
 	try(){
 	    std.Stream.Process
 		.start(out)
-		.doEncode(std.String.UTF8.Encoder, self)
+		.doEncode(std.String.Encoding.UTF8.Encoder, self)
 		.end();
 	} catch { return 0; }
 
@@ -146,7 +147,7 @@ SCAN(std_String){
 	std.Stream.Process
 	    .start(in)
 
-	    .doDecode(std.String.UTF8.Decoder, c){ string_len++; } 
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){ string_len++; } 
 
 	    then.rewind((string_size = std.Stream.GetCursorPos(in) - prev_pos))
 
@@ -172,7 +173,7 @@ ITER(std_String){
 	
 	c8* result = this.data;
 
-	loop(i, index){	std.String.UTF8.decode(&result, nil); }
+	loop(i, index){	std.String.Encoding.UTF8.decode(&result, nil); }
 
 return result;
 }
@@ -208,7 +209,7 @@ DEF(),
 ){
 	void* end = nil;
 
-	this.len = std.String.Utils.Str.len(arg.data, arg.max_len, &end);
+	this.len = std.String.Utils.Str.length(V(arg.data), arg.max_len, &end);
 
 	priv.len_bytes = (pntr_asVal(end) - pntr_asVal(arg.data));
 

@@ -21,5 +21,4 @@ Module(XC_Core){
 };
 
 
-
 #endif

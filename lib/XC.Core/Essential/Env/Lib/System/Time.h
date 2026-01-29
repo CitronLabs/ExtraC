@@ -14,5 +14,4 @@ Interface(__XC_SYS_TIME,
 	)
       	errvt fn(getNow)(word src, XC_Time* ts);
       
-      	errvt fn(sleep)(const XC_Time* duration);
 )

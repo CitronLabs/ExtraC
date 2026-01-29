@@ -58,6 +58,10 @@ Interface(Alloc_Ops,
 #define DESTROY(class) errvt moduleMethod(class,  Op_Destroy)							
 #define CREATE(class)  class* moduleMethod(class, Op_Create, len_t size, __CONCATE_IMPL(class,ConstructArgs)* args)
 
+#define __SCOPE_IMPL(var, ...)  for(std_Object* __var = generic (var); __var; (__var->__type->ops->Destroy(__var),__var = nil)) \
+				__VA_OPT__(for(typeof(__var) __VA_ARGS__ = __var; __VA_ARGS__; __VA_ARGS__ = nil))
+
+#define scope(var, ...) __SCOPE_IMPL(var __VA_ARGS__)
 
 #define construct(name, FMT, DEF, ...)  			\
 	CREATE(name); 						\

@@ -16,8 +16,8 @@ return time_buff;
 std_Clock* moduleFn(System_UTC_getClock)(){
 	static std_Clock clock = {0};
 
-	if(!clock.system){
-	    create(std_Clock, &clock, &std.Clock.Systems.UTC.interface);
+	if(!clock.system.getTime){
+	    create(std_Clock, &clock, std.Clock.Systems.UTC.interface);
 	}
 
 return &clock;
@@ -37,7 +37,7 @@ std_Clock* moduleFn(System_TAI_getClock)(){
 	static std_Clock clock = {0};
 
 	if(!clock.system){
-	    create(std_Clock, &clock, &std.Clock.Systems.TAI.interface);
+	    create(std_Clock, &clock, std.Clock.Systems.TAI.interface);
 	}
 
 return &clock;
@@ -63,8 +63,8 @@ return time_buff;
 std_Clock* moduleFn(System_TT_getClock)(){
 	static std_Clock clock = {0};
 
-	if(!clock.system){
-	    create(std_Clock, &clock, &std.Clock.Systems.TT.interface);
+	if(clock.system.getTime){
+	    create(std_Clock, &clock, std.Clock.Systems.TT.interface);
 	}
 
 return &clock;

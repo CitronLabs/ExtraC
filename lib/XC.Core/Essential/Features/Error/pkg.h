@@ -8,11 +8,11 @@
 
 #define package std
 
-#define getErrorPos()	(std_ErrorPosition){__func__, __module__, __LINE__}
+#define __position__ (std_CodePos){__func__, __module__, __LINE__}
 
 #define OK std.Error.Code.NONE
 
-#define ERR(code, msg) std.Error.Set(&(std_Error){code, msg}, #code, getErrorPos())
+#define ERR(code, msg) std.Error.Set(&(std_Error){code, msg}, #code, __position__)
 
 #define check(...) for(std_Error* err = std.Error.Get(); err->errorcode != std.Error.Code.NONE; std.Error.Clear()) 	\
 		   loop(i, 										\
@@ -22,7 +22,7 @@
     			 ((errvt[]){__VA_ARGS__})[i] == err->errorcode : err->errorcode != std.Error.Code.NONE)
 
 #define try(...) std.Error.Clear(); 										\
-		for(int __i = 1; i--; std.Error.Clear())							\
+		for(int __i = 1; __i--; std.Error.Clear())							\
 		if(!std.Error.Try((errvt[]){__VA_ARGS__}, sizeof((errvt[]){__VA_ARGS__})/sizeof(errvt)))	\
 
 #define catch else for(std_Error* err = std.Error.Get(); err->errorcode != std.Error.Code.NONE; std.Error.Clear())
@@ -57,7 +57,7 @@ type(Error,
 	char* message;
 );
 
-type(ErrorPosition,
+type(CodePos,
 	const char
      		* func,
      		* module_;
@@ -83,7 +83,7 @@ Interface(Error,
     		ALIGNMENT_FAILURE, RELOCATION_FAILED, INVALID_SIZE,
     		UNALIGNED_BASE, INVALID_SETTINGS, THREAD_SAFETY_VIOLATION,
     		REALLOC_FAILED, QUARANTINE_FULL, RUNTIME_TUNING_DISABLED,
-		INCOMPATIBLE_SETTINGS, LARGE_ALLOC_FAILED
+		INCOMPATIBLE_SETTINGS, LARGE_ALLOC_FAILED, ALLOC_FAILED
 
 	    )		
 	    values(STRING, errvt,			
@@ -91,7 +91,7 @@ Interface(Error,
 	    )		
 	)
 
-	errvt fn(Set)(std_Error* err, const char* err_name, pkg(ErrorPosition) position);
+	errvt fn(Set)(std_Error* err, const char* err_name, pkg(CodePos) position);
 	noFail fn(Show)();
 	noFail fn(Hide)();
 	errvt fn(SetOutput)(std_Stream*);

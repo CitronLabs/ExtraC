@@ -13,25 +13,27 @@
 #define package std
 
 Interface(Allocator,
-	void* imethod(Alloc, u64 size, std_ErrorPosition errorPos);
-      	errvt imethod(Free, void* instance, std_ErrorPosition errorPos);
-      	void* imethod(Resize, void* instance, u64 size, std_ErrorPosition errorPos);
-      	errvt imethod(setMax, u64 size);
+	void* imethod(Alloc, len_t size, std_CodePos errorPos);
+      	errvt imethod(Free,  void* instance, std_CodePos errorPos);
+      	void* imethod(Resize, void* instance, u64 size, std_CodePos errorPos);
+      	errvt imethod(setMax, len_t size);
       	bool  imethod(isStatic);
       	u64   imethod(getBytesAlloced);
 );
 
 Class(Memory,
-INIT(len_t size), 
-FMT(), 
+INIT(len_t size; void* loc), 
+FMT(bool stats, detailed), 
       	pntr  pointer;
       	len_t pages;
 private(bool managed;)
 ){
-     	struct {
+     	submodule(Allocator,
+	    interface(std_Allocator) Interface;
+
 	    values(Optimize, uword,
     		SPEED,      /* Minimize allocation time */
-    		SIZE,      /* Minimize fragmentation */
+    		SIZE,       /* Minimize fragmentation */
     		SECURITY    /* Maximum security features */
 	    )
 
@@ -40,8 +42,10 @@ private(bool managed;)
 	    pkg(Memory_Allocator_Settings) fn(optimizeSettings)(uword flag);
 	    errvt method(Memory, setup, pkg(Memory_Allocator_Settings) settings);
 
-	    interface(std_Allocator) Interface;
-	    struct {
+	    pkg(Memory_Allocator_Settings)  method(Memory, getSettings);
+	    pkg(Memory_Allocator_Telemetry) method(Memory, getTelemetry);
+
+	    submodule(Edit,
 		errvt 
 		method(Memory, settings, pkg(Memory_Allocator_Settings) settings),
 		method(Memory, optimization, uword flag),
@@ -55,10 +59,10 @@ private(bool managed;)
 		method(Memory, enableQuarantine, bool enable, len_t size),
 		method(Memory, enableDeferredCoalescing, bool enable),
 		method(Memory, setMaxHeapSize, len_t max);
-	    } Edit;
-     	} Allocator;
+	    );
+	)
 
-	bool  fn(compare)(void* a, void* b, len_t size);
+	int   fn(compare)(void* a, void* b, len_t size);
 	void* fn(setTo)(void* dest, int val, len_t size);
 	void* fn(copyTo)(void* dest, void* from, len_t size);
 

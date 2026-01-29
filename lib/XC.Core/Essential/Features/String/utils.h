@@ -14,8 +14,9 @@
 #define asString(string, max_len) 			\
 	push(std_String, generic string, strsize(string, max_len), true)			
 
-#define cat(...)     (std.String.Cat(push(String), CAT_CSTRING, __VA_ARGS__, endstr))
-#define CAT(...)     (std.String.Cat(new(String), CAT_CSTRING, __VA_ARGS__, endstr))
+
+#define cat(...)     (std.String.Cat(push(std_String), arr(__VA_ARGS__)))
+#define CAT(...)     (std.String.Cat(new(std_String), arr(__VA_ARGS__)))
 
 #define switchs(string) std_String* __string__switch = string; loop(__loop_once__,1)
 #define cases(str) if(std.String.Compare(__string__switch, s(str)))
@@ -25,6 +26,8 @@
 #undef strnlen
 #define strnlen(_string, maxlen) (std.String.Utils.Str.length(V(_string), maxlen, nil))
 #define strsize(_string, maxlen) (std.String.Utils.Str.siz(V(_string), maxlen))
+#define strncpy(dest, src, maxlen) (std.String.Utils.Str.cpy(V(dest), V(src), maxlen))
+#define strncmp(_string1, _string2, maxlen) (std.String.Utils.Str.cmp(V(_string1), V(_string2), maxlen))
 
 #undef iswblank
 #undef iswdigit

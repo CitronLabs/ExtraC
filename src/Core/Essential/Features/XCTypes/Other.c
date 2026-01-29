@@ -1,4 +1,5 @@
 #include <XC.Core/pkg.c>
+alias(std.Stream.Process, then)
 
 /*----------------------------------------------
  *						|
@@ -20,16 +21,16 @@ SCAN(bool){
 	rune c = 0;
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
 		
-		while(iswblank(c)) process->next();
+		while(iswblank(c)) then.next();
 
 		if(
 		    !(len_bool_txt = scanFrom(in, "true"))  ||
 		    !(len_bool_txt = scanFrom(in, "false")) 
 		){
 			ERR(ERR.INVALID, "invalid boolean, must be either true or false");
-			process->fail();
+			then.fail();
 			return 0;
 		}
 		

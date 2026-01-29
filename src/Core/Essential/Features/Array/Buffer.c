@@ -81,7 +81,6 @@ COPY(std_Array_Buffer){
 		return nil;
 	    }
 
-	    
 	    if(dest->items + this.items > privof(dest).allocSize)
 			std_Array_List_Grow(dest, (privof(dest).allocSize / 2) + this.items);
 

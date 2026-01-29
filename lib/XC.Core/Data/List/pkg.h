@@ -37,6 +37,7 @@ private(
 	len_t items_alloced, items, limit, type_size, 
 	    * free_slots_buff, free_slots_buff_alloced, free_slots_buff_size;
 	std_typeData type;
+	busylock lock;
 )){
 	errvt 		method(List, Limit, len_t limit_size);
 	errvt 		method(List, Append, void* in, len_t len);

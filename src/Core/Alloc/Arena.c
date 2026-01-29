@@ -34,7 +34,7 @@ errvt moduleMethod(std_Arena, Grow, u64 num_bytes){
  return OK;	
 }
 
-void* moduleMethod(std_Arena, Alloc, u64 num_bytes, std_ErrorPosition errorPos){
+void* moduleMethod(std_Arena, Alloc, u64 num_bytes, std_CodePos errorPos){
 
 	std_Buffer* alloc_buff = nil;
 
@@ -52,18 +52,18 @@ void* moduleMethod(std_Arena, Alloc, u64 num_bytes, std_ErrorPosition errorPos){
 return std.Buffer.Allocator.Alloc(generic alloc_buff, num_bytes, errorPos);
 }
 
-void* moduleIMethod(New, u64 size, std_ErrorPosition errorPos){ 
+void* moduleIMethod(New, u64 size, std_CodePos errorPos){ 
 	self(std_Arena); 
 return mod(Alloc)(self, size, errorPos); 
 }
 
-void* moduleIMethod(Resize, void* instance, u64 size, std_ErrorPosition errorPos){ 
+void* moduleIMethod(Resize, void* instance, u64 size, std_CodePos errorPos){ 
 	self(std_Arena); 
 	std.Arena.Grow(self, size);
 return instance;
 }
 
-errvt moduleIMethod(Free, void* instance, std_ErrorPosition errorPos){ return OK; }
+errvt moduleIMethod(Free, void* instance, std_CodePos errorPos){ return OK; }
 
 errvt moduleIMethod(setMax, u64 size){
 	self(std_Arena);
@@ -90,7 +90,7 @@ COPY(std_Arena){
 		{ERR(ERR.FAIL, "failed to create copy"); return nil; }
 
 	foreach(priv.arena_buffers, std_Buffer*, buff){
-		pntr copy_loc = std.Arena.Alloc(where, size(*buff), getErrorPos());
+		pntr copy_loc = std.Arena.Alloc(where, size(*buff), __position__);
 
 		memcpy(copy_loc, std.Buffer.getPointer(*buff), size(*buff));
 	}

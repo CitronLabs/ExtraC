@@ -14,11 +14,11 @@ errvt moduleIMethod(Allocator_setMax, u64 max){
     return std.Buffer.resize(self, max); 
 }
 
-pntr moduleIMethod(Allocator_Alloc, u64 size, std_ErrorPosition errorPos){
+pntr moduleIMethod(Allocator_Alloc, u64 size, std_CodePos errorPos){
     self(std_Buffer);
     if(priv.alloced_size + size > priv.size){
         if(priv.isStatic){
-            printlnErr("Failed Alloc:", $use(std_ErrorPosition_Type, &errorPos));
+            printlnErr("Failed Alloc:", $use(std_CodePos_Type, &errorPos));
             ERR(ERR.MEM.OVERFLOW, "size exceeds buffer and cannot grow static buffer");
             return nil;
         }else{
@@ -33,7 +33,7 @@ pntr moduleIMethod(Allocator_Alloc, u64 size, std_ErrorPosition errorPos){
 return result;
 }
 
-void* moduleIMethod(Allocator_Realloc, pntr instance, u64 new_size, std_ErrorPosition errorPos){
+void* moduleIMethod(Allocator_Realloc, pntr instance, u64 new_size, std_CodePos errorPos){
     self(std_Buffer);
     iferr(std.Buffer.resize(self, new_size, errorPos)){
         return nil;
@@ -41,7 +41,7 @@ void* moduleIMethod(Allocator_Realloc, pntr instance, u64 new_size, std_ErrorPos
 return priv.data;
 }
 
-errvt moduleIMethod(Allocator_Free, pntr instance, std_ErrorPosition errorPos){ return OK; }
+errvt moduleIMethod(Allocator_Free, pntr instance, std_CodePos errorPos){ return OK; }
 
 errvt moduleMethod(std_Buffer, Cast, Type_t type){
     if(type.size == 0) return ERR(ERR.MEM.OVERFLOW, "cannot cast buffer to type size 0");

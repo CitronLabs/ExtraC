@@ -1,7 +1,12 @@
-#include <XC.Core/pkg.c>
+#define std libc_std
+#include <wchar.h>
 #include <float.h>
 #include <stdio.h>
-#include <wchar.h>
+#undef std
+
+#include <XC.Core/pkg.c>
+
+alias(std.Stream.Process, then)
 
 /*----------------------------------------------
  *						|
@@ -37,24 +42,24 @@ SCAN(double){
 
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
-		while(iswblank(c)) process->next();
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
+		while(iswblank(c)) then.next();
 
 		while(
 			(iswdigit(c) || c == '.' || c == '-') && 
 			scannedLen < DBL_MAX_10_EXP + DBL_DIG
 		)
-			{ buff[scannedLen++] = c; process->next(); }
+			{ buff[scannedLen++] = c; then.next(); }
 
 		if(scannedLen == 0){ 
 			ERR(ERR.INVALID, "invalid float syntax");
-			process->fail();
+			then.fail();
 			return 0; 
 		}
 		
 		if(!swscanf(buff, L"%lf", self)){
 			ERR(ERR.INVALID, "failed to parse double");
-			process->fail();
+			then.fail();
 			return 0;
 		}
 	    
@@ -115,24 +120,24 @@ SCAN(float){
 
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
-		while(iswblank(c)) process->next();
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
+		while(iswblank(c)) then.next();
 
 		while(
 			(iswdigit(c) || c == '.' || c == '-') && 
 			scannedLen < FLT_MAX_10_EXP + FLT_DIG
 		)
-			{ buff[scannedLen++] = c; process->next(); }
+			{ buff[scannedLen++] = c; then.next(); }
 
 		if(scannedLen == 0){ 
 			ERR(ERR.INVALID, "invalid float syntax");
-			process->fail();
+			then.fail();
 			return 0; 
 		}
 		
 		if(!swscanf(buff, L"%f", self)){
 			ERR(ERR.INVALID, "failed to parse float");
-			process->fail();
+			then.fail();
 			return 0;
 		}
 	    
@@ -222,23 +227,23 @@ static inline len_t __xctype_impl_fill_buff_from_stream(std_Stream* in, rune* bu
 
 	std.Stream.Process
 	    .start(in)
-	    .doDecode(std.String.UTF8.Decoder, c){
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
 
-	    	while(iswblank(c)) process->next();
+	    	while(iswblank(c)) then.next();
 
 	    	if(!iswdigit(c)) {
 	    		ERR(ERR.FAIL, "failed to scan for integer");
-	    		process->fail();
+	    		then.fail();
 	    		return 0;
 	    	}
 
 	    	while(iswdigit(c) || buff_cursor > maxlen - 1){
-			buff[buff_cursor++] = c; process->next();
+			buff[buff_cursor++] = c; then.next();
 		}
 	    	
 		if(!iswblank(c)){
 			ERR(ERR.FAIL, "invalid charaters at end of interger scan");
-			process->fail();
+			then.fail();
 			return 0;
 
 		}

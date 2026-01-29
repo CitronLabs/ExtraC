@@ -2,6 +2,7 @@
 #include "../types.h"
 
 #include "./Locale.h"
+#include "./Thread.h"
 #include "./Time.h"
 #include "./Mem.h"
 
@@ -32,5 +33,6 @@ Interface(__XC_SYSTEM,
 	interface(__XC_SYS_LOCALE) 	Locale;
 	interface(__XC_SYS_TIME) 	Time;
 	interface(__XC_SYS_MEM) 	Mem;
+	interface(__XC_SYS_THREAD) 	Thread;
 
 )

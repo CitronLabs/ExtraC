@@ -7,7 +7,7 @@
 #define package std
 
 Class(Vector,
-INIT(std_VecData initData),
+INIT(std_Math_VecData initData),
 FMT(),
 ){
 	bool 		method(Vector, isFloat);
@@ -80,6 +80,5 @@ FMT(),
 })
 
 #define Vector(type, dim) std_Vector*
-
 
 #undef package

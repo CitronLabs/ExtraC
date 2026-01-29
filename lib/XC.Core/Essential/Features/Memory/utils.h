@@ -9,6 +9,8 @@
 #define del_use(allocator, ...) \
 	std.Type.alloc.destructWith((allocator)->Free, (pntr[]){__VA_ARGS__}, sizeof((pntr[]){__VA_ARGS__}) / sizeof(pntr))
 
+#define ALLOC_SIZE_UNLIMITED 0
+
 #undef alloca 
 #undef malloc 
 #undef realloc
@@ -19,9 +21,9 @@
 #undef calloc 
 
 #define alloca(size) 			__MEMORY_STACK_ALLOC(size)
-#define malloc(size) 			std.Memory.Allocator.Interface.Alloc (std.Memory.getHeap(), size)
-#define realloc(pntr, size) 		std.Memory.Allocator.Interface.Resize(std.Memory.getHeap(), pntr, size)
-#define free(pntr) 			std.Memory.Allocator.Interface.Free  (std.Memory.getHeap(), pntr)
+#define malloc(size) 			std.Memory.Allocator.Interface.Alloc (std.Memory.getHeap(), size, __position__)
+#define realloc(pntr, size) 		std.Memory.Allocator.Interface.Resize(std.Memory.getHeap(), pntr, size, __position__)
+#define free(pntr) 			std.Memory.Allocator.Interface.Free  (std.Memory.getHeap(), pntr, __position__)
 #define memcpy(dest, from,  size) 	std.Memory.copyTo(dest, from, size)
 #define memset(dest, value, size) 	std.Memory.setTo(dest, value, size)
 #define memcmp(a, b,  size) 		std.Memory.compare(a, b, size)

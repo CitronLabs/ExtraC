@@ -21,7 +21,7 @@ private(
 	u32 precision;
 	u8 floating : 1;
 )){
-	values(Equality, std_Equality,
+	values(Equality, std_Math_Equality,
      		INVALID,    
 		EQUALS,  
 		GREATER, 
@@ -69,7 +69,7 @@ private(
 	std_Number* method(Number, Multiply, std_Number* other);
     	std_Number* method(Number, Divide,   std_Number* other, std_Number* remainder);
     	
-      	std_Equality method(Number, Compare,  std_Number* other);
+      	std_Math_Equality method(Number, Compare,  std_Number* other);
 };
 
 #undef package

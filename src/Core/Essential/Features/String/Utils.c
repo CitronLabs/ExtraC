@@ -5,6 +5,8 @@
 
 len_t moduleFn(len)(std_varData in, len_t len, void** end) {
 
+	DO_LATER("Finish This")
+
 	switchT(&in.type){
 	caseT(std_String){
 
@@ -26,7 +28,7 @@ len_t moduleFn(len)(std_varData in, len_t len, void** end) {
 len_t moduleFn(siz)(std_varData in, len_t len) {
 	void* end = nil;
 
-	std.String.Utils.Str.len(in, len, &end);
+	std.String.Utils.Str.length(in, len, &end);
 
 return pntr_dist(in, end);
 }

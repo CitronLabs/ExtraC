@@ -40,10 +40,11 @@ moduleValues(MEM,
 	RUNTIME_TUNING_DISABLED		as 28,
 	INCOMPATIBLE_SETTINGS		as 29,
 	LARGE_ALLOC_FAILED		as 30,
+	ALLOC_FAILED			as 31,
 )
 
 moduleValues(STRING,
-	ENCODING			as 30,
+	ENCODING			as 32,
 )
 
 export(

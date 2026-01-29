@@ -22,7 +22,11 @@ the buffer
 */
 
 Class(Arena,
-INIT(u64 init_size; bool isStatic),
+INIT(
+	u64 init_size; bool isStatic; 
+	intf(std_Allocator) parentAllocator; 
+	bool pushLocal, pushGlobal;
+),
 FMT(),
 private(
 	len_t max_size, alloc_size, current_size;
@@ -31,7 +35,7 @@ private(
 )
 ){
       	u64 method(Arena, Size);
-      	void* method(Arena, Alloc, u64 num_bytes, std_ErrorPosition errorPos);
+      	void* method(Arena, Alloc, u64 num_bytes, std_CodePos errorPos);
       	errvt method(Arena, Reserve, u64 num_bytes);
       	errvt method(Arena, Grow, u64 add_num_bytes);
       };

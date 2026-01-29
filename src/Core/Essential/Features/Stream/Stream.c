@@ -10,6 +10,8 @@ from(std,
     	use(Process)
 );
 
+alias(core.Device.Stream, coreStream);
+
 typedef struct {
 	std_StreamDecoder 	activeDecoder;
 } StreamData;
@@ -41,11 +43,11 @@ return Context.process;
 }
 
 
-Stream* fetchStdStream(int id, Stream** stream){
+Stream* moduleFn(fetchStdStream)(int id, Stream** stream){
 	if(!*stream){
 	    *stream = new(Stream,
 		std.Stream.Preset.fromHandle(
-		    core.Device.Stream.stdHandle(id)
+		    coreStream.stdHandle(id)
 		)
 	    );
 
@@ -58,19 +60,19 @@ Stream* fetchStdStream(int id, Stream** stream){
 return *stream;
 }
 
-Stream* std_Stream_stdOut(){ static Stream* stream = nil; return fetchStdStream(core.Device.Stream.ID.Out, &stream); }
-Stream* std_Stream_stdIn(){  static Stream* stream = nil; return fetchStdStream(core.Device.Stream.ID.In,  &stream); }
-Stream* std_Stream_stdErr(){ static Stream* stream = nil; return fetchStdStream(core.Device.Stream.ID.Err, &stream); }
+Stream* moduleFn(stdOut)(){ static Stream* stream = nil; return mod(fetchStdStream)(coreStream.ID.Out, &stream); }
+Stream* moduleFn(stdIn)(){  static Stream* stream = nil; return mod(fetchStdStream)(coreStream.ID.In,  &stream); }
+Stream* moduleFn(stdErr)(){ static Stream* stream = nil; return mod(fetchStdStream)(coreStream.ID.Err, &stream); }
 
 
-const Options std_Stream_Preset_staticBuffer(void* start, len_t len){
+const Options moduleFn(Preset_staticBuffer)(void* start, len_t len){
 	return (Options){
 		.setMemoryAddr = start,
 		.setMemorySize = len
 	};
 }
 
-const Options std_Stream_Preset_fromHandle(streamHandle handle){
+const Options moduleFn(Preset_fromHandle)(streamHandle handle){
 	return (Options){
 		.handle = handle
 	};
@@ -85,14 +87,14 @@ return priv.stream.handle;
 errvt moduleMethod(std_Stream, Flush){
 	nonull(self){ return err; }
 
-return priv.stream.handle ? core.Device.Stream.Modify.flush(priv.stream.handle) : OK;
+return priv.stream.handle ? coreStream.Modify.flush(priv.stream.handle) : OK;
 }	
 void* moduleMethod(std_Stream, ToPointer){
 	nonull(self){ return nil; }
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = core.Device.Stream.Modify.info(priv.stream.handle);
+		streamInfo info = coreStream.Modify.info(priv.stream.handle);
 
 		iferr(!info.valid){
 			ERR(ERR.FAIL, "failed to get stream size");
@@ -106,7 +108,7 @@ void* moduleMethod(std_Stream, ToPointer){
 			return nil;
 		}
 
-		if(!core.Device.Stream.Modify.readFrom(priv.stream.handle, priv.pointer, info.size)){
+		if(!coreStream.Modify.readFrom(priv.stream.handle, priv.pointer, info.size)){
 			ERR(ERR.FAIL, "failed to read data into stream pointer buff");
 			free(priv.pointer);
 			return nil;
@@ -173,14 +175,14 @@ SP_Result moduleFn(Process_advance)(len_t num){
 	
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = core.Device.Stream.Modify.info(priv.stream.handle);
+		streamInfo info = coreStream.Modify.info(priv.stream.handle);
 		
 		if(!info.valid){
 			ERR(ERR.FAIL, "failed to get stream cursor position to advance");
 			return Stream_Proc_Fail;
 		}
 
-		iferr(core.Device.Stream.Modify.shift(priv.stream.handle, num, info.currentPos)){
+		iferr(coreStream.Modify.shift(priv.stream.handle, num, info.currentPos)){
 			ERR(ERR.FAIL, "failed to shift stream cursor position to advance");
 			return Stream_Proc_Fail;
 		}
@@ -210,14 +212,14 @@ SP_Result moduleFn(Process_rewind)(len_t num){
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = core.Device.Stream.Modify.info(priv.stream.handle);
+		streamInfo info = coreStream.Modify.info(priv.stream.handle);
 		
 		if(!info.valid){
 			ERR(ERR.FAIL, "failed to get stream cursor position to advance");
 			return Stream_Proc_Fail;
 		}
 
-		iferr(core.Device.Stream.Modify.shift(priv.stream.handle, -num, info.currentPos)){
+		iferr(coreStream.Modify.shift(priv.stream.handle, -num, info.currentPos)){
 			ERR(ERR.FAIL, "failed to shift stream cursor position to advance");
 			return Stream_Proc_Fail;
 		}
@@ -250,7 +252,7 @@ SP_Result moduleFn(Process_readData)(void* buff, len_t len){
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		if(!core.Device.Stream.Modify.readFrom(priv.stream.handle, buff, len * priv.frameSize)){
+		if(!coreStream.Modify.readFrom(priv.stream.handle, buff, len * priv.frameSize)){
 			ERR(ERR.FAIL, "failed to read from stream");
 			return Stream_Proc_Fail;
 		}
@@ -288,7 +290,7 @@ SP_Result moduleFn(Process_writeData)(void* buff, len_t len){
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		if(!core.Device.Stream.Modify.writeTo(priv.stream.handle, buff, len * priv.frameSize)){
+		if(!coreStream.Modify.writeTo(priv.stream.handle, buff, len * priv.frameSize)){
 			ERR(ERR.FAIL, "failed to write from stream");
 			return Stream_Proc_Fail;
 		}
@@ -487,7 +489,7 @@ SET(std_Stream){
 	}
 
 	switch(store_temp.__private.flags.streamType){
-	case STREAM_TYPE_REAL:{ core.Device.Stream.close(store_temp.__private.stream.handle); break;} 
+	case STREAM_TYPE_REAL:{ coreStream.close(store_temp.__private.stream.handle); break;} 
 	case STREAM_TYPE_MEM: { del(priv.stream.mem.data); break;}
 	}
 		
@@ -530,7 +532,7 @@ DESTROY(std_Stream){
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		core.Device.Stream.close(priv.stream.handle);
+		coreStream.close(priv.stream.handle);
 	break;}
 	case STREAM_TYPE_MEM:{
 		del(priv.stream.mem.data);
@@ -545,7 +547,7 @@ SIZE(std_Stream){
 
 	switch(priv.flags.streamType){
 	case STREAM_TYPE_REAL:{
-		streamInfo info = core.Device.Stream.Modify.info(priv.stream.handle);
+		streamInfo info = coreStream.Modify.info(priv.stream.handle);
 
 		return elements ? info.size / priv.frameSize : info.size;
 	break;}
@@ -622,7 +624,6 @@ return self;
 #undef module
 #define module std, Stream_Options
 
-
 COPY(Options){ 
 	if(!memcpy(where, self, sizeof(Options))){
 		ERR(ERR.FAIL, "failed to copy stream options");
@@ -658,12 +659,12 @@ PRINT(Options){
 construct(std_Stream_Options,
 FMT(),
 DEF(),
-	.Create  = std_Stream_Options_Op_Create,
-	.Destroy = std_Stream_Options_Op_Destroy,
-	.Copy    = std_Stream_Options_Op_Copy,
-	.Set     = std_Stream_Options_Op_Set,
-	.Size    = std_Stream_Options_Op_Size,
-	.Print   = std_Stream_Options_Op_Print,
+	.Create  = mod(Op_Create),
+	.Destroy = mod(Op_Destroy),
+	.Copy    = mod(Op_Copy),
+	.Set     = mod(Op_Set),
+	.Size    = mod(Op_Size),
+	.Print   = mod(Op_Print),
 ){ passover }
 
 

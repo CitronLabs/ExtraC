@@ -61,6 +61,9 @@ typedef __XC_PNTRVAL_TYPE 	pntrval;
 typedef void* devHandle;
 typedef void* registerHandle;
 typedef void* streamHandle;
+typedef void* threadHandle;
+
+typedef int busylock;
 
 
 

@@ -27,7 +27,9 @@
 
 
 #define intf(Class) const ___(Class, Interface)
-#define ifob(interface) ___(interface, Interface_Obj)
+#define ifob(interface) ___(interface, Interface_Obj)*
+
+#define with(interface, object) generic &(struct{typeof(interface) a; pntr b;}){interface, object}
 
 #define ifob_with(_interface) 			\
 	(___(_interface, Obj))	\
@@ -39,4 +41,7 @@
 
 #define generic (void*)
 #define like(var) (typeof(var))
+
+
+
 

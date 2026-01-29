@@ -31,6 +31,13 @@
 #define __XC_VARGS_GETARG __builtin_va_arg
 #define __XC_VARGS_END    __builtin_va_end
 
+
+#define _INTERNAL_CAS(ptr, exp, des) \
+    __atomic_compare_exchange_n(ptr, exp, des, 0, __ATOMIC_ACQUIRE, __ATOMIC_RELAXED)
+
+#define _INTERNAL_RELEASE(ptr) \
+    __atomic_store_n(ptr, 0, __ATOMIC_RELEASE)
+
 #define XSAVE_AREA_SIZE_MAX 4096
 #define XSAVE_AREA_ALIGNMENT 64
 

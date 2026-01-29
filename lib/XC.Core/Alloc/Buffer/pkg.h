@@ -8,7 +8,7 @@
 #define package std
 
 /**
-@class Buffer
+Buffer
 @implements Allocator
 @brief A fixed size array able to store any type of arbitrary size
 
@@ -29,7 +29,7 @@ can save you an extra size parameter for pointers
 */
 
 Class(Buffer,
-INIT(u64 size; Type_t type; bool isStatic; void* initData),
+INIT(u64 size; Type_t type; bool isStatic; void* initData; intf(std_Allocator) parentAllocator),
 FMT(),
 private(
 	std_typeData type;
@@ -60,7 +60,7 @@ private(
 @param num the number of items to resize the buffer to
 @return ERR_NONE if 
 */
-      	errvt 		method(Buffer, resize, u64 num, std_ErrorPosition errorPos);
+      	errvt 		method(Buffer, resize, u64 num, std_CodePos errorPos);
 
 /**
 @brief casts the buffer's type to  another size

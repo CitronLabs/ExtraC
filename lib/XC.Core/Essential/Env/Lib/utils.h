@@ -66,3 +66,9 @@ void*:  ((pntr){0})	\
 		    args.data = __data_is_set-- ? args.data : NULL)
 
 
+#define busy(lock) \
+        if (!_INTERNAL_CAS(&lock, &(int){0}, 1))    \
+            for (busylock* __busylock [[gnu::cleanup(_auto_unlock)]] = &lock; \
+                 __busylock != nil;  __busylock = nil)
+
+#define meanwhile else

@@ -15,10 +15,13 @@ VALUES(),
 	isStatic, Alloc, Resize, Free, getBytesAlloced, setMax
 )
 
+moduleValue(PATH(Allocator, defaultSettings)) = { __DEFAULT_ALLOC_SETTINGS };
+
 exportFrom(Allocator,
 SUBMODULE(Interface),
-VALUES(Optimize),
-	setup
+VALUES(Optimize, defaultSettings),
+	setup,   optimizeSettings,
+	getSettings, getTelemetry
 )
 
 export(

@@ -40,7 +40,7 @@ type(Allocator_Telemetry,
     len_t totalAllocated;            /* Total bytes allocated (user-requested) */
     len_t totalMetadataBytes;        /* Bytes used for metadata */
     len_t totalOverhead;             /* Internal overhead (headers, canaries, etc.) */
-    len_t metadataPageCount;         /* Number of pages used */
+    len_t pageCount;         	     /* Number of pages used */
     
     /* Operation Counts */
     len_t allocationCount;           /* Total allocations */

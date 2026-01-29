@@ -61,7 +61,6 @@ return result;
 errvt moduleMethod(std_List, Append, void* in, len_t len){
 	nonull(self, in){ return err; }
 
-
 	if(priv.items + len > priv.items_alloced){
 		if(__List.autoGrow)
 			std_List_Grow(self, priv.items_alloced + (priv.items_alloced / 2) + len);
@@ -71,6 +70,7 @@ errvt moduleMethod(std_List, Append, void* in, len_t len){
 	insertIntoListAt(priv.items, in, len)
 	
 	priv.items++;
+
 return OK;
 }
 
