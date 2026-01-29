@@ -1,2 +1,2 @@
 #pragma once
-#include "Testing/lib/LabRat.pkg.c"
+#include <LabRat.pkg.c>

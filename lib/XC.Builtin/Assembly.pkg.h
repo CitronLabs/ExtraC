@@ -1,1 +1,1 @@
-#include "Assembly/lib/Diesel.pkg.h"
+#include <Diesel.pkg.h>

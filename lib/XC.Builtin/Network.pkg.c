@@ -1,2 +1,2 @@
 #pragma once
-#include "Network/lib/Weaver.pkg.c"
+#include <Weaver.pkg.h>

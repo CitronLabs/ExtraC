@@ -1,2 +1,2 @@
 #pragma once
-#include "Rendering/lib/RenderKit.pkg.c"
+#include <RenderKit.pkg.c>
