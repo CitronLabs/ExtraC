@@ -6,7 +6,7 @@ static const char* DefaultErrMessage[] = {
     [ERR.NONE] 				= "No error",
     [ERR.MEM.OUT_OF_MEMORY] 		= "Out of memory: system cannot allocate more pages",
     [ERR.MEM.METADATA_CAP_EXCEEDED] 	= "Metadata capacity exceeded: hit maxMetadataPages limit",
-    [ERR.MEM.HEAP_LIMIT_REACHED] 	= "Heap limit reached: allocation would exceed maxHeapSize",
+    [ERR.MEM.HEAP_LIMIT_REACHED] 	= "Heap limit reached: allocation would exceed maxSize",
     [ERR.MEM.INVALID_POINTER] 		= "Invalid pointer: pointer not from this allocator or corrupted",
     [ERR.MEM.DOUBLE_FREE] 		= "Double free detected: attempting to free already-freed memory",
     [ERR.MEM.CORRUPTION_DETECTED] 	= "Memory corruption detected: canary value mismatch or invalid magic",
@@ -18,7 +18,8 @@ static const char* DefaultErrMessage[] = {
     [ERR.MEM.INVALID_SETTINGS] 		= "Invalid settings: configuration parameters are inconsistent",
     [ERR.MEM.RUNTIME_TUNING_DISABLED] 	= "Runtime tuning disabled: cannot change settings",
     [ERR.MEM.INCOMPATIBLE_SETTINGS] 	= "Incompatible settings: cannot apply requested configuration",
-    [ERR.MEM.LARGE_ALLOC_FAILED] 	= "Large allocation failed: direct page allocation error"
+    [ERR.MEM.LARGE_ALLOC_FAILED] 	= "Large allocation failed: direct page allocation error",
+    [ERR.MEM.ALLOC_FAILED] 		= "Allocation failed: allocation error"
 };
 
 errvt moduleMethod(AllocCtx, recordError, errvt err) {
@@ -29,6 +30,8 @@ errvt moduleMethod(AllocCtx, recordError, errvt err) {
     
 return ERR(err, generic DefaultErrMessage[err]);
 }
+
+
 
 /* === RANDOM NUMBER GENERATION === */
 
@@ -49,7 +52,7 @@ u32 moduleMethod(AllocCtx, getCanary) {
 }
 
 /* === BLOCK VALIDATION === */
-alias(std.Memory.Allocator, Alloc);
+
 Block moduleFn(parseBlock)(BlockHeader* start){
 
 	Block result = {
@@ -70,10 +73,13 @@ Block moduleFn(parseBlock)(BlockHeader* start){
 return result;
 }
 
-Block moduleMethod(AllocCtx, getBlock, pntrval rel_pntr){
-	BlockHeader* start = REL_TO_PTR(self, rel_pntr);
+len_t moduleMethod(AllocCtx, metadataSize){
+	return  sizeof(BlockHeader) + 
+		(this.settings.trackCallSites ? 
+			sizeof(TrackingData) : 0) +
+		(this.settings.useCanaries ?
+			sizeof(u32) : 0);
 
-return start ? mod(parseBlock)(start): (Block){0};
 }
 
 bool moduleMethod(AllocCtx, isValidBlock, BlockHeader* blk, bool checkCanaries) {
@@ -130,7 +136,7 @@ len_t moduleMethod(AllocCtx, Bin_getIndex, len_t size){
     
     /* Calculate log2 of size */
     int bit = 0;
-    size_t temp = size - 1;
+    len_t temp = size - 1;
     while (temp > 0) {
         bit++;
         temp >>= 1;
@@ -151,16 +157,16 @@ void moduleMethod(AllocCtx, Bin_insert, Block block) {
     len_t idx 		= mod(Bin_getIndex)(self, block.header->size);
 
     pntrval block_rel 	= PTR_TO_REL(self, block.header);
-    FreeData* head 	= mod(getBlock)(self, this.bin_offsets[idx]).free_data;
+    FreeData* head 	= mod(parseBlock)(this.bin_offsets[idx]).free_data;
     
-    block.free_data->rel_next_free = this.bin_offsets[idx];
-    block.free_data->rel_prev_free = -1;
+    block.free_data->next_free = this.bin_offsets[idx];
+    block.free_data->prev_free = nil;
     
     if (head) {
-        head->rel_prev_free = block_rel;
+        head->prev_free = block.header;
     }
     
-    this.bin_offsets[idx] = block_rel;
+    this.bin_offsets[idx] = block.header;
     block.header->magic   = MAGIC_FREE;
 }
 
@@ -168,29 +174,29 @@ void moduleMethod(AllocCtx, Bin_remove, Block block) {
 
     len_t idx = mod(Bin_getIndex)(self, block.header->size);
     
-    FreeData* prev = mod(getBlock)(self, block.free_data->rel_prev_free).free_data;
-    FreeData* next = mod(getBlock)(self, block.free_data->rel_next_free).free_data;
+    FreeData* prev = mod(parseBlock)(block.free_data->prev_free).free_data;
+    FreeData* next = mod(parseBlock)(block.free_data->next_free).free_data;
     
     if (prev) {
-        prev->rel_next_free   = block.free_data->rel_next_free;
+        prev->next_free   = block.free_data->next_free;
     } else {
-        this.bin_offsets[idx] = block.free_data->rel_next_free;
+        this.bin_offsets[idx] = block.free_data->next_free;
     }
     
     if (next) {
-        next->rel_prev_free = block.free_data->rel_prev_free;
+        next->prev_free = block.free_data->prev_free;
     }
     
-    block.free_data->rel_next_free = -1;
-    block.free_data->rel_prev_free = -1;
+    block.free_data->next_free = nil;
+    block.free_data->prev_free = nil;
 }
 
 /* === ALLOCATION STRATEGIES === */
 
-Block moduleMethod(AllocCtx, findFit, size_t size) {
+Block moduleMethod(AllocCtx, findFit, len_t size) {
     /* Search bins starting from appropriate size class */
     loopat(i, mod(Bin_getIndex)(self, size), this.settings.binCount) {
-        Block curr = mod(getBlock)(self, this.bin_offsets[i]);
+        Block curr = mod(parseBlock)(this.bin_offsets[i]);
         
         while (curr.valid) {
             if (this.settings.validateOnEntry && !mod(isValidBlock)(self, curr.header, true)) {
@@ -201,7 +207,7 @@ Block moduleMethod(AllocCtx, findFit, size_t size) {
                 return curr;
             }
             
-            curr = mod(getBlock)(self, curr.free_data->rel_next_free);
+            curr = mod(parseBlock)(curr.free_data->next_free);
         }
     }
     
@@ -215,21 +221,21 @@ void moduleMethod(AllocCtx, coalesceBlock, Block blk) {
 
     BlockHeader* header = blk.header;
 
-    if (header->rel_next_phys != -1) {
-        BlockHeader* next = pntr_shiftcpy(header, header->rel_next_phys);
+    if (header->next != nil) {
+        BlockHeader* next = header->next;
         
         if (next->is_free && mod(isValidBlock)(self, next, false)) {
             /* Remove next from free list */
             mod(Bin_remove)(self, mod(parseBlock)(next));
             
             /* Merge sizes */
-            header->size += next->size;
-            header->rel_next_phys = next->rel_next_phys;
+            header->size += 	next->size;
+            header->next = next->next;
             
             /* Update the block after next to point back to header */
-            if (next->rel_next_phys != -1) {
-                BlockHeader* next_next = pntr_shiftcpy(next, next->rel_next_phys);
-                next_next->rel_prev_phys = PTR_TO_REL(next_next, header);
+            if (next->next != nil) {
+                BlockHeader* next_next = next->next;
+                next_next->prev   = header;
             }
             
             this.telemetry.coalescingEvents++;
@@ -237,8 +243,8 @@ void moduleMethod(AllocCtx, coalesceBlock, Block blk) {
     }
     
     /* Coalesce with previous physical block if it's free */
-    if (header->rel_prev_phys != -1) {
-        BlockHeader* prev     = pntr_shiftcpy(header, header->rel_prev_phys);
+    if (header->prev != nil) {
+        BlockHeader* prev     = header->prev;
         Block 	     prev_blk = mod(parseBlock)(prev);
 
         if (prev->is_free && mod(isValidBlock)(self, prev, false)) {
@@ -247,12 +253,13 @@ void moduleMethod(AllocCtx, coalesceBlock, Block blk) {
             
             /* Merge sizes */
             prev->size += header->size;
-            prev->size =  header->rel_next_phys;
+
+            prev->next = header->next;
             
             /* Update the block after header to point back to prev */
-            if (header->rel_next_phys != -1) {
-                BlockHeader* next = pntr_shiftcpy(header, header->rel_next_phys);
-                next->rel_prev_phys = PTR_TO_REL(next, prev);
+            if (header->next != nil) {
+                BlockHeader* next = header->next;
+                next->prev = prev;
             }
             
             /* Continue with prev as the merged block */
@@ -407,10 +414,10 @@ void moduleMethod(AllocCtx, Quarantine_push, Block blk){
 /* === LARGE ALLOCATION TRACKING === */
 
 void moduleMethod(AllocCtx, allocLarge, 
-	LargeAlloc* 	  la, 
-	size_t 		  size, 
-	size_t 		  requested, 
-	std_ErrorPosition allocPos
+	LargeAlloc* 	la, 
+	len_t 		size, 
+	len_t 		requested, 
+	std_CodePos 	allocPos
 ) {
     /* Allocate tracking structure */
     la->ptr 		= pntr_shiftcpy(la, sizeof(LargeAlloc));
@@ -476,7 +483,7 @@ errvt moduleMethod(AllocCtx, grow, len_t pages) {
 
     if (!new_mem) {
         errvt err = mod(recordError)(self, ERR.MEM.OUT_OF_MEMORY); printlnErr(
-            "core.System.Mem.alloc failed to allocate "
+            "core.System.Mem.alloc failed to allocate ",
 	    "pages for at least ",$(req_size)," bytes"
 	);
         return err;
@@ -487,14 +494,14 @@ errvt moduleMethod(AllocCtx, grow, len_t pages) {
 
     /* Handle contiguous requirement */
     if (this.settings.ensureContiguous && !contiguous) {
-        size_t new_total = this.total_size + req_size;
+        len_t new_total = this.total_size + req_size;
         void* big_strip = core.System.Mem.alloc(new_total, nil);
         
         if (!big_strip) {
             core.System.Mem.dealloc(new_mem, req_size);
 
             errvt err = mod(recordError)(self, ERR.MEM.RELOCATION_FAILED); printlnErr(
-                "Cannot allocate new memory for ensuring "
+                "Cannot allocate new memory for ensuring ",
 		"a contiguous block of ",$(new_total)," bytes"
 	    );
             return err;
@@ -518,81 +525,102 @@ errvt moduleMethod(AllocCtx, grow, len_t pages) {
         this.total_size += req_size;
     }
 
+    this.free_space = new_mem;
+
+    /* Update telemetry */
+    this.telemetry.pageCount += pages;
+    this.telemetry.growthEvents++;
+
 return OK;
 }
-errvt moduleMethod(AllocCtx, newBlock, len_t needed) {
+Block moduleMethod(AllocCtx, newBlock, len_t needed) {
 
-    /* Create new free block at the start of growth */
-    BlockHeader* new_h = new_mem;
+    len_t actual  = needed + mod(metadataSize)(self);
+    len_t pg_size = core.System.Mem.getInfo().pageSize;
 
-    new_h->magic 		= MAGIC_FREE;
-    new_h->canary_top 		= mod(getCanary)(self);
-    new_h->size 		= req_size;
-    new_h->requested_size 	= 0;
-    new_h->is_free 		= 1;
-    new_h->rel_next_phys 	= -1;
-    new_h->rel_prev_phys 	= -1;
+    if(!this.free_space){
+	len_t new_space = 
+		ALIGN_UP(MEM_ALLOC_GROWTH_FACTOR(this.total_size), pg_size) + 
+		ALIGN_UP(needed, pg_size);
+
+	if(this.settings.maxSize)
+		new_space = new_space > this.settings.maxSize ? 
+			ALIGN_UP(this.settings.maxSize, pg_size) : new_space;
+
+	iferr(mod(grow)(self, new_space / pg_size))
+		return (Block){};
+    }
+
+    Block new = {
+	.valid    = true,
+	.header   = this.free_space,
+	.tracking = this.settings.trackCallSites ? 
+		pntr_shiftcpy(this.free_space, sizeof(BlockHeader)) : nil
+    };
+
+    new.header->magic 		= MAGIC_FREE;
+    new.header->canary_top 	= mod(getCanary)(self);
+    new.header->requested_size 	= needed;
+    new.header->size 		= actual;
+    new.header->is_free 	= true;
+    new.header->tracked 	= this.settings.trackCallSites;
+    new.header->next 		= nil;
+    new.header->prev 		= this.last_block;
+    this.last_block->next 	= new.header;
     
-    /* If contiguous, link to existing heap and try to coalesce */
-    if (contiguous) {
-        size_t ctx_sz = ALIGN_UP(sizeof(AllocCtx) + 
-                                 sizeof(pntrval)  * this.settings.binCount,
-                                 this.settings.alignment);
-
-        BlockHeader* curr = (BlockHeader*)((uint8_t*)this.base_addr + ctx_sz);
-        
-        /* Find last block in heap */
-        while (curr->rel_next_phys != -1) {
-            curr = (BlockHeader*)((uint8_t*)curr + curr->rel_next_phys);
-        }
-        
-        /* Link new block */
-        curr->rel_next_phys = PTR_TO_REL(curr, new_h);
-        new_h->rel_prev_phys = PTR_TO_REL(new_h, curr);
-        
-        /* Coalesce if last block is free */
-        if (curr->is_free) {
-            bin_remove(ctx, (FreeBlock*)curr);
-            curr->size += new_h->size;
-            curr->rel_next_phys = -1;
-            new_h = curr;
-        }
+    if(!this.settings.ensureContiguous && 
+	new.header != pntr_shiftcpy(this.last_block, this.last_block->size)
+    ){
+	new.header->prev_contiguous      = false;
+	this.last_block->next_contiguous = false;
+    } else {
+	new.header->prev_contiguous      = true;
+	this.last_block->next_contiguous = true;
     }
     
     /* Add new block to free list */
-    bin_insert(ctx, (FreeBlock*)new_h);
-    
-    /* Update telemetry */
-    this.telemetry.metadataPageCount = (this.total_size + pg_size - 1) / pg_size;
-    this.telemetry.growthEvents++;
-    
-    return true;
+    mod(Bin_insert)(self, new);
 
+    if(this.settings.maxSize > 0 && 
+       this.total_size + new.header->size < this.settings.maxSize
+    )
+    	pntr_shift(this.free_space, new.header->size);
+    else
+	this.free_space = nil;
+
+    this.last_block = new.header;
+    
+return new;
 }
-
-/* === DEFAULT SETTINGS GENERATOR === */
-
 
 /* === COMPLETE ALLOCATION IMPLEMENTATION === */
 
-void* allocate_block(AllocatorContext** ctx_ref, size_t size, 
-                     const char* file, int line) {
-    AllocatorContext* ctx = *ctx_ref;
+pntr moduleMethod(AllocCtx, allocateBlock, len_t size, std_CodePos allocPos){
     
     /* Validate size */
     if (size == 0) {
-        set_error(ctx, ERR_INVALID_SIZE, "Allocation size is 0 at %s:%d", 
-                  file ? file : "unknown", line);
+        mod(recordError)(self, ERR.MEM.INVALID_SIZE); printlnErr(
+		"Allocation size is 0 at ", $use(std_CodePos_Type, &allocPos)
+	);
+
         return nil;
     }
     
     /* Large allocation path - bypass normal allocator */
     if (this.settings.largeMmapThreshold > 0 && 
         size >= this.settings.largeMmapThreshold) {
-        size_t pg_size = getPageSize();
-        size_t alloc_size = ALIGN_UP(size, pg_size);
+        len_t 
+	    pg_size    = core.System.Mem.getInfo().pageSize,
+            alloc_size = ALIGN_UP(size, pg_size);
         
-        large_alloc(ctx, ptr, alloc_size, size, file, line);
+	pntr ptr = core.System.Mem.alloc(alloc_size, nil);
+
+	if(ptr == nil){
+		mod(recordError)(self, ERR.MEM.LARGE_ALLOC_FAILED);
+		return nil;
+	}
+	
+        mod(allocLarge)(self, ptr, alloc_size, size, allocPos);
         
         if (this.settings.enableTelemetry) {
             this.telemetry.activeAllocations++;
@@ -604,89 +632,96 @@ void* allocate_block(AllocatorContext** ctx_ref, size_t size,
     }
     
     /* Calculate overhead for normal allocation */
-    size_t overhead = sizeof(BlockHeader);
+    len_t overhead = sizeof(BlockHeader);
     if (this.settings.useCanaries) {
-        overhead += sizeof(uint32_t);  /* Bottom canary */
+        overhead += sizeof(u32);  /* Bottom canary */
     }
     
     /* Check for overflow */
-    if (size > SIZE_MAX - overhead) {
-        set_error(ctx, ERR_SIZE_OVERFLOW,
-                  "Requested size %llu + overhead %llu exceeds maximum at %s:%d",
-                  (unsigned long long)size, (unsigned long long)overhead,
-                  file ? file : "unknown", line);
+    if (size > maxof(len_t) - overhead) {
+        mod(recordError)(self, ERR.MEM.OVERFLOW); printlnErr(
+            "Allocation at ",	     $use(std_CodePos_Type, &allocPos),
+	    " with Requested size ", $(size),
+	    " + overhead ",	     $(overhead),
+	    " exceeds maximum"
+	);
+
         return nil;
     }
     
-    size_t actual = ALIGN_UP(size + overhead, this.settings.alignment);
+    len_t actual = ALIGN_UP(size + overhead, this.settings.alignment);
     if (actual < MIN_BLOCK_SIZE) {
         actual = MIN_BLOCK_SIZE;
     }
     
-    FreeBlock* chosen = nil;
+    Block chosen = {};
     
-retry:
-    chosen = find_segregated_fit(ctx, actual);
+    chosen = mod(findFit)(self, actual);
     
     /* No suitable block found - try to grow heap */
-    if (!chosen) {
-        if (grow_heap(ctx_ref, actual)) {
-            ctx = *ctx_ref;
-            goto retry;
-        }
-        return nil;
+    if (!chosen.valid) {
+        chosen = mod(newBlock)(self, actual);
+
+	if(!chosen.valid){
+	    mod(recordError)(self, ERR.MEM.ALLOC_FAILED); printlnErr(
+		"Failed to find a suitable block ",
+		"and create a new block of size ", $(size),
+		"at ", $use(std_CodePos_Type, &allocPos)
+	    );
+            return nil;
+	}
     }
     
     /* Remove chosen block from free list */
-    bin_remove(ctx, chosen);
+    mod(Bin_remove)(self, chosen);
     
     /* Split block if remainder is large enough */
-    if (chosen->header.size - actual >= this.settings.min_split_threshold) {
-        FreeBlock* remainder = (FreeBlock*)((uint8_t*)chosen + actual);
+    if (chosen.header->size - actual >= this.settings.minSplitThreshold) {
+        BlockHeader* remainder = pntr_shiftcpy(chosen.header, actual);
         
-        remainder->header.magic = MAGIC_FREE;
-        remainder->header.canary_top = get_canary(ctx);
-        remainder->header.size = chosen->header.size - actual;
-        remainder->header.requested_size = 0;
-        remainder->header.is_free = 1;
-        remainder->header.rel_next_phys = chosen->header.rel_next_phys;
-        remainder->header.rel_prev_phys = PTR_TO_REL(remainder, chosen);
-        remainder->header.alloc_file = nil;
-        remainder->header.alloc_line = 0;
-        remainder->header.alloc_timestamp = 0;
+        remainder->magic 	  = MAGIC_FREE;
+        remainder->canary_top 	  = mod(getCanary)(self);
+        remainder->size 	  = chosen.header->size - actual;
+        remainder->requested_size = 0;
+        remainder->is_free 	  = true;
+        remainder->next  	  = chosen.header->next;
+        remainder->prev  	  = chosen.header;
         
         /* Update chosen block */
-        chosen->header.rel_next_phys = PTR_TO_REL(chosen, remainder);
-        chosen->header.size = actual;
+        chosen.header->next  = remainder;
+        chosen.header->size 	  = actual;
         
         /* Update next block's prev pointer */
-        if (remainder->header.rel_next_phys != -1) {
-            BlockHeader* next = (BlockHeader*)((uint8_t*)remainder + 
-                                               remainder->header.rel_next_phys);
-            next->rel_prev_phys = PTR_TO_REL(next, remainder);
+        if (remainder->next != nil) {
+            BlockHeader* next 	= remainder->next;
+            next->prev 	= remainder;
         }
         
         /* Add remainder to free list */
-        bin_insert(ctx, remainder);
+        mod(Bin_insert)(self, mod(parseBlock)(remainder));
         this.telemetry.splittingEvents++;
     }
     
     /* Finalize allocated block */
-    chosen->header.magic = MAGIC_ALLOCATED;
-    chosen->header.is_free = 0;
-    chosen->header.requested_size = size;
-    chosen->header.alloc_timestamp = ++this.alloc_counter;
+    chosen.header->magic 		= MAGIC_ALLOCATED;
+    chosen.header->is_free 		= false;
+    chosen.header->requested_size 	= size;
     
     if (this.settings.trackCallSites) {
-        chosen->header.alloc_file = file;
-        chosen->header.alloc_line = line;
+	chosen.header->tracked 		= true;
+        chosen.tracking->position	= allocPos;
+    	chosen.tracking->alloc_num 	= ++this.alloc_counter;
+
+	core.System.Time.getNow(
+	    core.System.Time.Source.MONOTONIC, 
+	    &chosen.tracking->time
+	);
     }
     
     /* Set bottom canary if enabled */
     if (this.settings.useCanaries) {
-        uint32_t* bot_canary = (uint32_t*)((uint8_t*)chosen + 
-                                           chosen->header.size - sizeof(uint32_t));
-        *bot_canary = chosen->header.canary_top;
+        u32* bot_canary = pntr_shiftcpy(chosen.header, chosen.header->size - sizeof(u32));
+        *bot_canary = chosen.header->canary_top;
     }
     
     /* Update telemetry */
@@ -706,53 +741,62 @@ retry:
         }
     }
     
-    /* Return pointer to user data (after header) */
-    return (void*)((uint8_t*)chosen + sizeof(BlockHeader));
+/* Return pointer to user data (after header) */
+return chosen.free_data;
 }
 
 /* === COMPLETE DEALLOCATION IMPLEMENTATION === */
 
-void free_block(AllocatorContext* ctx, void* ptr) {
-    if (!ptr) return;
+errvt moduleMethod(AllocCtx, freeBlock, void* ptr, std_CodePos freePos) {
+    nonull(ptr) return err; 
+
+
+    // Get the magic 
+    u32* magic = this.settings.trackCallSites ? 
+		pntr_shiftcpy(ptr, -(sizeof(TrackingData) + sizeof(BlockHeader))) :
+		pntr_shiftcpy(ptr, -sizeof(BlockHeader))
+    ;
     
     /* Check if it's a large allocation */
-    if (find_large_alloc(ctx, ptr)) {
-        LargeAlloc* la = find_large_alloc(ctx, ptr);
-        size_t requested = la->requested_size;
+    if (*magic == MAGIC_LARGE) {
+        LargeAlloc* la 	= ptr;
+        len_t requested = la->requested_size;
         
-        if (untrack_large_alloc(ctx, ptr)) {
+        if (mod(freeLarge)(self, ptr) == OK) {
             if (this.settings.enableTelemetry) {
                 this.telemetry.activeAllocations--;
                 this.telemetry.freeCount++;
                 this.telemetry.totalAllocated -= requested;
             }
         }
-        return;
+        return OK;
+    }
+    elif (*magic == MAGIC_FREE) {
+	BlockHeader*  freedBlock = generic magic;
+	TrackingData* tracking   = this.settings.trackCallSites ? 
+					pntr_shiftcpy(freedBlock, sizeof(BlockHeader)) : nil;
+
+        errvt err = mod(recordError)(self, ERR.MEM.DOUBLE_FREE); 
+	printlnErr("Double free detected at ",$(ptr));
+
+	if(tracking)
+	   printlnErr(", First free location: ", $use(std_CodePos_Type, &tracking->position));
+
+	printlnErr(", Double free location: ", $use(std_CodePos_Type, &freePos));
+        return err;
+    }
+
+    elif (*magic != MAGIC_ALLOCATED) {
+        errvt err = mod(recordError)(self, ERR.MEM.INVALID_POINTER); printlnErr(
+        	"Pointer ",$(ptr)," has invalid magic (not from this allocator)"
+	);
+        return err;
     }
     
     /* Normal allocation - get block header */
-    BlockHeader* blk = (BlockHeader*)((uint8_t*)ptr - sizeof(BlockHeader));
+    Block block = mod(parseBlock)(generic magic);
     
-    /* Validate block */
-    if (!validate_block(ctx, blk)) {
-        return;  /* Error already set by validate_block */
-    }
-    
-    if (blk->magic != MAGIC_ALLOCATED) {
-        set_error(ctx, ERR_INVALID_POINTER,
-                  "Pointer %p has invalid magic (not from this allocator)", ptr);
-        return;
-    }
-    
-    if (blk->is_free) {
-        set_error(ctx, ERR_DOUBLE_FREE,
-                  "Double free detected at %p (allocated at %s:%d, timestamp %llu)",
-                  ptr, blk->alloc_file ? blk->alloc_file : "unknown",
-                  blk->alloc_line, (unsigned long long)blk->alloc_timestamp);
-        return;
-    }
-    
-    size_t payload_size = blk->requested_size;
+    len_t payload_size = block.header->requested_size;
     
     /* Security features - zero or poison freed memory */
     if (this.settings.zeroOnFree && !this.settings.poisonOnFree) {
@@ -763,73 +807,98 @@ void free_block(AllocatorContext* ctx, void* ptr) {
     
     /* Update telemetry */
     if (this.settings.enableTelemetry) {
+	len_t overhead = 
+		block.header->size - (mod(metadataSize)(self) + payload_size);
+
         this.telemetry.activeAllocations--;
         this.telemetry.freeCount++;
         this.telemetry.totalAllocated -= payload_size;
-        size_t overhead = blk->size - sizeof(BlockHeader) - payload_size;
-        this.telemetry.totalOverhead -= overhead;
+        this.telemetry.totalOverhead  -= overhead;
     }
     
     /* Mark as free and add to quarantine (which handles coalescing) */
-    blk->is_free = 1;
-    blk->magic = MAGIC_FREE;
-    quarantine_push(ctx, blk);
+    block.header->is_free = 1;
+    block.header->magic   = MAGIC_FREE;
+
+    if(block.header->tracked)
+	block.tracking->position = freePos;
+
+    mod(Quarantine_push)(self, block);
+
+return OK;
 }
 
 /* === COMPLETE REALLOC IMPLEMENTATION === */
-
-void* realloc_block(AllocatorContext** ctx_ref, void* ptr, size_t new_size,
-                    const char* file, int line) {
-    AllocatorContext* ctx = *ctx_ref;
+void* moduleMethod(AllocCtx, reallocBlock, void* ptr, len_t new_size, std_CodePos allocPos) {
     
     /* Standard realloc semantics */
     if (!ptr) {
-        return allocate_block(ctx_ref, new_size, file, line);
+        return mod(allocateBlock)(self, new_size, allocPos);
     }
     
     if (new_size == 0) {
-        free_block(ctx, ptr);
+        mod(freeBlock)(self, ptr, allocPos);
         return nil;
     }
     
+    // Get the magic 
+    u32* magic = this.settings.trackCallSites ? 
+		pntr_shiftcpy(ptr, -(sizeof(TrackingData) + sizeof(BlockHeader))) :
+		pntr_shiftcpy(ptr, -sizeof(BlockHeader))
+    ;
+    
     /* Check if it's a large allocation */
-    if (find_large_alloc(ctx, ptr)) {
+    if (*magic == MAGIC_LARGE) {
         /* For large allocations, just allocate new and copy */
-        LargeAlloc* la = find_large_alloc(ctx, ptr);
-        size_t old_size = la->requested_size;
+        LargeAlloc* la = generic magic;
+        len_t old_size = la->requested_size;
         
-        void* new_ptr = allocate_block(ctx_ref, new_size, file, line);
+        void* new_ptr = mod(allocateBlock)(self, new_size, allocPos);
         if (new_ptr) {
             memcpy(new_ptr, ptr, MIN(old_size, new_size));
-            free_block(*ctx_ref, ptr);
-            if ((*ctx_ref)->settings.enableTelemetry) {
-                (*ctx_ref)->telemetry.reallocCount++;
-            }
+            mod(freeBlock)(self, ptr, allocPos);
+            if (this.settings.enableTelemetry) 
+                this.telemetry.reallocCount++;
+            
         }
         return new_ptr;
     }
-    
-    /* Normal allocation */
-    BlockHeader* blk = (BlockHeader*)((uint8_t*)ptr - sizeof(BlockHeader));
-    
-    if (!validate_block(ctx, blk)) {
+    elif (*magic == MAGIC_FREE) {
+	BlockHeader*  freedBlock = generic magic;
+	TrackingData* tracking   = this.settings.trackCallSites ? 
+					pntr_shiftcpy(freedBlock, sizeof(BlockHeader)) : nil;
+
+        mod(recordError)(self, ERR.MEM.DOUBLE_FREE); 
+	printlnErr("Realloc Double free detected at ",$(ptr));
+
+	if(tracking)
+	   printlnErr(", First free location: ", $use(std_CodePos_Type, &tracking->position));
+
+	printlnErr(", Realloc location: ", $use(std_CodePos_Type, &allocPos));
+        return nil;
+    }
+
+    elif (*magic != MAGIC_ALLOCATED) {
+        mod(recordError)(self, ERR.MEM.INVALID_POINTER); printlnErr(
+        	"Pointer ",$(ptr)," has invalid magic (not from this allocator)"
+	);
         return nil;
     }
     
-    size_t old_size = blk->requested_size;
-    size_t overhead = sizeof(BlockHeader);
-    if (this.settings.useCanaries) {
-        overhead += sizeof(uint32_t);
-    }
+    /* Normal allocation - get block header */
+    Block block = mod(parseBlock)(generic magic);
     
-    size_t needed = ALIGN_UP(new_size + overhead, this.settings.alignment);
+    len_t old_size = block.header->requested_size;
+    len_t overhead = mod(metadataSize)(self);
+    
+    len_t needed = ALIGN_UP(new_size + overhead, this.settings.alignment);
     if (needed < MIN_BLOCK_SIZE) {
         needed = MIN_BLOCK_SIZE;
     }
     
     /* If new size fits in current block, just update */
-    if (needed <= blk->size) {
-        blk->requested_size = new_size;
+    if (needed <= block.header->size) {
+        block.header->requested_size = new_size;
         if (this.settings.enableTelemetry) {
             this.telemetry.reallocCount++;
             this.telemetry.totalAllocated += (new_size - old_size);
@@ -838,33 +907,33 @@ void* realloc_block(AllocatorContext** ctx_ref, void* ptr, size_t new_size,
     }
     
     /* Try expanding into next block if it's free */
-    if (blk->rel_next_phys != -1) {
-        BlockHeader* next = (BlockHeader*)((uint8_t*)blk + blk->rel_next_phys);
+    if (block.header->next != nil && block.header->next_contiguous) {
+        Block next = mod(parseBlock)(block.header->next);
         
-        if (next->is_free && (blk->size + next->size >= needed)) {
-            bin_remove(ctx, (FreeBlock*)next);
+        if (next.free_data && (block.header->size + next.header->size >= needed)) {
+            mod(Bin_remove)(self, next);
             
-            size_t combined = blk->size + next->size;
-            blk->size = combined;
-            blk->rel_next_phys = next->rel_next_phys;
+            len_t combined = block.header->size + next.header->size;
+            block.header->size = combined;
+            block.header->next = next.header->next;
             
-            if (next->rel_next_phys != -1) {
-                BlockHeader* next_next = (BlockHeader*)((uint8_t*)next + 
-                                                        next->rel_next_phys);
-                next_next->rel_prev_phys = PTR_TO_REL(next_next, blk);
+            if (next.header->next != nil) {
+                BlockHeader* next_next = next.header->next;
+                next_next->prev = block.header;
             }
             
-            blk->requested_size = new_size;
+            block.header->requested_size = new_size;
             
             /* Update bottom canary */
             if (this.settings.useCanaries) {
-                uint32_t* bot = (uint32_t*)((uint8_t*)blk + blk->size - sizeof(uint32_t));
-                *bot = blk->canary_top;
+                u32* bot = pntr_shiftcpy(block.header, block.header->size - sizeof(u32));
+                *bot = block.header->canary_top;
             }
             
             if (this.settings.enableTelemetry) {
                 this.telemetry.reallocCount++;
-                this.telemetry.totalAllocated += (new_size - old_size);
+                this.telemetry.totalAllocated -= old_size;
+		this.telemetry.totalAllocated += new_size;
                 this.telemetry.coalescingEvents++;
             }
             
@@ -873,27 +942,31 @@ void* realloc_block(AllocatorContext** ctx_ref, void* ptr, size_t new_size,
     }
     
     /* Need to allocate new block and copy */
-    void* new_ptr = allocate_block(ctx_ref, new_size, file, line);
+    void* new_ptr = mod(allocateBlock)(self, new_size, allocPos);
     if (!new_ptr) {
-        set_error(*ctx_ref, ERR_RELOCATION_FAILED,
-                  "Failed to allocate %llu bytes for realloc at %s:%d",
-                  (unsigned long long)new_size, file ? file : "unknown", line);
+        mod(recordError)(self, ERR.MEM.RELOCATION_FAILED); printlnErr(
+                "Failed to allocate ",    $(new_size),
+		" bytes for realloc at ", $use(std_CodePos_Type, &allocPos)
+	);
         return nil;
     }
     
     memcpy(new_ptr, ptr, MIN(old_size, new_size));
-    free_block(*ctx_ref, ptr);
+    mod(freeBlock)(self, ptr, allocPos);
     
-    if ((*ctx_ref)->settings.enableTelemetry) {
-        (*ctx_ref)->telemetry.reallocCount++;
-    }
+    if (this.settings.enableTelemetry) 
+        this.telemetry.reallocCount++;
     
-    return new_ptr;
+return new_ptr;
 }
 
 /* === WRAPPER FUNCTIONS === */
-
-void* std_aligned_alloc(AllocatorContext** ctx, size_t alignment, size_t size) {
+    /* Simplified aligned allocation:
+     * Allocate extra space and return aligned address within it.
+     * Note: This is a simplified version. Production code would need
+     * to store offset for proper freeing. */
+/*
+void* std_aligned_alloc(AllocatorContext** ctx, len_t alignment, len_t size) {
     if (!IS_POWER_OF_TWO(alignment)) {
         set_error(*ctx, ERR_ALIGNMENT_FAILURE,
                   "Alignment %llu is not a power of 2",
@@ -909,22 +982,19 @@ void* std_aligned_alloc(AllocatorContext** ctx, size_t alignment, size_t size) {
         return nil;
     }
     
-    /* Simplified aligned allocation:
-     * Allocate extra space and return aligned address within it.
-     * Note: This is a simplified version. Production code would need
-     * to store offset for proper freeing. */
-    size_t extra = alignment + sizeof(BlockHeader);
+    len_t extra = alignment + sizeof(BlockHeader);
     void* ptr = allocate_block(ctx, size + extra, nil, 0);
     if (!ptr) return nil;
     
     uintptr_t addr = (uintptr_t)ptr;
     uintptr_t aligned = ALIGN_UP(addr, alignment);
     
-    /* If already aligned, return as-is */
+    // If already aligned, return as-is
     if (aligned == addr) {
         return ptr;
     }
     
-    /* Return aligned address (Note: simplified - not production ready) */
+    // Return aligned address (Note: simplified - not production ready)
     return (void*)aligned;
 }
+*/

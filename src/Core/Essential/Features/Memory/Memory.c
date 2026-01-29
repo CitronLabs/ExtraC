@@ -6,7 +6,7 @@
 #undef memcpy
 #undef memset
 
-bool  moduleFn(compare)(void* a, void* b, len_t size){ return memcmp(a, b, size) == 0; }
+int  moduleFn(compare)(void* a, void* b, len_t size){ return memcmp(a, b, size); }
 void* moduleFn(setTo)(void* dest, int val, len_t size){ return memset(dest, val, size); }
 void* moduleFn(copyTo)(void* dest, void* from, len_t size){ return memcpy(dest, from, size); }
 
@@ -14,7 +14,11 @@ std_Memory* moduleFn(getHeap)(){
 	static std_Memory HeapMemory = {};
 
 	if(HeapMemory.pointer == nil){
-	    create(std_Memory, &HeapMemory, core.System.Mem.getInfo().pageSize);
+	    create(std_Memory, &HeapMemory, 
+	    		core.System.Mem.getInfo().pageSize * 
+	    		__INIT_HEAP_NUM_PAGES,
+	    		__INIT_HEAP_LOCATION
+	    );
 
 	    if(HeapMemory.pointer == nil){
 		ERR(ERR.INIT, "Failed to initialize Heap memory");
@@ -77,7 +81,7 @@ SET(std_Memory){
 	word val = value ? *(word*)value : 0;
 
 	if(this.pointer)
-		memset(this.pointer, val, this.pages * core.Sys.Mem.getInfo().pageSize);
+		memset(this.pointer, val, this.pages * core.System.Mem.getInfo().pageSize);
 	
 return OK;
 }
@@ -118,33 +122,35 @@ HASH(std_Memory){
 	;
 }
 
-SIZE(std_Memory){ return elements ? this.pages : this.pages * core.Sys.Mem.getInfo().pageSize; }
+SIZE(std_Memory){ return elements ? this.pages : this.pages * core.System.Mem.getInfo().pageSize; }
 
 PRINT(std_Memory){
 	return printTo(out,
-		"(std_Memory){ "
-		    ".pointer = ", $(this.pointer), ", ",
-		    ".pages = ",   $(this.pages),   ", ",
-		" }"
+		"Memory address: ", $(this.pointer), ", ",
+	     	"Memory length: ",  $(this.pages),   " pages"
 	);
 }
+
+u64 std_Memory_Allocator_Op_Print(std_Memory *self, std_Memory_FormatArgs *format, std_Stream *out);
 
 construct(std_Memory,
 FMT(),
 DEF(),
 	.Create  = mod(Op_Create),
+	.Destroy = mod(Op_Destroy),
 	.Write 	 = mod(Op_Write),
 	.Copy 	 = mod(Op_Copy),
 	.Set 	 = mod(Op_Set),
 	.Size 	 = mod(Op_Size),
 	.Hash 	 = mod(Op_Hash),
 	.Read 	 = mod(Op_Read),
-	.Print 	 = mod(Op_Print),
-	.Destroy = mod(Op_Destroy),
+
+	.Print 	 = __INCLUDE_ALLOCATOR ? 
+	  		mod(Allocator_Op_Print) : mod(Op_Print),
 ){
-	len_t pageSize = core.Sys.Mem.getInfo().pageSize;
+	len_t pageSize = core.System.Mem.getInfo().pageSize;
 	this.pages     = arg.size / pageSize  + (pageSize % arg.size == 0 ? 0 : 1);
-	this.pointer   = core.Sys.Mem.alloc(this.pages);
+	this.pointer   = core.System.Mem.alloc(this.pages, arg.loc);
 
 	if(!this.pointer){
 		ERR(ERR.FAIL, "failed to allocate memory");

@@ -28,7 +28,12 @@
 #define IS_POWER_OF_TWO(x) \
     (((x) != 0) && (((x) & ((x) - 1)) == 0))
 
-#define MIN_BLOCK_SIZE (sizeof(FreeBlock) + sizeof(u32))
+#define MIN_BLOCK_SIZE 				\
+	(sizeof(BlockHeader) + 			\
+	 (this.settings.trackCallSites ? 	\
+		sizeof(TrackingData) : 0) + 	\
+	 sizeof(FreeData) + 			\
+	 sizeof(u32))
 
 /* === TYPE DEFINITIONS === */
 typedef struct {
@@ -36,22 +41,24 @@ typedef struct {
     u32 	canary_top;             /* Top canary for overflow detection */
     len_t 	size;                   /* Total block size including metadata */
     len_t 	requested_size;         /* Original user-requested size */
-    pntrval 	rel_next_phys;          /* Relative pointer to next physical block */
-    pntrval 	rel_prev_phys;          /* Relative pointer to previous physical block */
-    
+    pntr 	next;          		/* Pointer to next block */
+    pntr 	prev;          		/* Pointer to previous block */
+
     bool 	is_free : 1;            /* 1 if free, 0 if allocated */
     bool 	tracked : 1;		/* if trackCallSites enabled for this allocation */
+    bool 	next_contiguous : 1;	/* if the next pointer points to a contiguous block */
+    bool 	prev_contiguous : 1;	/* if the prev pointer points to a contiguous block */
 } BlockHeader;
 
 typedef struct {
-	std_ErrorPosition position;
-	XC_Time 	  time;
-	len_t 		  alloc_num;
+	std_CodePos 	 position;
+	XC_Time 	 time;
+	len_t 		 alloc_num;
 } TrackingData;
 
 typedef struct {
-	pntrval rel_next_free;          	/* Relative pointer to next free block in bin */
-	pntrval rel_prev_free;          	/* Relative pointer to previous free block in bin */
+	pntr next_free;          	/* Pointer to next free block in bin */
+	pntr prev_free;          	/* Pointer to previous free block in bin */
 } FreeData;
 
 typedef struct {
@@ -63,11 +70,14 @@ typedef struct {
 
 /* Large Allocation Tracking */
 typedef struct LargeAlloc {
+    u32 			magic;		/* Magic number for validation */
     void* 			ptr;            /* Pointer to allocated memory */
     len_t 			size;           /* Total size allocated */
     len_t 			requested_size; /* User-requested size */
     struct LargeAlloc* 		next;         	/* Next large allocation */
     struct LargeAlloc* 		prev;         	/* Prev large allocation */
+
+    
 } LargeAlloc;
 
 
@@ -106,14 +116,16 @@ typedef struct {
     
     Quarantine  	quarantine;          	/* Quarantine structure */
     LargeAlloc* 	large_allocs;        	/* List of large allocations */
+    BlockHeader*	last_block;		/* Last block created using newBlock */
     DeferredBlock* 	deferred_list;    	/* Deferred coalescing list */
     len_t 		deferred_count;         /* Count of deferred blocks */
     len_t 		deferred_threshold;     /* Threshold to trigger coalescing */
-    
-    pntrval 		bin_offsets[];          /* Flexible array of free list bins */
+ 
+    pntr 		free_space;
+    pntr 		bin_offsets[];          /* Flexible array of free list bins */
 } AllocCtx;
 
-
+static_assert(sizeof(LargeAlloc) == sizeof(BlockHeader));
 
 constexpr int 
 	Opt_Secure	= std_Memory_Allocator_Optimize_SECURITY,
