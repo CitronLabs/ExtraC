@@ -1,57 +1,99 @@
-#include "../List.h"
+#include "../../Test.h"
+#define module tests, Data, List, Features
 
-TEST(LIST_FEATURES){
-	List(c8) test_list = null;
-	List(c8) sublist = null;
+static List(c8) test_list 	= nil;
+static List(c8) sublist 	= nil;
 
-	NEW_SUBTEST("Initialization"){
-		test_list = pushList(c8, 10);
-		if(isinit(test_list))
-			PASS_TEST
-		else{ 
-			FAIL_TEST
-			goto skip;
-		}
-	}
-	NEW_SUBTEST("Appending"){
-		List.Append(test_list, "Hello, World!", sizeof("Hello, World!"));
+alias(std.List, List)
+
+
+TEST(Initialization){
 	
-		TestListFor(test_list, "Hello, World!")
-			PASS_TEST
-		else{ 
-			FAIL_TEST
-			goto skip;
-		}
-	}
-	NEW_SUBTEST("Clearing"){
-		List.Flush(test_list);
-		if(List.Size(test_list) == 0)
-			PASS_TEST
-		else{
-			FAIL_TEST
-			goto skip;
-		}
-	}
+    try() UT
+	.newTest("Initialization")
+	.assert((test_list = pushList(c8, 10)) != nil);
+    catch {
+	return err->errorcode;
+    }
 
-	NEW_SUBTEST("Insertion"){
-		List.Insert(test_list, sizeof("Hello, World!"), UINT64_MAX, "Hello, World!");
-		
-		TestListNotFor(test_list, "Hello, World!"){
-			FAIL_TEST
-			loginfo("FAIL RESULT: ", $((strc8)List.GetPointer(test_list,0)));
-			goto skip;
-		}
-		
-		List.Insert(test_list , sizeof("Other ") - 1, 7, "Other ");
-		TestListNotFor(test_list, "Hello, Other World!"){
-			FAIL_TEST
-			loginfo("FAIL RESULT: ",$((strc8)List.GetPointer(test_list,0)));
-			goto skip;
-		}else 
-			PASS_TEST
-	}
-	NEW_SUBTEST("Creating a Sublist"){
-		sublist = List.SubList(test_list, 7, sizeof("Other ") - 1);
+return OK;
+}
+
+TEST(Appending){
+    try() UT
+	.newTest("Appending")
+	.assert(
+		List.Append(test_list, "Hello, World!", sizeof("Hello, World!")) == OK
+	)
+	.equals(
+		V(test_list), V("Hello, World!")
+	);
+    catch {
+	printlnErr(
+	"Fail Info:\n",
+		"\tList Data: ", $(test_list)
+	);
+	return err->errorcode;	
+    }
+
+return OK;
+}
+
+TEST(Clearing){
+
+    try() UT
+	.newTest("Clearing")
+	.assert(({
+		List.Flush(test_list); 
+		errnm == OK;
+	}))
+	.assert(len(test_list) == 0);
+
+    catch {
+	printlnErr(
+	"Fail Info:\n",
+		"\tList Data: ", $(test_list)
+	);
+	return err->errorcode;	
+    }
+
+return OK;
+}
+
+TEST(Insertion){
+	
+    try() UT
+	.newTest("Insertion")
+	.assert(
+		List.Insert(test_list, sizeof("Hello, World!"), maxof(len_t), "Hello, World!") == OK
+	)
+	.equals(
+		test_list, "Hello, Other World!"
+	)
+	.assert(
+		List.Insert(test_list , sizeof("Other ") - 1, 7, "Other ") == OK
+	)
+	.equals(
+		test_list, "Hello, Other World!"
+	);
+    catch {
+	printlnErr(
+	"Fail Info:\n",
+		"\tList Data: ", $(test_list)
+	);
+	return err->errorcode;	
+    }
+
+return OK;
+}
+
+TEST(Sublist){
+	
+    try() UT
+	.newTest("Sublist")
+	.assert((sublist = List.SubList(test_list, 7, sizeof("Other ") - 1)) != nil)
+	.equals(sublist, "Other ")
+		;
 		TestListNotFor(sublist, "Other "){
 			FAIL_TEST
 			loginfo("FAIL RESULT: ",$((strc8)List.GetPointer(sublist,0)));
@@ -69,6 +111,35 @@ TEST(LIST_FEATURES){
 		}else 
 			PASS_TEST
 	}
+
+return OK;
+}
+
+
+#undef module
+#define module tests, Data, List
+
+Tests moduleFn(Features)(){
+	static Tests tests = {};
+
+	if(!tests.unit)
+	tests.unit = new(UnitTest, 
+		.name 		= "XC.Core.Data.List",
+		.procedures 	= arr(
+			&mod(Features_Initialization),
+			&mod(Features_Appending),
+			&mod(Features_Clearing),
+			&mod(Features_Insertion),
+		),
+	);
+
+return tests;
+
+
+}
+
+TEST(LIST_FEATURES){
+
 	NEW_SUBTEST("Merging"){
 		List.Flush(test_list);
 		List.Insert(test_list, sizeof("Goodbye,  See you tommorrow!"),

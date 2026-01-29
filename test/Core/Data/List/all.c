@@ -1,23 +1,37 @@
-#include "List.h"
-#include "tests/features.c"
-#include "tests/errors.c"
-#include "tests/cases.c"
+#include "../../Test.h"
+#define module tests, Data
 
+errvt moduleFn(List_test)(UnitTest* unit){
 
-TEST(LIST){
-	NEW_TEST("List Data Structure");
+	try() UnitTests
+	    	.start(unit)
+	    	.runSubtest("XC.Core.Data.List.Features")
+	    	.runSubtest("XC.Core.Data.List.Errors")
+	    	.runSubtest("XC.Core.Data.List.Cases")
+	    	.end();
+	catch 
+		return err->errorcode;
 
-	RUN_TEST(LIST_FEATURES){
-		return TEST_RESULT;
-	}
-	
-	RUN_TEST(LIST_ERRORS){
-		return TEST_RESULT;
-	}
-	
-	RUN_TEST(LIST_EDGE_CASES){
-		return TEST_RESULT;
-	}
+return OK;
+}
 
-return TEST_RESULT;
+Tests moduleFn(List_Features)();
+Tests moduleFn(List_Errors)();
+Tests moduleFn(List_Cases)();
+
+Tests moduleFn(List)(){
+	static Tests tests = {};
+
+	if(!tests.unit)
+	tests.unit = new(UnitTest, 
+		.name 		= "XC.Core.Data.List",
+		.procedures 	= arr(&mod(List_test)),
+		.subtests 	= arr(
+			mod(List_Features)().unit,
+			mod(List_Errors)().unit,
+			mod(List_Cases)().unit
+		)
+	);
+
+return tests;
 }

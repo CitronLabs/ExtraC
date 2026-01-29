@@ -26,7 +26,7 @@ Module(tests){
   )
   submodule(Strings,
       Tests 
-            fn(StringBuilder)();
+            fn(Editor)();
   )
   submodule(Time,
       Tests 
@@ -40,6 +40,7 @@ Module(tests){
             fn(Type)(),
             fn(Memory)(),
             fn(Stream)(),
+            fn(Process)(),
             fn(Arrays)(),
             fn(Error)(),
             fn(String)();
@@ -55,6 +56,10 @@ Module(tests){
 #undef package
 #define module tests
 
+exportFrom(Data
+SUBMODULE(), 
+VALUES(), 
+)
 export(
 SUBMODULE(), 
 VALUES(), 
