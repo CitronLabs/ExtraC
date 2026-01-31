@@ -39,12 +39,20 @@ private(
 	);
 
       	errvt 		method(DSN, include, std_DSN* include_data);
-	std_DSN_Data*	method(DSN, search, std_String* name);
-	len_t 		method(DSN, parse,  std_DSN_Data* ds, std_Stream* in);
-	len_t 		method(DSN, format, std_DSN_Data* ds, std_Stream* out);
+	std_DSN_Data*	method(DSN, search,  std_String* name);
+	len_t 		method(DSN, parse,   std_DSN_Data* ds, std_Stream* in);
+	len_t 		method(DSN, format,  std_DSN_Data* ds, std_Stream* out);
 	
 	std_StreamDecoder decoder;
 	std_StreamEncoder encoder;
+
+	submodule(Export,
+		errvt method(DSN, JSON,     std_Stream ouput);
+	)
+
+	submodule(Import,
+		errvt method(DSN, JSON,     std_Stream ouput);
+	)
 	
 	submodule(DSB,    
 	    std_StreamDecoder decoder; 
