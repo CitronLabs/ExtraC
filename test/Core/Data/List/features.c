@@ -8,7 +8,6 @@ alias(std.List, List)
 
 
 TEST(Initialization){
-	
     try() UT
 	.newTest("Initialization")
 	.assert((test_list = pushList(c8, 10)) != nil);

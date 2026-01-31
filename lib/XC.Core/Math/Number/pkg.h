@@ -6,8 +6,8 @@
 
 #define package std
 
-#define N(number) new(Number,  #number)
-#define n(number) push(Number, #number)
+#define N(number) new(std_Number,  #number)
+#define n(number) push(std_Number, #number)
 
 Decl(List)
 

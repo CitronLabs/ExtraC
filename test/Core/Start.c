@@ -1,13 +1,6 @@
 #include "Test.h"
 #define module std
             
-            
-            
-            
-            
-            
-            
-
 errvt moduleFn(test)(UnitTest* test){
 
 	try() UnitTests
