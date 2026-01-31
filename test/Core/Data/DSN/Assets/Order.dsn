@@ -1,5 +1,8 @@
+import Menu
+
 SodaType 	= Menu.sodatype,
 Condiments 	= Menu.condiments,
+
 {
     	name     = "Jim M",
 	takeout	 = true,
