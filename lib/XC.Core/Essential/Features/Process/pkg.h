@@ -12,21 +12,18 @@
 #define Process(name, Class, ...) 				\
 	const struct ___(Class, name, Proc) 			\
 	    { noFail 						\
-		fn(end)(), fn(fail)(), 				\
-		fn(doRun)();					\
+		fn(end)(), fn(fail)(); 				\
 								\
 		Class* fn(result)();				\
 								\
 		const struct ___(Class, name, Proc)		\
+		fn(run)(bool cont),				\
 		fn(start)(Class*) 				\
 		__VA_OPT__(,)					\
 			__VA_ARGS__; } name;
 
-
-#define doRun(times)		\
-	doRun(); loop(i, times)	\
-
-
+#define run_continue true
+#define run_stop     false
 Class(Process,
 INIT(Type_t class; void* extraData),
 FMT(),

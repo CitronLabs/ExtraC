@@ -7,7 +7,7 @@
 Module(Internal){
 	noFail fn(clearLeadingZeros)(std_Number* self);
 
-	std_Equality fn(absoluteCompare)(std_Number* a, std_Number* b);
+	std_Math_Equality fn(absoluteCompare)(std_Number* a, std_Number* b);
 
 	errvt fn(absoluteAdd)(std_Number* result, std_Number* a, std_Number* b);
 

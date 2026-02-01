@@ -7,6 +7,7 @@ from(std,
     use(Number),
     use(Stream)
 )
+alias(std.Stream.Process, then);
 #endif
 
 u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
@@ -18,11 +19,11 @@ u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 
 	std.Stream.Process
 	   .start(in)
-	   .doDecode(std.String.UTF8.Decoder, c){
+	   .doDecode(std.String.Encoding.UTF8.Decoder, c){
 
 		// 1. Handle sign
-		if   (c == '-') { priv.sign = -1; process->next();}
-		elif (c == '+') { priv.sign = 1;  process->next();}
+		if   (c == '-') { priv.sign = -1; then.next();}
+		elif (c == '+') { priv.sign = 1;  then.next();}
 		else { priv.sign = 1;	}
 	   
 		// Temporary stream to build the mantissa digits
@@ -41,36 +42,39 @@ u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 
 		std.Stream.Process
 		    .start(mantissa)
-		    .doRun(1){
+		    .run(({
 			while(iswdigit(c)){
-			    std.String.UTF8.encode((char*)&encode_point, c);
-			    process->writeData(
+			    std.String.Encoding.UTF8.encode((char*)&encode_point, c);
+			    then.writeData(
 					&encode_point, 
-					std.String.UTF8.charSize(encode_point)
+					std.String.Encoding.UTF8.charSize(encode_point)
 			    );
-			    process->next();
+			    then.next();
 			}
-		    } 
-		    then.doRun(c == '.'){
-			decimal_point_pos = initial_mantissa_len; // Record decimal point position
-			process->next();
+			if(c == '.'){
 
-			while (iswdigit(c)) {
-			    std.String.UTF8.encode((char*)&encode_point, c);
-			    process->writeData(
-					&encode_point, 
-					std.String.UTF8.charSize(encode_point)
-			    );
-			    process->next();
+				decimal_point_pos = initial_mantissa_len; // Record decimal point position
+				then.next();
+
+				while (iswdigit(c)) {
+				    std.String.Encoding.UTF8.encode((char*)&encode_point, c);
+				    then.writeData(
+						&encode_point, 
+						std.String.Encoding.UTF8.charSize(encode_point)
+				    );
+				    then.next();
+				}
 			}
-		    }
-		    then.end();
+
+			run_continue;
+		    })) 
+		    .end();
 			
 		// If no digits were found at all (e.g., just ".", "+.", "-."), treat as zero
-		if (size(mantissa) == 0) {
+		if (len(mantissa) == 0) {
 			pop(mantissa);
 			std.Number.setZero(self);
-			process->end();
+			then.end();
 			return prev_pos - size(in);
 		}
 		
@@ -87,17 +91,17 @@ u64 moduleMethod(std_Number, FloatScan, Number_FormatArgs* format, Stream* in) {
 			priv.exponent = 0;
 		}
 
-		process->next();
+		then.next();
 		
 		// 4. Parse exponent part (e.g., "e+5", "E-2")
 		if (c == 'e' || c == 'E') {
-			process->next();
+			then.next();
 			int exp_sign = 1;
 
 			if (c == '-') {
 				exp_sign = -1;
 			}
-			process->next();
+			then.next();
 		
 			i64 parsed_exp_val = 0;
 			char* endptr;
