@@ -151,7 +151,7 @@ SCAN(std_String){
 
 	    then.rewind((string_size = std.Stream.GetCursorPos(in) - prev_pos))
 
-	    .doRun(1){
+	    .run(({
 		if(this.data && !priv.IsView){ 
 			destroy(self); 
 		}
@@ -161,9 +161,10 @@ SCAN(std_String){
 		priv.len_bytes 	= string_size;
 		priv.IsView 	= false;
 		priv.views 	= nil;
-	    }
 
-	    then.end();
+		run_continue;
+	    }))
+	    .end();
 	;
 
 return string_size;
