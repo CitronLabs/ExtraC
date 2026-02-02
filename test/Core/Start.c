@@ -35,7 +35,6 @@ errvt moduleFn(test)(UnitTest* test){
 	    	.end();
 	catch 
 		return err->errorcode;
-
 return OK;
 }
 
