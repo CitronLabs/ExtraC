@@ -22,7 +22,7 @@ VALUES(),
 	start, doEncode, doDecode,
 	each, advance, rewind, readData,
 	writeData, result,
-	end, fail, doRun, next
+	end, fail, run, next
 )
 
 

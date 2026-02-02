@@ -95,14 +95,15 @@ len_t moduleMethod(std_DSN, parseMap, std_Map** data, std_Stream* in){
 
 	std.Stream.Process
 	    .start(in)
-	    .doRun(1){
+	    .run(({
 		if(!scanFrom(in, "@{")){
 			ERR(ERR.DATA.DSN, "invalid map format");
 			pop(buckets);
 	       		return 0;
 		}
-	    }
-	    process.doDecode(std.String.Encoding.UTF8.Decoder, c){
+		run_continue;
+	    }))
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
 		while(iswblank(c)) process.next();
 
 	//SCANNING FOR KEY	
@@ -183,14 +184,15 @@ len_t moduleMethod(std_DSN, parseStruct, std_Struct** data, std_Stream* in){
 
 	std.Stream.Process
 	    .start(in)
-	    .doRun(1){
+	    .run(({
 		if(!scanFrom(in, "{")){
 			ERR(ERR.DATA.DSN, "invalid map format");
 			del(result);
 	       		return 0;
 		}
-	    }
-	    process.doDecode(std.String.Encoding.UTF8.Decoder, c){
+		run_continue;
+	    }))
+	    .doDecode(std.String.Encoding.UTF8.Decoder, c){
 
 		while(iswblank(c)) process.next();
 

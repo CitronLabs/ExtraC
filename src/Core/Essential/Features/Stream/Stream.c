@@ -334,7 +334,9 @@ noFail moduleFn(Process_fail)(){
 
 SP_Result moduleFn(Process_each)(){ return Stream_Proc_OK; }
 
-noFail moduleFn(Process_doRun)(){}
+SP_Result moduleFn(Process_run)(bool cont){
+return cont ? Stream_Proc_OK : Stream_Proc_Fail;
+}
 
 pntr moduleFn(Process_next)(pntr* buff){
 	Process* ctx = mod(getProcess)();
@@ -363,7 +365,7 @@ SP_Result
 		.result		= generic std.Process.noOp,
 	    	.end		= generic std.Process.noOp,
 		.fail		= generic std.Process.noOp,
-		.doRun		= generic std.Process.noOp,
+		.run		= generic std.Process.noOp,
 	    	.next		= generic std.Process.noOp,
 	},
 	Stream_Proc_OK   = {
@@ -378,7 +380,7 @@ SP_Result
 		.result		= mod(Process_result),
 	    	.end		= mod(Process_end),
 		.fail		= mod(Process_fail),
-		.doRun		= mod(Process_doRun),
+		.run		= mod(Process_run),
 	    	.next		= mod(Process_next),
 	}
 ;
@@ -572,13 +574,13 @@ SIZE(std_Stream){
 construct(std_Stream,
 FMT(),
 DEF(),
-	.Create  = std_Stream_Op_Create,
-	.Destroy = std_Stream_Op_Destroy,
-	.Size	 = std_Stream_Op_Size,
-	.Iter	 = std_Stream_Op_Iter,
-	.Copy	 = std_Stream_Op_Copy,
-	.Write   = std_Stream_Op_Write,
-	.Read	 = std_Stream_Op_Read,
+	.Create  = mod(Op_Create),
+	.Destroy = mod(Op_Destroy),
+	.Size	 = mod(Op_Size),
+	.Iter	 = mod(Op_Iter),
+	.Copy	 = mod(Op_Copy),
+	.Write   = mod(Op_Write),
+	.Read	 = mod(Op_Read),
 	.Hash	 = nil,
 	.Print	 = nil,
 	.Set	 = nil

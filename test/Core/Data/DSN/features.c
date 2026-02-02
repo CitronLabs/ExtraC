@@ -194,29 +194,125 @@ return tests;
 
 }
 
-TEST(DSN_FEATURES_PARSING);
-TEST(DSN_FEATURES_PRINTING);
-TEST(DSN_FEATURES_IMPORTING);
+alias(std.Map.Search, 		  search);
+alias(std.Number.Compare, 	  numCompare);
+alias(std.Number.Equality.EQUALS, EQUALS);
 
-TEST(DSN_FEATURES){
+static std_DSN* dsn;
 
-	dsn_var = new(DSN);
+TEST(Initialization){
+    try() UT
+	.newTest("Initialization")
+	.assert((dsn = push(std_DSN)) != nil);
+    catch {
+	return err->errorcode;
+    }
 
-	RUN_TEST(DSN_FEATURES_PRINTING){
-		return TEST_RESULT;
-	}
+return OK;
+}
 
-	RUN_TEST(DSN_FEATURES_PARSING){
-		return TEST_RESULT;
-	}
+TEST(Parse_String){
+	std_String* string 	= nil;
+	len_t       parsed_len 	= 0;
+	var         inputStream = push(std_Stream);
 
-	RUN_TEST(DSN_FEATURES_IMPORTING){
-		return TEST_RESULT;
-	}
-	
-	del(dsn_var);
+    try() UT
+	.newTest("Parse_String")
+	.assert(({
+		printTo(inputStream, "\"Hello\""); 
 
-return TEST_RESULT;	
+		parsed_len = std.DSN.String.parse(dsn, &string, inputStream);
+			
+		parsed_len  != 0  && 
+		len(string) == 5  &&
+		std.String.Compare(string, s("Hello"));
+	}));
+    catch {
+	printlnErr(
+	"Fail Info:\n"
+		"\tInput Stream: ",  $(inputStream), ",\n",
+		"\tParsed Length: ", $(parsed_len),  ",\n",
+		"\tString Result: ", $(string)
+	);
+
+	del(string);
+	pop(inputStream);
+	return err->errorcode;
+    }
+	del(string);
+	pop(inputStream);
+
+return OK;
+}
+
+TEST(Parse_Number){
+	std_Number* number 	= nil;
+	len_t       parsed_len 	= 0;
+	var         inputStream = push(std_Stream);
+
+    try() UT
+	.newTest("Parse_Number")
+	.assert(({
+		printTo(inputStream, "100"); 
+
+		parsed_len = std.DSN.Number.parse(dsn, &number, inputStream);
+			
+		parsed_len  != 0  && 
+		len(number) == 5  &&
+		numCompare(number, n(100));
+	}));
+    catch {
+	printlnErr(
+	"Fail Info:\n"
+		"\tInput Stream: ",  $(inputStream), ",\n",
+		"\tParsed Length: ", $(parsed_len),  ",\n",
+		"\tNumber Result: ", $(number)
+	);
+
+	del(number);
+	pop(inputStream);
+	return err->errorcode;
+    }
+	del(number);
+	pop(inputStream);
+
+return OK;
+}
+TEST(Parse_List){
+	std_List* list 		= nil;
+	len_t     parsed_len 	= 0;
+	var       inputStream 	= push(std_Stream);
+
+    try() UT
+	.newTest("Parse_List")
+	.assert(({
+		printTo(inputStream, "[1, 2, 3]"); 
+
+		parsed_len = std.DSN.List.parse(dsn, &list, inputStream);
+
+			
+		parsed_len != 0 && 
+		len(list) == 3  &&
+		numCompare(index(list, 0), n(1)) == EQUALS &&
+		numCompare(index(list, 1), n(2)) == EQUALS &&
+		numCompare(index(list, 2), n(3)) == EQUALS;
+	}));
+    catch {
+	printlnErr(
+	"Fail Info:\n"
+		"\tInput Stream: ",  $(inputStream), ",\n",
+		"\tParsed Length: ", $(parsed_len),  ",\n",
+		"\tList Result: ",   $(list)
+	);
+
+	del(list);
+	pop(inputStream);
+	return err->errorcode;
+    }
+	del(list);
+	pop(inputStream);
+
+return OK;
 }
 
 
@@ -235,41 +331,158 @@ TEST(DSN_FEATURES_PARSING){
 
 return TEST_RESULT; 
 
+	del(map);
+	pop(inputStream);
+	return err->errorcode;
+    }
+	del(map);
+	pop(inputStream);
 
+return OK;
 }
-TEST(DSN_FEATURES_PRINTING){
-	inst(StringBuilder) sb = new(StringBuilder);
-    
-	NEW_SUBTEST("Format List"){
-		List(int) list = pushList(int, 10);
-		List.Append(list, (int[]){1,2,3}, 3);
-		DSN.formatList(dsn_var, list, sb);
-		if (strncmp(StringBuilder.GetStr(sb).txt.data.utf8, "[ 1, 2, 3 ]", 11) == 0) {
-		    PASS_TEST
-		} else {
-		    FAIL_TEST
-		}
-		StringBuilder.Clear(sb);
-		pop(list);
-	}
-	NEW_SUBTEST("Format Map"){
-		Map(String, int) map = pushMap(String, int);
-		int val1 = 1, val2 = 2;
-		Map.Insert(map, s("key1"), &val1);
-		Map.Insert(map, s("key2"), &val2);
-		DSN.formatMap(dsn_var, map, sb);
-		if (strncmp(StringBuilder.GetStr(sb).txt.data.utf8, "@{ \"key1\"->1, \"key2\"->2, }", 23) == 0) {
-		    PASS_TEST
-		} else {
-		    FAIL_TEST
-		}
-		StringBuilder.Clear(sb);
-		pop(map);
-	}
-	pop(sb);
 
+TEST(Parse_Struct){
+	std_Struct* struct_data	= nil;
+	len_t       parsed_len 	= 0;
+	var         inputStream = push(std_Stream);
+
+    try() UT
+	.newTest("Parse_Struct")
+	.assert(({
+		printTo(inputStream, 
+	  		"{"
+	  		    "number =  10,"
+	  		    "string = \"Hello\","
+	  		    "list   =  [1,2,3],"
+	  		    "map    =  @{1->\"Hey\"},"
+	  		    "struct =  {number = 15}"
+			"}"); 
+
+		parsed_len = std.DSN.Struct.parse(dsn, &struct_data, inputStream);
+			
+		parsed_len != 0 && len(struct_data) == 3;
+	}));
+    catch {
+	printlnErr(
+	"Fail Info:\n"
+		"\tInput Stream: ",  $(inputStream), ",\n",
+		"\tParsed Length: ", $(parsed_len),  ",\n",
+		"\tStruct Result: ", $(struct_data)
+	);
+
+	del(struct_data);
+	pop(inputStream);
+	return err->errorcode;
+    }
+	del(struct_data);
+	pop(inputStream);
+
+return OK;
 }
-TEST(DSN_FEATURES_IMPORTING){
 
+TEST(Parse_DSN_NoImports){
+	const c8 input[] = {
+		#embed "Assets/Person.dsn" suffix(, 0)
+	};
 
+	var      inputStream = push(std_Stream);
+	len_t 	 parsed_len  = 0;
+
+    try() UT
+	.newTest("Parse_DSN_NoImports")
+	.assert(({
+		printTo(inputStream, input); 
+
+		parsed_len = std.DSN.parse(dsn, nil, inputStream);
+			
+		parsed_len != 0 && len(dsn->body) &&
+		std.String.Compare(
+			std.DSN.search(dsn, s("Name"))->asString, 
+			s("John Smith")
+		) &&
+		numCompare(
+			std.DSN.search(dsn, s("Age"))->asNumber,
+			n(38)
+		) == EQUALS;
+	}));
+    catch {
+	printlnErr(
+	"Fail Info:\n"
+		"\tInput Text: ",    input, 	     ",\n",
+		"\tInput Stream: ",  $(inputStream), ",\n",
+		"\tParsed Length: ", $(parsed_len),  ",\n",
+		"\tInput Result: ",  $(dsn)
+	);
+
+	del(dsn);
+	pop(inputStream);
+	return err->errorcode;
+    }
+
+return OK;
 }
+TEST(Parse_DSN_WithImports){
+	const c8 input[] = {
+		#embed "Assets/Order.dsn" suffix(, 0)
+	};
+	const c8 import[] = {
+		#embed "Assets/Menu.dsn" suffix(, 0)
+	};
+
+	var      inputStream = push(std_Stream);
+	len_t 	 parsed_len  = 0;
+	std_DSN* importDSN   = push(std_DSN);
+
+    try() UT
+	.newTest("Parse_Map")
+	.assert(({
+		printTo(inputStream, import); 
+
+		var parsed_len = std.DSN.parse(dsn, nil, inputStream);
+			
+		parsed_len != 0 && len(dsn->body);
+	}));
+    catch {
+	printlnErr(
+	"Fail Info:\n"
+		"\tInput Text: ",    input, 	     ",\n",
+		"\tImport Text: ",   import, 	     ",\n",
+		"\tInput Stream: ",  $(inputStream), ",\n",
+		"\tParsed Length: ", $(parsed_len),  ",\n",
+		"\tImport Result: ", $(importDSN),   ",\n",
+		"\tInput Result: ",  $(dsn)
+	);
+
+	del(dsn);
+	pop(inputStream, importDSN);
+	return err->errorcode;
+    }
+	del(dsn);
+	pop(inputStream, importDSN);
+
+return OK;
+}
+#undef module
+#define module tests, Data, DSN
+
+Tests moduleFn(Features)(){
+	static Tests tests = {};
+
+	if(!tests.unit)
+	tests.unit = new(UnitTest, 
+		.name 		= "XC.Core.Data.DSN",
+		.procedures 	= arr(
+		  	&mod(Features_Initialization),
+		  	&mod(Features_Parse_String),
+		  	&mod(Features_Parse_Number),
+		  	&mod(Features_Parse_List),
+		  	&mod(Features_Parse_Map),
+		  	&mod(Features_Parse_Struct),
+		  	&mod(Features_Parse_DSN_NoImports),
+		  	&mod(Features_Parse_DSN_WithImports),
+		),
+	);
+
+return tests;
+}
+
