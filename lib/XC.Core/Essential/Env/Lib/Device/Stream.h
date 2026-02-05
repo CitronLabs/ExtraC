@@ -22,9 +22,6 @@ typedef struct streamInfo {
 
 
 Interface(stream,
-	errvt fn(open)(streamHandle handle, bool create);	
-	errvt fn(close)(streamHandle handle);	
-	errvt fn(delete)(streamHandle handle);	
 	errvt fn(edit)(streamHandle handle, const char* name, word attributes);
 	errvt fn(watch)(streamHandle handle);
 	len_t fn(isModified)(streamHandle handle);

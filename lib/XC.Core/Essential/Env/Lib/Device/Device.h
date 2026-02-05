@@ -45,6 +45,7 @@ Interface(__XC_DEVICE,
 		IO
 	)
 	values(Resource, word,
+		Self,
 		Device,
 		Stream,
 		Register
