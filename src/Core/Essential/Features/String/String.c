@@ -10,9 +10,7 @@ bool moduleMethod(std_String, Compare, std_String* cmp_string){
 	) 
 		return false;
 
-	strncmp(this.data, cmp_string->data, this.len);
-	
-return false;
+return strncmp(self, cmp_string, this.len);
 }
 
 errvt moduleMethod(std_String, Copy, std_String* to){
