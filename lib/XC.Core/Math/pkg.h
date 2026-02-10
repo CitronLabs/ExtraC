@@ -21,11 +21,8 @@
 #define math(...) push(std_Math, (pntr[]){__VA_ARGS__})
 #define MATH(...) new(std_Math, (pntr[]){__VA_ARGS__})
 
-Class(Math,
-INIT(pntr* expression),
-FMT(),
 
-){
+Interface(Math,
 	interface(std_Math_Algebra)    Algebra;
 	interface(std_Math_Calculus)   Calculus;
 	interface(std_Math_Complex)    Complex;
@@ -39,9 +36,7 @@ FMT(),
 		UNDEFINED,
 		ERROR
 	)
-
-	
-};
+);
 
 #undef package
 #endif
