@@ -1,9 +1,11 @@
 #pragma once
 #include "pkg.h"
 
-#define module compiler
+#define module app
 
 export(
 SUBMODULE(),
 VALUES()
 )
+
+#undef module
