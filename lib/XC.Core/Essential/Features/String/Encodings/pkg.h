@@ -23,6 +23,9 @@ Interface(Encoding,
 		const std_StreamDecoder Decoder;
 	)
 	submodule(UTF16,
+	  	bool  fn(isLowSurrogate)(c16 c);
+	  	bool  fn(isHighSurrogate)(c16 c);
+	  	rune  fn(mergeSurrogates)(c16 high, c16 low);
 	   	len_t fn(len)(c16* str, len_t max, c16** end);
 		errvt fn(encode) (c16* dest,   rune codepoint);
 		len_t fn(toUtf8) (c16* in, len_t in_max, c8* dest, len_t dest_max);
