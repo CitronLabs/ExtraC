@@ -17,7 +17,7 @@ Interface(__XC_SYSTEM,
       	processHandle 	fn(thisProcess)();
       
       	moduleHandle 	fn(load)(const char* module);
-      	pntr 		fn(find)(moduleHandle module, const char* symbol);
+      	pntr 		fn(symbol)(moduleHandle module, const char* symbol);
       	errvt 		fn(unload)(moduleHandle module);
 
 	values(ExitCode, word,
