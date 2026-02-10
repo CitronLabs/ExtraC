@@ -29,7 +29,7 @@ SOFTWARE.
 #include "Essential/pkg.h"
 #include "Debug/pkg.h"
 #include "Data/pkg.h"
-#include "Strings/pkg.h"
+#include "Editor/pkg.h"
 #include "Math/pkg.h"
 #include "Alloc/pkg.h"
 #include "Time/pkg.h"
