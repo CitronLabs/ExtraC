@@ -1,17 +1,11 @@
 #pragma once
-#include "./pkg.h"
-#include "Essential/pkg.c"
-#include "Data/pkg.c"
-#include "Math/pkg.c"
+#include "Type/pkg.c"
+#include "Base/pkg.c"
+#include "Arrays/pkg.c"
+#include "Error/pkg.c"
+#include "Memory/pkg.c"
+#include "Process/pkg.c"
+#include "Stream/pkg.c"
 
-#define module std
 
-export(
-SUBMODULE(Types, DSN, Math, Number, Error),
-VALUES(),
-	
-);
 
-alias(std.Error.Code, ERR);
-
-#undef module

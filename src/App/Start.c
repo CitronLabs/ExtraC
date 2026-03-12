@@ -10,8 +10,10 @@ main(
 	"Unified application interface for the "
 	"management of XC apps and development."
 ){
+
 	var cli = push(std_CLI);
 
+	
 	foreach(cli, std_String, cmd){
 	    switchs(cmd){
 	    cases("install"){
@@ -19,7 +21,8 @@ main(
 	    break;}
 
 	    cases("run"){
-		// Run application
+		std.CLI.advance(cli, cmd_iterator);
+
 	    break;}
 
 	    cases("stop"){

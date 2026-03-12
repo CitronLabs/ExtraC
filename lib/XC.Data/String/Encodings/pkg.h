@@ -1,0 +1,81 @@
+#pragma once
+#define __XC_STRING__
+#include "../pkg.h"
+
+#define package std_String
+
+Data(UTF8,
+INIT(),
+FMT(),
+	pntr data; len_t len;
+private(
+	ArrayList(String) views; 
+	bool IsView; 
+	len_t lenBytes; 
+)
+)
+
+Data(UTF16,
+INIT(),
+FMT(),
+	pntr data; len_t len;
+private(
+	ArrayList(String) views; 
+	bool IsView;
+)
+)
+
+Data(UTF32,
+INIT(),
+FMT(),
+	pntr data; len_t len;
+private(
+	ArrayList(String) views; 
+	bool IsView;
+)
+)
+
+
+Interface(Encoding,
+	values(Type, word,
+		UTF8,
+		UTF16,
+		UTF32,
+		ASCII
+	)
+	submodule(UTF8,
+		len_t fn(charSize) (rune codepoint);
+	   	len_t fn(len)(c8* str, len_t max, c8** end);
+		errvt fn(decode) (c8** start, rune* codepoint);
+		errvt fn(encode) (c8* dest,   rune codepoint);
+		len_t fn(toUtf16)(c8* in, len_t in_max, c16* dest, len_t dest_max);
+		len_t fn(toUtf32)(c8* in, len_t in_max, c32* dest, len_t dest_max);
+		len_t fn(toAscii)(c8* in, len_t in_max, c8*  dest, len_t dest_max);
+		const std_StreamEncoder Encoder;
+		const std_StreamDecoder Decoder;
+	)
+	submodule(UTF16,
+	  	bool  fn(isLowSurrogate)(c16 c);
+	  	bool  fn(isHighSurrogate)(c16 c);
+	  	rune  fn(mergeSurrogates)(c16 high, c16 low);
+	   	len_t fn(len)(c16* str, len_t max, c16** end);
+		errvt fn(encode) (c16* dest,   rune codepoint);
+		len_t fn(toUtf8) (c16* in, len_t in_max, c8* dest, len_t dest_max);
+		len_t fn(toUtf32)(c16* in, len_t in_max, c32* dest, len_t dest_max);
+		len_t fn(toAscii)(c16* in, len_t in_max, c8*  dest, len_t dest_max);
+		const std_StreamEncoder Encoder;
+		const std_StreamDecoder Decoder;
+	)
+	submodule(UTF32,
+	   	len_t fn(len)(c32* str, len_t max, c32** end);
+		len_t fn(toUtf8) (c32* in, len_t in_max, c8* dest,  len_t dest_max);
+		len_t fn(toUtf16)(c32* in, len_t in_max, c16* dest, len_t dest_max);
+		len_t fn(toAscii)(c32* in, len_t in_max, c8*  dest, len_t dest_max);
+		const std_StreamEncoder Encoder;
+		const std_StreamDecoder Decoder;
+	)
+
+	errvt fn(Convert)(pntr stringObject, word encoding);
+)
+
+#undef package
