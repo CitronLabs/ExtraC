@@ -1,7 +1,9 @@
-#include "../../Test.h"
-#define module tests, Data
+#include <XC.Builtin/pkg.c>
+#define module std, DSN
 
-errvt moduleFn(DSN_test)(UnitTest* unit){
+static Tests mod(Tests) = {};
+
+errvt moduleFn(Test)(UnitTest* unit){
 
 	try() UnitTests
 	    	.start(unit)
@@ -15,12 +17,11 @@ errvt moduleFn(DSN_test)(UnitTest* unit){
 return OK;
 }
 
-Tests moduleFn(DSN_Features)();
-Tests moduleFn(DSN_Errors)();
-Tests moduleFn(DSN_Cases)();
+Tests moduleFn(Features)();
+Tests moduleFn(Errors)();
+Tests moduleFn(Cases)();
 
 Tests moduleFn(DSN)(){
-	static Tests tests = {};
 
 	if(!tests.unit)
 	tests.unit = new(UnitTest, 
